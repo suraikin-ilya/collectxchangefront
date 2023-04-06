@@ -19,22 +19,35 @@
         <li><a href="#">ОБМЕН</a></li>
       </ul>
       <div class="header__login">
-        <button @click="isPopupOpen = true">ВОЙТИ</button>
+        <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>
+        <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>
       </div>
     </nav>
   </header>
   <popup-login
-      :is-open="isPopupOpen"
-       @close="isPopupOpen = false">
+      :is-open="isLoginOpen"
+       @close="isLoginOpen = false"
+  >
   </popup-login>
+  <popup-registration
+      :is-open="isRegistrationOpen"
+      @close="isRegistrationOpen = false"
+  >
+  </popup-registration>
 </template>
 <script>
 import PopupLogin from "@/components/PopupLogin.vue";
+import PopupRegistration from "@/components/PopupRegistration.vue";
+
 export default {
-  components: {PopupLogin},
+  components: {PopupLogin, PopupRegistration},
   data(){
-    return {isPopupOpen: false}
+    return {
+      isLoginOpen: false,
+      isRegistrationOpen: false,
+    }
   },
+
   name: 'HelloWorld',
   props: {
     msg: String
@@ -61,6 +74,7 @@ export default {
   height: 58px;
   margin-left: 2.5%;
   margin-right: 6%;
+  align-content: center;
   display: inline-block;
 }
 
@@ -76,12 +90,14 @@ export default {
 
 .header__nav ul{
   display: inline-block;
-  min-width: 1150px;
+  min-width: 1100px;
 }
+
+
 
 .header__menu li {
   display: inline-block;
-  margin-right: 5.6%;
+  margin-right: 4.6%;
   font-style: normal;
   font-weight: bold;
   font-size: 36px;
@@ -96,9 +112,6 @@ a{
   color: #fff;
 }
 
-.header__menu li:last-child {
-  margin-right: 11.1%;
-}
 
 button,
 
@@ -111,10 +124,37 @@ button,
 .header__login button {
   font-style: normal;
   font-weight: bold;
-  font-size: 36px;
-  line-height: 43px;
+  font-size: 20px;
+  line-height: 24px;
   /*display: inline-block;*/
   cursor: pointer;
+}
+
+.login{
+  padding: 13px 19px 8px 19px;
+  background: #55BEA4;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.signup{
+  margin-right: 24px;
+  padding: 13px 10px 8px 10px;
+  background: #fff;
+  border: 2px solid #55BEA4;
+  border-radius: 10px;
+  color: #55BEA4;
+}
+
+.button__signup{
+  position: relative;
+  top: -3px;
+}
+
+.button__login{
+  position: relative;
+  top: -3px;
 }
 
 @media screen and (max-width: 1200px) {

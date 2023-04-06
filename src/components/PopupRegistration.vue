@@ -3,10 +3,18 @@
     <div class="popup" @click.stop>
       <div class="popup__content">
         <form class="form">
+          <h2 class="form__title">Создание профиля</h2>
+          <h3 class="form__description">Введите ваши данные</h3>
           <div class="form__group">
             <label for="email" class="form__label">EMAIL</label>
             <div class="form__input-group">
               <input type="email" id="email" name="email" class="form__input" placeholder="Email" required>
+            </div>
+          </div>
+          <div class="form__group">
+            <label for="nickname" class="form__label">Никнейм</label>
+            <div class="form__input-group">
+              <input type="text" id="nickname" name="nickname" class="form__input" placeholder="Nickname" required>
             </div>
           </div>
           <div class="form__group">
@@ -15,9 +23,14 @@
               <input type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
             </div>
           </div>
+          <div class="form__group">
+            <label for="check_password" class="form__label">Повторите пароль</label>
+            <div class="form__input-group">
+              <input type="password" id="check_password" name="check_password" class="form__input form__input--password" placeholder="Повторите пароль" required>
+            </div>
+          </div>
           <div class="form__actions">
-            <button type="submit" class="form__button form__button--login">Войти</button>
-            <button type="button" class="form__button form__button--register" >Регистрация</button>
+            <button type="submit" class="form__button form__button--create">Создать</button>
           </div>
         </form>
       </div>
@@ -36,7 +49,7 @@ export default {
   emits: {
     close:null,
   },
-  name: "PopupLogin",
+  name: "PopupRegistration",
   mounted() {
     document.addEventListener("keydown", this.handleKeydown);
   },
@@ -87,13 +100,20 @@ export default {
 .form {
   display: flex;
   flex-direction: column;
-  /*align-items: center;*/
-  /*justify-content: center;*/
+  align-items: center;
+  justify-content: center;
 }
 
 .form__title {
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.form__description{
+  margin-bottom: 28px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
 }
 
 .form__group {
@@ -149,7 +169,7 @@ export default {
   border-radius: 5px;
   padding: 10px 30px;
   cursor: pointer;
-
+  width: 100%;
 }
 
 .form__button--register {
@@ -159,8 +179,9 @@ export default {
   border-radius: 6px;
   float: right;
   color: #55BEA4;
-
 }
+
+
 
 .form__input--password {
   padding-right: 30px;
@@ -179,6 +200,21 @@ input#password {
   background-position: 9px 5px;
   padding-left: 36px;
 }
+
+input#check_password {
+  background-image: url('../assets/lock.svg');
+  background-repeat: no-repeat;
+  background-position: 9px 5px;
+  padding-left: 36px;
+}
+
+input#nickname {
+  background-image: url('../assets/wpf_name.svg');
+  background-repeat: no-repeat;
+  background-position: 9px 5px;
+  padding-left: 36px;
+}
+
 
 input {outline:none;}
 </style>
