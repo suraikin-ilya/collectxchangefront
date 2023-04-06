@@ -19,13 +19,22 @@
         <li><a href="#">ОБМЕН</a></li>
       </ul>
       <div class="header__login">
-        <button>ВОЙТИ</button>
+        <button @click="isPopupOpen = true">ВОЙТИ</button>
       </div>
     </nav>
   </header>
+  <popup-login
+      :is-open="isPopupOpen"
+       @close="isPopupOpen = false">
+  </popup-login>
 </template>
 <script>
+import PopupLogin from "@/components/PopupLogin.vue";
 export default {
+  components: {PopupLogin},
+  data(){
+    return {isPopupOpen: false}
+  },
   name: 'HelloWorld',
   props: {
     msg: String
@@ -35,6 +44,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .header {
   position: fixed;
   top: 0;
