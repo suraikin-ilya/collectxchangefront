@@ -2,17 +2,17 @@
   <div v-if="isOpen" class="backdrop" @click="close">
     <div class="popup" @click.stop>
       <div class="popup__content">
-        <form class="form">
+        <form @submit.prevent="submit" class="form">
           <div class="form__group">
             <label for="email" class="form__label">EMAIL</label>
             <div class="form__input-group">
-              <input type="email" id="email" name="email" class="form__input" placeholder="Email" required>
+              <input v-model="data.email" type="email" id="email" name="email" class="form__input" placeholder="Email" required>
             </div>
           </div>
           <div class="form__group">
             <label for="password" class="form__label">Пароль</label>
             <div class="form__input-group">
-              <input type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
+              <input v-model="data.password" type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
             </div>
           </div>
           <div class="form__actions">
@@ -26,7 +26,29 @@
 </template>
 
 <script>
+import {reactive} from "vue";
+
 export default {
+  setup(){
+    const data = reactive({
+      email: '',
+      password: '',
+    });
+
+    const submit = async () => {
+      await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+    }
+
+    return{
+      data,
+      submit
+    }
+  },
   props: {
     isOpen:{
       type: Boolean,

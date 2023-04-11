@@ -6,17 +6,18 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="stylesheet" type="text/css" href="normalize.css">
     <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
+    <title>{{ name }}</title>
   </head>
   <header class="header">
     <div class="header__logo">
-      <a href="#"><img src="../assets/COLLECTxCHANGE.svg" alt="Logo"></a>
+      <RouterLink to="/"><img src="../assets/COLLECTxCHANGE.svg" alt="Logo"></RouterLink>
     </div>
     <nav class="header__nav">
       <ul class="header__menu">
-        <li><a href="#">КАТАЛОГ</a></li>
-        <li><a href="#">КОЛЛЕКЦИИ</a></li>
-        <li><a href="#">КОЛЛЕКЦИОНЕРЫ</a></li>
-        <li><a href="#">ОБМЕН</a></li>
+        <li><RouterLink to="catalog">КАТАЛОГ</RouterLink></li>
+        <li><RouterLink to="">КОЛЛЕКЦИИ</RouterLink></li>
+        <li><RouterLink to="">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
+        <li><RouterLink to="">ОБМЕН</RouterLink></li>
       </ul>
       <div class="header__login">
         <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>
@@ -48,7 +49,7 @@ export default {
     }
   },
 
-  name: 'HelloWorld',
+  name: 'PageHeader',
   props: {
     msg: String
   }

@@ -2,31 +2,31 @@
   <div v-if="isOpen" class="backdrop" @click="close">
     <div class="popup" @click.stop>
       <div class="popup__content">
-        <form class="form">
+        <form  @submit.prevent="submit" class="form" >
           <h2 class="form__title">Создание профиля</h2>
           <h3 class="form__description">Введите ваши данные</h3>
           <div class="form__group">
             <label for="email" class="form__label">EMAIL</label>
             <div class="form__input-group">
-              <input type="email" id="email" name="email" class="form__input" placeholder="Email" required>
+              <input v-model="data.email" type="email" id="email" name="email" class="form__input" placeholder="Email" required>
             </div>
           </div>
           <div class="form__group">
             <label for="nickname" class="form__label">Никнейм</label>
             <div class="form__input-group">
-              <input type="text" id="nickname" name="nickname" class="form__input" placeholder="Nickname" required>
+              <input v-model="data.nickname" type="text" id="nickname" name="nickname" class="form__input" placeholder="Nickname" required>
             </div>
           </div>
           <div class="form__group">
             <label for="password" class="form__label">Пароль</label>
             <div class="form__input-group">
-              <input type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
+              <input v-model="data.password" type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
             </div>
           </div>
           <div class="form__group">
             <label for="check_password" class="form__label">Повторите пароль</label>
             <div class="form__input-group">
-              <input type="password" id="check_password" name="check_password" class="form__input form__input--password" placeholder="Повторите пароль" required>
+              <input v-model="data.check_password" type="password" id="check_password" name="check_password" class="form__input form__input--password" placeholder="Повторите пароль" required>
             </div>
           </div>
           <div class="form__actions">
@@ -39,7 +39,28 @@
 </template>
 
 <script>
+import {reactive} from "vue";
+
 export default {
+  setup() {
+    const data = reactive({
+      nickname: '',
+      email: '',
+      password: ''
+    });
+    const submit = async () => {
+      await fetch('http://localhost:8000/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+    }
+
+    return {
+        data,
+        submit
+      }
+    },
   props: {
     isOpen:{
       type: Boolean,
