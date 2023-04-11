@@ -10,12 +10,12 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'Главная',
+            name: 'Main',
             component: MainPage
         },
         {
             path: '/catalog',
-            name: 'Каталог',
+            name: 'Catalog',
             component: CatalogView
         },
     ]

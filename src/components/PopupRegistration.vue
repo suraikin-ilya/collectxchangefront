@@ -41,8 +41,9 @@
 <script>
 import {reactive} from "vue";
 
+
 export default {
-  setup() {
+  setup(props, context) {
     const data = reactive({
       nickname: '',
       email: '',
@@ -54,6 +55,7 @@ export default {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
       });
+      context.emit('close')
     }
 
     return {

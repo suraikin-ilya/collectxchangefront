@@ -28,8 +28,9 @@
 <script>
 import {reactive} from "vue";
 
+
 export default {
-  setup(){
+  setup(props, context){
     const data = reactive({
       email: '',
       password: '',
@@ -42,11 +43,11 @@ export default {
         credentials: 'include',
         body: JSON.stringify(data)
       });
+      context.emit('close')
     }
-
     return{
       data,
-      submit
+      submit,
     }
   },
   props: {
@@ -66,7 +67,6 @@ export default {
     document.removeEventListener("keydown", this.handleKeydown);
   },
   methods: {
-
     handleKeydown(e) {
       if (this.isOpen && e.key === "Escape") {
         this.close();
