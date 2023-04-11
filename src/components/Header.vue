@@ -3,10 +3,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <link rel="stylesheet" type="text/css" href="normalize.css">
     <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
-    <title>{{ name }}</title>
+    <title></title>
   </head>
   <header class="header">
     <div class="header__logo">
@@ -17,12 +15,17 @@
         <li><RouterLink to="catalog">КАТАЛОГ</RouterLink></li>
         <li><RouterLink to="">КОЛЛЕКЦИИ</RouterLink></li>
         <li><RouterLink to="">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
-        <li><RouterLink to="">ОБМЕН</RouterLink></li>
+        <li><RouterLink to="">Обмен</RouterLink></li>
       </ul>
-      <div class="header__login">
+      <div class="header__login" v-if="!auth">
         <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>
         <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>
       </div>
+      <div class="header__login" v-if="auth">
+<!--        <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>-->
+<!--        <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>-->
+      </div>
+
     </nav>
   </header>
   <popup-login
@@ -35,10 +38,14 @@
       @close="isRegistrationOpen = false"
   >
   </popup-registration>
+
 </template>
 <script>
 import PopupLogin from "@/components/PopupLogin.vue";
 import PopupRegistration from "@/components/PopupRegistration.vue";
+import {onMounted, ref} from "vue";
+import {useStore} from "vuex";
+import {computed} from "vue";
 
 export default {
   components: {PopupLogin, PopupRegistration},
@@ -48,7 +55,27 @@ export default {
       isRegistrationOpen: false,
     }
   },
+  setup(){
+    const store = useStore();
 
+    onMounted(async() =>{
+      try {
+            const message = ref('Вы не авторизованы')
+            const response = await fetch('http://localhost:8000/api/user', {
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'include',
+            });
+            const content = await response.json();
+            message.value = `Hi ${content.nickname}`;
+            console.log(content.nickname)
+            await store.dispatch('setAuth', true)
+          }catch(e){
+            await store.dispatch('setAuth', false)
+          }
+    })
+    const auth = computed(() => store.state.authenticated)
+    return {auth}
+  },
   name: 'PageHeader',
   props: {
     msg: String
