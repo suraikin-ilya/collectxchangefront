@@ -15,15 +15,23 @@
         <li><RouterLink to="catalog">КАТАЛОГ</RouterLink></li>
         <li><RouterLink to="">КОЛЛЕКЦИИ</RouterLink></li>
         <li><RouterLink to="">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
-        <li><RouterLink to="">Обмен</RouterLink></li>
+        <li><RouterLink to="">ОБМЕН</RouterLink></li>
       </ul>
       <div class="header__login" v-if="!auth">
         <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>
         <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>
       </div>
-      <div class="header__login" v-if="auth">
-<!--        <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>-->
-<!--        <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>-->
+      <div class="header__logout" v-if="auth">
+        <RouterLink to=""><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></RouterLink>
+        <RouterLink to=""><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
+        <div class="dropdown">
+          <RouterLink to=""><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
+          <div class="header__dropdown">
+            <li><RouterLink to="">Мои коллекции</RouterLink></li>
+            <li><RouterLink to="">Профиль</RouterLink></li>
+            <button @click="logout" class=""><span class="button__signup">Выйти</span></button>
+          </div>
+        </div>
       </div>
 
     </nav>
@@ -43,7 +51,7 @@
 <script>
 import PopupLogin from "@/components/PopupLogin.vue";
 import PopupRegistration from "@/components/PopupRegistration.vue";
-import {onMounted, ref} from "vue";
+import {onMounted} from"vue";
 import {useStore} from "vuex";
 import {computed} from "vue";
 
@@ -57,24 +65,30 @@ export default {
   },
   setup(){
     const store = useStore();
-
     onMounted(async() =>{
-      try {
-            const message = ref('Вы не авторизованы')
             const response = await fetch('http://localhost:8000/api/user', {
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
             });
-            const content = await response.json();
-            message.value = `Hi ${content.nickname}`;
-            console.log(content.nickname)
             await store.dispatch('setAuth', true)
-          }catch(e){
-            await store.dispatch('setAuth', false)
-          }
+            console.log(response)
+            if (!response.ok){await store.dispatch('setAuth', false)}
     })
     const auth = computed(() => store.state.authenticated)
-    return {auth}
+    const logout = async() => {
+      await fetch('http://localhost:8000/api/logout', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+      });
+      await store.dispatch('setAuth', false);
+    }
+    console.log(store.state.authenticated)
+    console.log(auth)
+    return {
+      auth,
+      logout
+    }
   },
   name: 'PageHeader',
   props: {
@@ -184,6 +198,62 @@ button,
   position: relative;
   top: -3px;
 }
+
+.header__auth{
+  display: inline-block;
+  margin-right: 30px;
+  position: relative;
+  margin-bottom: -10px;
+}
+
+.header__logout{
+  display: inline-block;
+}
+
+.header__dropdown {
+  margin-top: 5px;
+  display: none;
+  position: absolute;
+  background-color: #FFFFFF;
+  padding: 11px 17px 11px 17px;
+  border-radius: 7px;
+  min-width: 144px;
+  border: 1px solid #55BEA4;
+  z-index: 1;
+}
+
+.header__dropdown li{
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  list-style-type: none;
+  line-height: 17px;
+  opacity: 0.6;
+  color: #007D5F;
+  margin-bottom: 10px;
+}
+
+
+.header__dropdown li a{
+  color: #007D5F;
+}
+
+.header__dropdown button{
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 17px;
+  opacity: 0.6;
+  color: #007D5F;
+  cursor: pointer;
+  margin-top: 3px;
+}
+
+.dropdown{
+  display: inline-block;
+}
+
+.dropdown:hover .header__dropdown {display: block;}
 
 @media screen and (max-width: 1200px) {
   .header {

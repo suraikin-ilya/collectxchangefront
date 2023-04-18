@@ -27,6 +27,7 @@
 
 <script>
 import {reactive} from "vue";
+import {useStore} from "vuex";
 
 
 export default {
@@ -35,7 +36,7 @@ export default {
       email: '',
       password: '',
     });
-
+    const store = useStore()
     const submit = async () => {
       await fetch('http://localhost:8000/api/login', {
         method: 'POST',
@@ -43,7 +44,8 @@ export default {
         credentials: 'include',
         body: JSON.stringify(data)
       });
-      context.emit('close')
+      context.emit('close');
+      await store.dispatch('setAuth', true);
     }
     return{
       data,

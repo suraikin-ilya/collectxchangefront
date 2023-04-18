@@ -55,7 +55,7 @@ export default {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
       });
-      context.emit('close')
+      context.emit('close');
     }
 
     return {
