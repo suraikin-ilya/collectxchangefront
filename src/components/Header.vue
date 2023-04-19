@@ -13,7 +13,7 @@
     <nav class="header__nav">
       <ul class="header__menu">
         <li><RouterLink to="catalog">КАТАЛОГ</RouterLink></li>
-        <li><RouterLink to="">КОЛЛЕКЦИИ</RouterLink></li>
+        <li><RouterLink to="collection">КОЛЛЕКЦИИ</RouterLink></li>
         <li><RouterLink to="">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
         <li><RouterLink to="">ОБМЕН</RouterLink></li>
       </ul>
@@ -27,7 +27,7 @@
         <div class="dropdown">
           <RouterLink to=""><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
           <div class="header__dropdown">
-            <li><RouterLink to="">Мои коллекции</RouterLink></li>
+            <li><RouterLink to="collection">Мои коллекции</RouterLink></li>
             <li><RouterLink to="">Профиль</RouterLink></li>
             <button @click="logout" class=""><span class="button__signup">Выйти</span></button>
           </div>

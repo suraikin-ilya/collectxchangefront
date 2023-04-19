@@ -4,6 +4,7 @@ import {createStore} from "vuex";
 import App from './App.vue'
 import MainPage from "@/components/MainPage.vue";
 import CatalogView from "@/components/CatalogView.vue";
+import CollectionView from "@/components/CollectionView.vue";
 
 
 const router = createRouter({
@@ -18,6 +19,11 @@ const router = createRouter({
             path: '/catalog',
             name: 'Catalog',
             component: CatalogView
+        },
+        {
+            path: '/collection',
+            name: 'Collection',
+            component: CollectionView
         },
     ]
 })
