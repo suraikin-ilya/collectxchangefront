@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <h2>Мои коллекции</h2>
-    <button @click="isCollectionOpen = true" class="create-btn">Создать</button>
+    <button @click="isOpen = true" class="create-btn">Создать</button>
     <div class="filter">
       <div class="search-field">
         <input id="search" type="text" placeholder="поиск">
@@ -46,22 +46,25 @@
       </table>
     </div>
   </div>
+  <div>
   <popup-collection
-      :is-open="isCollectionOpen"
-      @close="isCollectionOpen = false"
-  >
+      :is-open="isOpen"
+      @close="isOpen = false"
+      >
   </popup-collection>
+  </div>
 </template>
 
 <script>
 
 import PopupCollection from "@/components/PopupCollection.vue";
 export default {
+
   components: {PopupCollection},
-  name: "PopupCollection",
+  name: "CollectionView",
   data(){
     return {
-      isCollectionOpen: false
+      isOpen: false
     }
   },
 }
