@@ -7,6 +7,7 @@ import CatalogView from "@/components/CatalogView.vue";
 import CollectionView from "@/components/CollectionView.vue";
 
 
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -21,9 +22,9 @@ const router = createRouter({
             component: CatalogView
         },
         {
-            path: '/collection',
+            path: '/collections/:userId',
             name: 'Collection',
-            component: CollectionView
+            component: CollectionView,
         },
     ]
 })

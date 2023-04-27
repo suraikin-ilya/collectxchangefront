@@ -13,22 +13,22 @@
     <nav class="header__nav">
       <ul class="header__menu">
         <li><RouterLink to="catalog">КАТАЛОГ</RouterLink></li>
-        <li><RouterLink to="collection">КОЛЛЕКЦИИ</RouterLink></li>
-        <li><RouterLink to="">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
-        <li><RouterLink to="">ОБМЕН</RouterLink></li>
+        <li><RouterLink to="collections">КОЛЛЕКЦИИ</RouterLink></li>
+        <li><RouterLink to="collectioners">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
+        <li><RouterLink to="trades">ОБМЕН</RouterLink></li>
       </ul>
       <div class="header__login" v-if="!auth">
         <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>
         <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>
       </div>
       <div class="header__logout" v-if="auth">
-        <RouterLink to=""><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></RouterLink>
-        <RouterLink to=""><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
+        <RouterLink to="trades"><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></RouterLink>
+        <RouterLink to="messages"><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
         <div class="dropdown">
-          <RouterLink to=""><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
+          <RouterLink to="profile"><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
           <div class="header__dropdown">
-            <li><RouterLink to="collection">Мои коллекции</RouterLink></li>
-            <li><RouterLink to="">Профиль</RouterLink></li>
+            <li><router-link :to="{ name: 'Collection', params: { userId: result.id} }">Мои коллекции</router-link></li>
+            <li><RouterLink to="profile">Профиль</RouterLink></li>
             <button @click="logout" class=""><span class="button__signup">Выйти</span></button>
           </div>
         </div>
@@ -51,7 +51,7 @@
 <script>
 import PopupLogin from "@/components/PopupLogin.vue";
 import PopupRegistration from "@/components/PopupRegistration.vue";
-import {onMounted} from"vue";
+import {onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {computed} from "vue";
 
@@ -64,6 +64,7 @@ export default {
     }
   },
   setup(){
+    const result = ref(null)
     const store = useStore();
     onMounted(async() =>{
             const response = await fetch('http://localhost:8000/api/user', {
@@ -72,7 +73,11 @@ export default {
             });
             await store.dispatch('setAuth', true)
             console.log(response)
-            if (!response.ok){await store.dispatch('setAuth', false)}
+            if(response.ok) {
+              result.value = await response.json();
+            }else
+              {await store.dispatch('setAuth', false)
+            }
     })
     const auth = computed(() => store.state.authenticated)
     const logout = async() => {
@@ -83,11 +88,14 @@ export default {
       });
       await store.dispatch('setAuth', false);
     }
+    // const result = this.response
     console.log(store.state.authenticated)
     console.log(auth)
+    // console.log(result)
     return {
       auth,
-      logout
+      logout,
+      result
     }
   },
   name: 'PageHeader',
