@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="form__group">
-            <input class="custom-checkbox" type="checkbox" id="visible" value="visible">
+            <input v-model="data.visibility" class="custom-checkbox" type="checkbox" id="visibility" value="visibility">
             <label for="coins">Виден другим пользователям</label>
           </div>
           <div class="form__actions">
@@ -31,29 +31,35 @@
 </template>
 
 <script>
-import {reactive} from "vue";
+
+
+import {useStore} from "vuex";
+import {computed, reactive} from "vue";
 
 export default {
   setup(props, context) {
     const data = reactive({
       name: '',
       description: '',
-      visible: ''
+      visibility: '',
+      owner: null
     });
+    const store = useStore();
+    const owner = computed(() => store.state.id)
     const submit = async () => {
-      await fetch('http://localhost:8000/api/collection', {
+      data.owner = owner.value;
+      await fetch('http://localhost:8000/api/collections', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
       });
       context.emit('close');
     }
-
     return {
-        data,
-        submit
-      }
-    },
+      data,
+      submit
+    }
+  },
   props: {
     isOpen:{
       type: Boolean,
