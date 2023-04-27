@@ -56,6 +56,9 @@ import {useStore} from "vuex";
 import {computed} from "vue";
 
 export default {
+  mounted() {
+    console.log(this.$store); // should output the Vuex store object
+  },
   components: {PopupLogin, PopupRegistration},
   data(){
     return {
@@ -71,15 +74,20 @@ export default {
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
             });
+
             await store.dispatch('setAuth', true)
             console.log(response)
             if(response.ok) {
               result.value = await response.json();
+              const id = result.value.id;
+              const nickname = result.value.nickname;
+              await store.dispatch('setUser', { id, nickname });
             }else
               {await store.dispatch('setAuth', false)
             }
     })
     const auth = computed(() => store.state.authenticated)
+
     const logout = async() => {
       await fetch('http://localhost:8000/api/logout', {
         method: 'POST',
@@ -89,9 +97,10 @@ export default {
       await store.dispatch('setAuth', false);
     }
     // const result = this.response
-    console.log(store.state.authenticated)
-    console.log(auth)
     // console.log(result)
+
+
+
     return {
       auth,
       logout,

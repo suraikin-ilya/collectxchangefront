@@ -1,5 +1,6 @@
 <template>
   <div class="wrapper">
+    <div v-if="compareIds">
     <h2>Мои коллекции</h2>
     <button @click="isOpen = true" class="create-btn">Создать</button>
     <div class="filter">
@@ -53,19 +54,43 @@
       >
   </popup-collection>
   </div>
+  </div>
 </template>
 
 <script>
 
 import PopupCollection from "@/components/PopupCollection.vue";
-export default {
+import { mapGetters } from 'vuex';
+import {useRoute} from "vue-router";
 
+export default {
   components: {PopupCollection},
   name: "CollectionView",
   data(){
     return {
-      isOpen: false
+      isOpen: false,
     }
+  },
+  setup(){
+    const route = useRoute();
+    const userId = route.params.userId;
+    return {
+      userId,
+    };
+  },
+  methods:{
+    compareIds(){
+      return this.userId === this.id
+    }
+  },
+  computed: {
+    ...mapGetters(['userData']),
+    id() {
+      return this.userData.id;
+    },
+    nickname() {
+      return this.userData.nickname;
+    },
   },
 }
 </script>

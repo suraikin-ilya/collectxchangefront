@@ -31,20 +31,33 @@ const router = createRouter({
 
 const store = createStore({
     state:{
-        authenticated: false
+        authenticated: false,
+        id: null,
+        nickname: null,
     },
     mutations:{
         SET_AUTH:(state, auth) =>{
             state.authenticated = auth
-        }
+        },
+        setUser(state, { id, nickname }) {
+            state.id = id;
+            state.nickname = nickname;
+        },
     },
     actions:{
         setAuth({commit}, auth){
             commit('SET_AUTH', auth)
-        }
+        },
+        setUser({ commit }, { id, nickname }) {
+            commit('setUser', { id, nickname });
+            localStorage.setItem('userData', JSON.stringify({ id, nickname }));
+        },
     },
-    modules:{}
+    modules:{},
+    getters:{
+        userData: (state) => state,
+    }
 })
 
-createApp(App).use(router).use(store).mount('#app')
+createApp(App).use(store).use(router).mount('#app')
 
