@@ -52,6 +52,10 @@ export default {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
+      }).then(data => {
+        this.collections.push(data);
+        this.newItemName = '';
+        context.emit('close');
       });
       context.emit('close');
     }
