@@ -5,7 +5,7 @@
     <button @click="isOpen = true" class="create-btn">Создать</button>
     <div class="filter">
       <div class="search-field">
-        <input id="search" type="text" placeholder="поиск">
+        <input v-model="searchCollection" id="search" type="text" placeholder="поиск">
       </div>
       <div class="sort-by">
         <span>Cортировать по:</span>
@@ -43,8 +43,8 @@
           <td class="border-right">Кол-во</td>
           <td>Действия</td>
         </tr>
-        <tr v-for="collection in collections" :key="collection.id">
-          <td class="border-right green">{{collection.name}}</td>
+        <tr v-for="collection in filteredItems" :key="collection.id">
+          <td class="border-right green"><RouterLink to="" class="collection__name">{{collection.name}}</RouterLink></td>
           <td class="border-right">{{collection.created_date}}</td>
           <td class="border-right">{{collection.views}}</td>
           <td v-if="collection.visibility" class="border-right available">Доступна</td>
@@ -53,7 +53,7 @@
           <td class="collection__icons">
             <img src="../assets/share.svg">
             <img src="../assets/edit.svg">
-            <img src="../assets/delete.svg">
+            <img @click="deleteCollection(collection.id)" src="../assets/delete.svg">
           </td>
         </tr>
       </table>
@@ -84,16 +84,12 @@ export default {
     return {
       collections: [],
       isOpen: false,
+      newItemName: '',
+      searchCollection: ''
     }
   },
   mounted() {
-    axios.get('http://localhost:8000/api/collections/get/5/')
-        .then(response => {
-          this.collections = response.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    this.getCollections()
   },
   setup(){
     const route = useRoute();
@@ -102,13 +98,37 @@ export default {
       userId,
     };
   },
-  methods:{
-    compareIds(){
+  methods: {
+    compareIds() {
       return this.userId === this.id
-    }
+    },
+    getCollections() {
+      axios.get('http://localhost:8000/api/collections/get/5/')
+          .then(response => {
+            this.collections = response.data;
+          })
+          .catch(error => {
+            console.log(error);
+          });
+    },
+    deleteCollection(collectionId) {
+      axios.delete(`http://localhost:8000/api/collections/${collectionId}/`)
+          .then(response => {
+            this.getCollections();
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+    },
   },
   computed: {
     ...mapGetters(['userData']),
+    filteredItems() {
+      return this.collections.filter(collection => {
+        return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
+      });
+    },
     id() {
       return this.userData.id;
     },
@@ -155,6 +175,10 @@ export default {
     margin-top: 42px;
     display: inline-block;
     margin-right: 40px;
+  }
+  .collection__name{
+    text-decoration: none;
+    color: #007D5F;
   }
   .green{
     color: #007D5F;
