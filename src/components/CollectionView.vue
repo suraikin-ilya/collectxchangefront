@@ -9,7 +9,7 @@
       </div>
       <div class="sort-by">
         <span>Cортировать по:</span>
-          <button>Названию</button>
+          <button @click="toggleSortOrder('name')">Названию</button>
           <button>Дате создания</button>
           <button>Статусу</button>
           <button>Количеству</button>
@@ -43,7 +43,7 @@
           <td class="border-right">Кол-во</td>
           <td>Действия</td>
         </tr>
-        <tr v-for="collection in filteredItems" :key="collection.id">
+        <tr v-for="collection in sortedCollections" :key="collection.id">
           <td class="border-right green"><RouterLink to="" class="collection__name">{{collection.name}}</RouterLink></td>
           <td class="border-right">{{collection.created_date}}</td>
           <td class="border-right">{{collection.views}}</td>
@@ -85,7 +85,11 @@ export default {
       collections: [],
       isOpen: false,
       newItemName: '',
-      searchCollection: ''
+      searchCollection: '',
+      sortOrder: 'asc',
+      dateSortOrder: 'asc',
+      statusSortOrder: 'asc',
+      property: ''
     }
   },
   mounted() {
@@ -121,13 +125,34 @@ export default {
             console.log(error);
           });
     },
+    toggleSortOrder(property) {
+      if (property === 'name') {
+        if (this.sortOrder === 'asc') {
+          this.sortOrder = 'desc';
+        } else {
+          this.sortOrder = 'asc';
+        }
+      }
+    },
   },
   computed: {
     ...mapGetters(['userData']),
-    filteredItems() {
-      return this.collections.filter(collection => {
+    sortedCollections() {
+      let filteredCollections = this.collections.filter(collection => {
         return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
       });
+
+      filteredCollections.sort((a, b) => {
+        if (this.sortOrder === 'asc') {
+          if (a.name < b.name) return -1;
+          if (a.name > b.name) return 1;
+        } else {
+          if (a.name < b.name) return 1;
+          if (a.name > b.name) return -1;
+        }
+      });
+
+      return filteredCollections;
     },
     id() {
       return this.userData.id;
