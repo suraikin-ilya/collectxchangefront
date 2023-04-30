@@ -12,10 +12,10 @@
     </div>
     <nav class="header__nav">
       <ul class="header__menu">
-        <li><RouterLink to="catalog">КАТАЛОГ</RouterLink></li>
-        <li><RouterLink to="collections">КОЛЛЕКЦИИ</RouterLink></li>
-        <li><RouterLink to="collectioners">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
-        <li><RouterLink to="trades">ОБМЕН</RouterLink></li>
+        <li><RouterLink to="/catalog">КАТАЛОГ</RouterLink></li>
+        <li><RouterLink to="/collections">КОЛЛЕКЦИИ</RouterLink></li>
+        <li><RouterLink to="/collectioners">КОЛЛЕКЦИОНЕРЫ</RouterLink></li>
+        <li><RouterLink to="/trades">ОБМЕН</RouterLink></li>
       </ul>
       <div class="header__login" v-if="!auth">
         <button @click="isRegistrationOpen = true" class="signup"><span class="button__signup">Регистрация</span></button>

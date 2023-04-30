@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div v-if="compareIds">
+    <div v-if="compareIds()">
     <h2>Мои коллекции</h2>
     <button @click="isOpen = true" class="create-btn">Создать</button>
     <div class="filter">
@@ -80,6 +80,11 @@ import axios from 'axios'
 export default {
   components: {PopupCollection},
   name: "CollectionView",
+  beforeRouteUpdate(to, from, next) {
+    this.userId = to.params.userId;
+    this.getCollections();
+    next();
+  },
   data(){
     return {
       collections: [],
@@ -93,7 +98,7 @@ export default {
     }
   },
   mounted() {
-    this.getCollections()
+    this.getCollections();
   },
   setup(){
     const route = useRoute();
@@ -104,10 +109,10 @@ export default {
   },
   methods: {
     compareIds() {
-      return this.userId === this.id
+      return parseInt(this.userId) === parseInt(this.userData.id);
     },
     getCollections() {
-      axios.get('http://localhost:8000/api/collections/get/5/')
+      axios.get(`http://localhost:8000/api/collections/get/${this.userId}/`)
           .then(response => {
             this.collections = response.data;
           })
