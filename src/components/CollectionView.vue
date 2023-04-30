@@ -37,12 +37,24 @@
       <table>
         <tr>
           <td class="border-right">Название</td>
-          <td class="border-right">Категория</td>
           <td class="border-right">Дата создания</td>
           <td class="border-right">Просмотры</td>
           <td class="border-right">Статус</td>
           <td class="border-right">Кол-во</td>
           <td>Действия</td>
+        </tr>
+        <tr v-for="collection in collections" :key="collection.id">
+          <td class="border-right green">{{collection.name}}</td>
+          <td class="border-right">{{collection.created_date}}</td>
+          <td class="border-right">{{collection.views}}</td>
+          <td v-if="collection.visibility" class="border-right available">Доступна</td>
+          <td v-if="!collection.visibility" class="border-right unavailable">Скрыта</td>
+          <td class="border-right">Кол-во</td>
+          <td class="collection__icons">
+            <img src="../assets/share.svg">
+            <img src="../assets/edit.svg">
+            <img src="../assets/delete.svg">
+          </td>
         </tr>
       </table>
     </div>
@@ -62,14 +74,26 @@
 import PopupCollection from "@/components/PopupCollection.vue";
 import { mapGetters } from 'vuex';
 import {useRoute} from "vue-router";
+import axios from 'axios'
+
 
 export default {
   components: {PopupCollection},
   name: "CollectionView",
   data(){
     return {
+      collections: [],
       isOpen: false,
     }
+  },
+  mounted() {
+    axios.get('http://localhost:8000/api/collections/get/5/')
+        .then(response => {
+          this.collections = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
   },
   setup(){
     const route = useRoute();
@@ -132,6 +156,9 @@ export default {
     display: inline-block;
     margin-right: 40px;
   }
+  .green{
+    color: #007D5F;
+  }
   .search-field input{
     min-width: 257px;
     min-height: 29px;
@@ -177,6 +204,20 @@ export default {
     align-items: center;
     user-select: none;
   }
+  .collection__icons img{
+    cursor: pointer;
+  }
+  .collection__icons img:nth-child(1){
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+  .collection__icons img:nth-child(2){
+    width: 20px;
+    height: 20px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+  }
   .custom-checkbox+label::before{
     content: '';
     display: inline-block;
@@ -194,6 +235,12 @@ export default {
   .custom-checkbox:checked+label::before{
     background-image: url('../assets/checkmark.svg');
     background-size: 12px;
+  }
+  .available{
+    color: #2D8B00;
+  }
+  .unavailable{
+    color: #FF0000;
   }
   .sort-by span{
     font-weight: 400;
