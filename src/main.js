@@ -4,6 +4,7 @@ import {createStore} from "vuex";
 import App from './App.vue'
 import MainPage from "@/components/MainPage.vue";
 import CatalogView from "@/components/CatalogView.vue";
+import CollectionsView from "@/components/CollectionsView.vue";
 import CollectionView from "@/components/CollectionView.vue";
 
 
@@ -23,6 +24,11 @@ const router = createRouter({
         },
         {
             path: '/collections/:userId',
+            name: 'Collections',
+            component: CollectionsView,
+        },
+        {
+            path: '/collection/:collectionId',
             name: 'Collection',
             component: CollectionView,
         },

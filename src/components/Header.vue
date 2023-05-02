@@ -27,7 +27,7 @@
         <div class="dropdown">
           <RouterLink to="profile"><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
           <div class="header__dropdown">
-            <li><router-link :to="{ name: 'Collection', params: { userId: result.id} }">Мои коллекции</router-link></li>
+            <li><router-link :to="{ name: 'Collections', params: { userId: result.id} }">Мои коллекции</router-link></li>
             <li><RouterLink to="profile">Профиль</RouterLink></li>
             <button @click="logout" class=""><span class="button__signup">Выйти</span></button>
           </div>
