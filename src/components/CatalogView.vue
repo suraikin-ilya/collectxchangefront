@@ -1,30 +1,31 @@
 <template>
   <div class="wrapper">
-    <h1>Каталог</h1>
-
+    <h2>Каталог</h2>
   </div>
 </template>
 
 <script>
+
 export default {
-  name: "CatalogView"
+  name: "CatalogView",
 }
 </script>
 
 <style scoped>
-  wrapper{
+  .wrapper{
     width: 62.5%;
     max-width: 100%;
-    margin: 0 auto;
+    margin: 83px auto 0 auto;
     padding-left: 42px;
     padding-right: 42px;
     padding-top: 36px;
   }
-  h1{
+  h2{
     font-style: normal;
-    font-weight: 500;
-    font-size: 36px;
-    line-height: 43px;
+    font-weight: 600;
+    font-size: 48px;
+    line-height: 57px;
     margin-bottom: 12px;
+    color: rgba(67, 67, 67, 1);
   }
 </style>

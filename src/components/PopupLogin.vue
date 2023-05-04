@@ -44,8 +44,8 @@ export default {
         credentials: 'include',
         body: JSON.stringify(data)
       });
-      context.emit('close');
       await store.dispatch('setAuth', true);
+      context.emit('close');
     }
     return{
       data,
