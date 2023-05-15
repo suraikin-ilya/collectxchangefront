@@ -127,7 +127,6 @@ export default {
 }
 
 .form__label {
-  font-family: 'Rubik';
   font-style: normal;
   font-weight: 200;
   font-size: 10px;
@@ -173,7 +172,6 @@ export default {
   border-radius: 5px;
   padding: 10px 30px;
   cursor: pointer;
-
 }
 
 .form__button--register {

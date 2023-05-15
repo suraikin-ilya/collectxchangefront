@@ -19,7 +19,7 @@
           </div>
           <div class="form__group">
             <input v-model="data.visibility" class="custom-checkbox" type="checkbox" id="visibility" value="visibility">
-            <label for="coins">Виден другим пользователям</label>
+            <label for="visibility">Виден другим пользователям</label>
           </div>
           <div class="form__actions">
             <button type="submit" class="form__button form__button--create">Создать</button>

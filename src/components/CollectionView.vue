@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div v-if="compareIds()">
       <h2>{{collection.name}}</h2>
-      <button class="create-btn">Добавить</button>
+      <button class="create-btn" @click="isOpen = true">Добавить</button>
     </div>
     <div class="filter">
       <div class="search-field">
@@ -38,10 +38,12 @@
           </div>
         </div>
       </div>
-
-      <!-- повторяем элемент .card ещё 3 раза -->
-      <!-- ... -->
     </div>
+    <popup-item
+        :is-open="isOpen"
+        @close="isOpen = false"
+    >
+    </popup-item>
   </div>
 </template>
 
@@ -49,12 +51,14 @@
 import {useRoute} from "vue-router";
 import {mapGetters} from "vuex";
 import axios from "axios";
-
+import PopupItem from "@/components/PopupItem.vue";
 
 export default {
+  components: {PopupItem},
   name: "CollectionView",
   data() {
     return {
+      isOpen: false,
       collection: null,
       loading: true,
       token: null
