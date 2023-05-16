@@ -20,8 +20,8 @@
     <hr>
     <div class="card-wrapper">
       <div v-for="item in items" :key="item.id" class="card">
-        <div class="card-title">{{item.name}}</div>
-        <img class="card-image" :src="item.obverse" alt="Изображение товара">
+        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
+        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="item.obverse" alt="Изображение товара"></router-link>
         <ul class="card-features">
           <li v-if="item.material != '' && item.material != null" title="{{ item.material }}">Материал: <span>{{ item.material }}</span> </li>
           <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
@@ -30,11 +30,13 @@
           <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>
         </ul>
         <div class="card-stats">
-          <img src="../assets/views.svg" alt="views"><span class="card-views">{{ item.views}}</span>
+          <img v-if="item.visibility" @click="toggleVisibility(item.id)" src="../assets/views.svg" alt="views" class="icon-views"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
+          <img v-if="!item.visibility" @click="toggleVisibility(item.id)" src="../assets/visibility-none.svg" alt="views" class="icon-views"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
           <div class="card-buttons">
-            <img class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
+            <img  v-if="!item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
+            <img  v-if="item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/trade-active.svg" alt="Выключить обмен">
             <img class="card-button" src="../assets/edit.svg" alt="Редактировать">
-            <img class="card-button" src="../assets/delete.svg" alt="Удалить">
+            <img @click="deleteItem(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
           </div>
         </div>
       </div>
@@ -86,10 +88,39 @@ export default {
             console.log(error);
           });
     },
-      handleItemAdded(event) {
-          const newItem = event.detail;
-          // Обновить список предметов или выполнить другие необходимые действия
-          this.items.push(newItem);
+      deleteItem(itemId) {
+          axios.delete(`http://localhost:8000/api/items/${itemId}/delete/`)
+              .then(response => {
+                  this.getItems();
+                  console.log(response);
+              })
+              .catch(error => {
+                  console.log(error);
+              });
+      },
+      toggleTrade(itemId){
+          axios.put(`http://localhost:8000/api/items/${itemId}/toggle-trade/`)
+              .then(response => {
+                  console.log('Trade value toggled successfully');
+                  this.getItems();
+                  console.log(response)
+              })
+              .catch(error => {
+                  console.error(error);
+                  // Обработка ошибки, если необходимо
+              });
+      },
+      toggleVisibility(itemId){
+          axios.put(`http://localhost:8000/api/items/${itemId}/toggle-visibility/`)
+              .then(response => {
+                  console.log('Visibility value toggled successfully');
+                  this.getItems();
+                  console.log(response)
+              })
+              .catch(error => {
+                  console.error(error);
+                  // Обработка ошибки, если необходимо
+              });
       },
     compareIds() {
       if (this.collection && this.collection.owner && this.userData && this.userData.id) {
@@ -299,6 +330,10 @@ export default {
   .card-views {
     position: relative;
     margin-left: -80px;
+  }
+
+  .icon-views{
+      cursor: pointer;
   }
 
   .card-buttons {
