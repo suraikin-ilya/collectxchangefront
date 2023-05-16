@@ -29,27 +29,27 @@
                   <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
                 </div>
               </div>
+                <div class="form__group">
+                    <label for="CBRF" class="form__label">ЦБРФ номер</label>
+                    <div class="form__input-group">
+                        <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по другому каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер монеты по другому каталогу">
+                    </div>
+                </div>
               <div class="form__group">
                 <label for="country" class="form__label">Страна*</label>
                 <div class="form__input-group-select">
                   <select id="country" v-model="data.selectedCountry">
-                    <option value="" disabled selected>Выберите страну</option>
+                    <option value="" disabled selected >Выберите страну</option>
                     <option v-for="country in countries" :value="country.name" :key="country.id">
                       {{ country.name }}
                     </option>
                   </select>
-                </div>
-              </div>
-              <div class="form__group">
-                <label for="CBRF" class="form__label">ЦБРФ номер</label>
-                <div class="form__input-group">
-                  <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
-                </div>
-              </div>
-              <div class="form__group">
-                <label for="catalog_number" class="form__label">Номер по другому каталогу</label>
-                <div class="form__input-group">
-                  <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер монеты по другому каталогу">
                 </div>
               </div>
               <div class="form__group">
@@ -59,15 +59,394 @@
                 </div>
               </div>
               <div class="form__group">
-                <label for="year" class="form__label">Гол</label>
+                <label for="year" class="form__label">Год</label>
                 <div class="form__input-group">
                   <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
                 </div>
               </div>
                 <div class="form__group">
+                    <label for="weight" class="form__label">Вес</label>
+                    <div class="form__input-group">
+                        <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото аверс*</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите фото реверс</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
+                </div>
+                <div class="form__group">
                     <label for="price" class="form__label">Цена</label>
                     <div class="form__input-group">
                         <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
+                </div>
+              <div class="form__group">
+                <label for="description" class="form__label">Описание*</label>
+                <div class="form__input-group">
+                  <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                </div>
+              </div>
+                <div style="display: none">
+                        <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                        <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина">
+                        <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Высота">
+                        <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
+                </div>
+            </div>
+            <div v-if="selectedCategory=== 'Банкнота'">
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер купюры по каталогу">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="country" class="form__label">Страна*</label>
+                    <div class="form__input-group-select">
+                        <select id="country" v-model="data.selectedCountry">
+                            <option value="" disabled selected>Выберите страну</option>
+                            <option v-for="country in countries" :value="country.name" :key="country.id">
+                                {{ country.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="material" class="form__label">Материал</label>
+                    <div class="form__input-group">
+                        <input v-model="data.material" type="text" id="material" name="material" class="form__input" placeholder="Номер монеты по другому каталогу">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="width" class="form__label">Ширина в мм</label>
+                    <div class="form__input-group">
+                        <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="height" class="form__label">Длина в мм</label>
+                    <div class="form__input-group">
+                        <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Длина в мм">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="year" class="form__label">Год</label>
+                    <div class="form__input-group">
+                        <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото аверс*</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите фото реверс</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="price" class="form__label">Цена</label>
+                    <div class="form__input-group">
+                        <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="description" class="form__label">Описание*</label>
+                    <div class="form__input-group">
+                        <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                    </div>
+                </div>
+                <div style="display: none">
+                    <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
+                    <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
+                    <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
+                </div>
+            </div>
+            <div v-if="selectedCategory=== 'Значок'">
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер монеты по каталогу">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="country" class="form__label">Страна*</label>
+                    <div class="form__input-group-select">
+                        <select id="country" v-model="data.selectedCountry">
+                            <option value="" disabled selected>Выберите страну</option>
+                            <option v-for="country in countries" :value="country.name" :key="country.id">
+                                {{ country.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="material" class="form__label">Материал</label>
+                    <div class="form__input-group">
+                        <input v-model="data.material" type="text" id="material" name="material" class="form__input" placeholder="Материал">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="year" class="form__label">Год</label>
+                    <div class="form__input-group">
+                        <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="price" class="form__label">Цена</label>
+                    <div class="form__input-group">
+                        <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="description" class="form__label">Описание*</label>
+                    <div class="form__input-group">
+                        <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                    </div>
+                </div>
+                <div style="display: none">
+                    <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
+                    <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
+                    <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
+                    <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Длина в мм">
+                </div>
+            </div>
+            <div v-if="selectedCategory=== 'Видеоигра'">
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер по каталогу">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="country" class="form__label">Страна*</label>
+                    <div class="form__input-group-select">
+                        <select id="country" v-model="data.selectedCountry">
+                            <option value="" disabled selected>Выберите страну</option>
+                            <option v-for="country in countries" :value="country.name" :key="country.id">
+                                {{ country.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="year" class="form__label">Год</label>
+                    <div class="form__input-group">
+                        <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="price" class="form__label">Цена</label>
+                    <div class="form__input-group">
+                        <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="description" class="form__label">Описание*</label>
+                    <div class="form__input-group">
+                        <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                    </div>
+                </div>
+                <div style="display: none">
+                    <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
+                    <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
+                    <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
+                    <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Длина в мм">
+                    <input v-model="data.material" type="text" id="material" name="material" class="form__input" placeholder="Материал">
+                </div>
+            </div>
+            <div v-if="selectedCategory=== 'Почтовая марка'">
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер по каталогу">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="country" class="form__label">Страна*</label>
+                    <div class="form__input-group-select">
+                        <select id="country" v-model="data.selectedCountry">
+                            <option value="" disabled selected>Выберите страну</option>
+                            <option v-for="country in countries" :value="country.name" :key="country.id">
+                                {{ country.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="year" class="form__label">Год</label>
+                    <div class="form__input-group">
+                        <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="price" class="form__label">Цена</label>
+                    <div class="form__input-group">
+                        <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="description" class="form__label">Описание*</label>
+                    <div class="form__input-group">
+                        <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                    </div>
+                </div>
+                <div style="display: none">
+                    <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
+                    <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
+                    <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
+                    <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Длина в мм">
+                    <input v-model="data.material" type="text" id="material" name="material" class="form__input" placeholder="Материал">
+                </div>
+            </div>
+            <div v-if="selectedCategory=== 'Журнал'">
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер по каталогу">
                     </div>
                 </div>
                 <div class="form__group">
@@ -77,87 +456,175 @@
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="width" class="form__label">width</label>
-                    <div class="form__input-group">
-                        <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина">
+                    <label for="country" class="form__label">Страна*</label>
+                    <div class="form__input-group-select">
+                        <select id="country" v-model="data.selectedCountry">
+                            <option value="" disabled selected>Выберите страну</option>
+                            <option v-for="country in countries" :value="country.name" :key="country.id">
+                                {{ country.name }}
+                            </option>
+                        </select>
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="height" class="form__label">height</label>
+                    <label for="datePublish" class="form__label">Дата публикации</label>
                     <div class="form__input-group">
-                        <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Высота">
+                        <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
                     </div>
                 </div>
-              <div class="form__group">
-                <label for="weight" class="form__label">Вес</label>
-                <div class="form__input-group">
-                  <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
-                </div>
-              </div>
                 <div class="form__group">
-                    <label for="datePublish" class="form__label">Вес</label>
-                    <div class="form__input-group">
-                        <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Вес">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
                     </div>
                 </div>
-              <div class="form__group">
-                <label for="preservation" class="form__label">Сохранность*</label>
-                <div class="form__input-group-select">
-                  <select id="preservation" v-model="selectedPreservation">
-                    <option value="" disabled selected>Выберите сохранность предмета</option>
-                    <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
-                      {{ preservation.category }}
-                    </option>
-                  </select>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
                 </div>
-              </div>
-              <div class="form__group">
-                <label for="obverse" class="form__label">Загрузите фото аверс*</label>
-                <div class="form__input-group input-file">
-                  <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
                 </div>
-              </div>
-              <div class="form__group">
-                <label for="photo" class="form__label">Загрузите фото реверс</label>
-                <div class="form__input-group input-file">
-                  <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
                 </div>
-              </div>
-              <div class="form__group">
-                <label for="photo" class="form__label">Загрузите дополнительное фото</label>
-                <div class="form__input-group input-file">
-                  <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                <div class="form__group">
+                    <label for="price" class="form__label">Цена</label>
+                    <div class="form__input-group">
+                        <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
                 </div>
-              </div>
-              <div class="form__group">
-                <label for="description" class="form__label">Описание*</label>
-                <div class="form__input-group">
-                  <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                <div class="form__group">
+                    <label for="description" class="form__label">Описание*</label>
+                    <div class="form__input-group">
+                        <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                    </div>
                 </div>
-              </div>
-            </div>
-            <div v-if="selectedCategory=== 'Банкнота'">
-              Банкнота
-            </div>
-            <div v-if="selectedCategory=== 'Значок'">
-              значок
-
-            </div>
-            <div v-if="selectedCategory=== 'Видеоигра'">
-              Видеоигра
-
-            </div>
-            <div v-if="selectedCategory=== 'Почтовая марка'">
-              Почтовая марка
-
-            </div>
-            <div v-if="selectedCategory=== 'Журнал'">
-              Журнал
-
+                <div style="display: none">
+                    <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
+                    <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    <input v-model="data.weight" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Длина в мм">
+                    <input v-model="data.material" type="text" id="material" name="material" class="form__input" placeholder="Материал">
+                    <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
+                </div>
             </div>
             <div v-if="selectedCategory=== 'Другое'">
-              Другое
-
+                <div class="form__group">
+                    <label for="catalog_number" class="form__label">Номер по каталогу</label>
+                    <div class="form__input-group">
+                        <input v-model="data.catalogNumber" type="text" id="catalog_number" name="catalog_number" class="form__input" placeholder="Номер по каталогу">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="ISSN" class="form__label">ISSN</label>
+                    <div class="form__input-group">
+                        <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="country" class="form__label">Страна*</label>
+                    <div class="form__input-group-select">
+                        <select id="country" v-model="data.selectedCountry">
+                            <option value="" disabled selected>Выберите страну</option>
+                            <option v-for="country in countries" :value="country.name" :key="country.id">
+                                {{ country.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="year" class="form__label">Год</label>
+                    <div class="form__input-group">
+                        <input v-model="data.year" type="text" id="year" name="year" class="form__input" placeholder="Год">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="weight" class="form__label">Вес</label>
+                    <div class="form__input-group">
+                        <input v-model="data.weight" type="text" id="weight" name="weight" class="form__input" placeholder="Вес">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="width" class="form__label">Ширина в мм</label>
+                    <div class="form__input-group">
+                        <input v-model="data.width" type="text" id="width" name="width" class="form__input" placeholder="Ширина в мм">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="height" class="form__label">Длина</label>
+                    <div class="form__input-group">
+                        <input v-model="data.height" type="text" id="height" name="height" class="form__input" placeholder="Длина в мм">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="material" class="form__label">Материал</label>
+                    <div class="form__input-group">
+                        <input v-model="data.material" type="text" id="material" name="material" class="form__input" placeholder="Материал">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="preservation" class="form__label">Сохранность*</label>
+                    <div class="form__input-group-select">
+                        <select id="preservation" v-model="selectedPreservation">
+                            <option value="" disabled selected>Выберите сохранность предмета</option>
+                            <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
+                                {{ preservation.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <div class="form__input-group input-file">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="price" class="form__label">Цена</label>
+                    <div class="form__input-group">
+                        <input v-model="data.price" type="text" id="price" name="price" class="form__input" placeholder="Цена">
+                    </div>
+                </div>
+                <div class="form__group">
+                    <label for="description" class="form__label">Описание*</label>
+                    <div class="form__input-group">
+                        <textarea v-model="data.description" type="text" id="description" name="description" rows="5" class="form__input" required>Описание</textarea>
+                    </div>
+                </div>
+                <div style="display: none">
+                    <input v-model="data.ISSN" type="text" id="ISSN" name="ISSN" class="form__input" placeholder="ISSN">
+                    <input v-model="data.WWC" type="text" id="WWC" name="WWC" class="form__input" placeholder="Номер монеты по каталогу WWC">
+                    <input v-model="data.CBRF" type="text" id="CBRF" name="CBRF" class="form__input" placeholder="Номер монеты по каталогу ЦБРФ">
+                    <input v-model="data.datePublish" type="date" id="datePublish" name="datePublish" class="form__input" placeholder="Дата публикации">
+                </div>
             </div>
           <div class="form__group">
             <input v-model="data.visibility" class="custom-checkbox" type="checkbox" id="visibility" value="visibility">
@@ -166,6 +633,10 @@
           <div class="form__group">
             <input v-model="data.trade" class="custom-checkbox" type="checkbox" id="trade" value="trade">
             <label for="trade">Доступен для обмена</label>
+          </div>
+          <div class="form__group">
+                <input v-model="data.market" class="custom-checkbox" type="checkbox" id="market" value="market">
+                <label for="trade">Показывать цену на сайте</label>
           </div>
           <button @click="saveFormData" class="form__button form__button--create">Добавить</button>
         </form>
@@ -214,6 +685,7 @@ export default {
       owner: store.state.id,
       trade: false,
       visibility: false,
+      market: false,
       collectionId: route.params.collectionId,
       selectedCategory: ref('Выберите категорию предмета').value,
       selectedPreservation: ref(''),
@@ -243,6 +715,7 @@ export default {
         formData.append('name', data.name);
         formData.append('category', data.selectedCategory);
         formData.append('trade', data.trade ? 'true' : 'false');
+        formData.append('trade', data.market ? 'true' : 'false');
         formData.append('visibility', data.visibility ? 'true' : 'false');
         formData.append('collection', data.collectionId);
         formData.append('country', data.selectedCountry);
@@ -575,4 +1048,89 @@ textarea {outline: none;}
 }
 
 input {outline:none;}
+
+input#CBRF {
+    background-image: url('../assets/catalog.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#WWC {
+    background-image: url('../assets/catalog.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#catalog_number {
+    background-image: url('../assets/catalog.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#material {
+    background-image: url('../assets/material.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#year{
+    background-image: url('../assets/year.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#ISSN{
+    background-image: url('../assets/issn.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#title{
+    background-image: url('../assets/name.svg');
+    background-repeat: no-repeat;
+    background-position: 4px 6px;
+    padding-left: 36px;
+}
+
+input#datePublish{
+    background-image: url('../assets/year.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 5px;
+    padding-left: 36px;
+}
+
+input#weight {
+    background-image: url('../assets/weight.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#width {
+    background-image: url('../assets/width.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+input#height {
+    background-image: url('../assets/height.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
+
+
+input#price {
+    background-image: url('../assets/ruble.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    padding-left: 36px;
+}
 </style>
