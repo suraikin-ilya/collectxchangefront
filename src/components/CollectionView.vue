@@ -19,18 +19,18 @@
     </div>
     <hr>
     <div class="card-wrapper">
-      <div class="card">
-        <div class="card-title">Название монеты</div>
-        <img class="card-image" src="../assets/test_picture.jpg" alt="Изображение товара">
+      <div v-for="item in items" :key="item.id" class="card">
+        <div class="card-title">{{item.name}}</div>
+        <img class="card-image" :src="item.obverse" alt="Изображение товара">
         <ul class="card-features">
-          <li title="натуральная кожанатуральная кожанатуральная кожанатуральная кожа">Материал: <span>натуральная кожа</span> </li>
-          <li>Год: <span>2021</span> </li>
-          <li>Вес: <span> 500 г</span></li>
-          <li>Сохранность: <span>новое</span> </li>
-          <li>Статус: <span>в наличии</span> </li>
+          <li v-if="item.material != '' && item.material != null" title="{{ item.material }}">Материал: <span>{{ item.material }}</span> </li>
+          <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
+          <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>
+          <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
+          <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>
         </ul>
         <div class="card-stats">
-          <img src="../assets/views.svg" alt="views"><span class="card-views">123</span>
+          <img src="../assets/views.svg" alt="views"><span class="card-views">{{ item.views}}</span>
           <div class="card-buttons">
             <img class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
             <img class="card-button" src="../assets/edit.svg" alt="Редактировать">
@@ -61,11 +61,13 @@ export default {
       isOpen: false,
       collection: null,
       loading: true,
-      token: null
+      token: null,
+      items: []
     };
   },
   mounted() {
     this.getCollections();
+    this.getItems()
   },
   setup() {
     const route = useRoute();
@@ -74,7 +76,6 @@ export default {
       collectionId,
     };
   },
-
   methods: {
    getCollections() {
       axios.get(`http://localhost:8000/api/collection/${this.collectionId}/`)
@@ -85,12 +86,26 @@ export default {
             console.log(error);
           });
     },
+      handleItemAdded(event) {
+          const newItem = event.detail;
+          // Обновить список предметов или выполнить другие необходимые действия
+          this.items.push(newItem);
+      },
     compareIds() {
       if (this.collection && this.collection.owner && this.userData && this.userData.id) {
         return parseInt(this.userData.id) === parseInt(this.collection.owner);
       }
       return false;
     },
+      getItems() {
+          axios.get(`http://localhost:8000/api/items/collection/${this.collectionId}/`)
+              .then(response => {
+                  this.items = response.data;
+              })
+              .catch(error => {
+                  console.error(error);
+              });
+      }
   },
   computed: {
     ...mapGetters(['userData']),
@@ -212,6 +227,7 @@ export default {
     width: calc(25% - 41px);
     margin-left: 41px;
     margin-bottom: 20px;
+    height: max-content;
     padding: 10px 0 8px 0;
     background: #FFFFFF;
     border: 1px solid rgba(0, 125, 95, 0.25);
