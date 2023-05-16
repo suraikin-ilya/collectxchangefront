@@ -6,6 +6,7 @@ import MainPage from "@/components/MainPage.vue";
 import CatalogView from "@/components/CatalogView.vue";
 import CollectionsView from "@/components/CollectionsView.vue";
 import CollectionView from "@/components/CollectionView.vue";
+import itemView from "@/components/itemView.vue";
 
 
 
@@ -31,6 +32,11 @@ const router = createRouter({
             path: '/collection/:collectionId',
             name: 'Collection',
             component: CollectionView,
+        },
+        {
+            path: '/item/:itemId',
+            name: 'Item',
+            component: itemView,
         },
     ]
 })
