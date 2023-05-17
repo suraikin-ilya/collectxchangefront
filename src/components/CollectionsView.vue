@@ -49,7 +49,7 @@
           <td class="border-right">{{collection.views}}</td>
           <td v-if="collection.visibility" class="border-right available">Доступна</td>
           <td v-if="!collection.visibility" class="border-right unavailable">Скрыта</td>
-          <td class="border-right">Кол-во</td>
+          <td class="border-right">{{ collection.itemCount }}</td>
           <td class="collection__icons">
             <img src="../assets/share.svg">
             <img src="../assets/edit.svg">
@@ -58,7 +58,38 @@
         </tr>
       </table>
     </div>
-  </div>
+    </div>
+        <div v-if="!compareIds()">
+            <h2>Коллекции</h2>
+            <div class="filter">
+                <div class="search-field">
+                    <input v-model="searchCollection" id="search" type="text" placeholder="поиск">
+                </div>
+                <div class="sort-by">
+                    <span>Cортировать по:</span>
+                    <button @click="toggleSortOrder('name')">Названию</button>
+                    <button>Дате создания</button>
+                    <button>Статусу</button>
+                    <button>Количеству</button>
+                </div>
+            </div>
+            <div class="table">
+              <table>
+                  <tr>
+                      <td class="border-right">Название</td>
+                      <td class="border-right">Дата создания</td>
+                      <td class="border-right">Просмотры</td>
+                      <td class="border-right">Кол-во</td>
+                  </tr>
+                  <tr v-for="collection in filteredAndSortedCollections" :key="collection.id">
+                      <td class="border-right green"><router-link :to="{name: 'Collection', params: { collectionId: collection.id}}" class="collection__name">{{collection.name}}</router-link></td>
+                      <td class="border-right">{{collection.created_date}}</td>
+                      <td class="border-right">{{collection.views}}</td>
+                      <td class="border-right">{{ collection.itemCount }}</td>
+                  </tr>
+              </table>
+            </div>
+        </div>
   <div>
   <popup-collection
       :is-open="isOpen"
@@ -98,9 +129,13 @@ export default {
     }
   },
   mounted() {
-    this.getCollections();
+
+
   },
-  setup(){
+    created() {
+        this.getCollections();
+    },
+    setup(){
     const route = useRoute();
     const userId = route.params.userId;
     return {
@@ -115,11 +150,17 @@ export default {
       axios.get(`http://localhost:8000/api/collections/get/${this.userId}/`)
           .then(response => {
             this.collections = response.data;
+              this.processCollectionItemCount();
           })
           .catch(error => {
             console.log(error);
           });
     },
+      processCollectionItemCount() {
+          this.collections.forEach(collection => {
+              this.getCollectionItemCount(collection.id);
+          });
+      },
     deleteCollection(collectionId) {
       axios.delete(`http://localhost:8000/api/collections/${collectionId}/`)
           .then(response => {
@@ -139,6 +180,19 @@ export default {
         }
       }
     },
+      getCollectionItemCount(collectionId) {
+          axios.get(`http://localhost:8000/api/item/count/${collectionId}/`)
+              .then(response => {
+                  const itemCount = response.data.item_count;
+                  const collection = this.collections.find(collection => collection.id === collectionId);
+                  if (collection) {
+                      collection.itemCount = itemCount;
+                  }
+              })
+              .catch(error => {
+                  console.error(error);
+              });
+      }
   },
   computed: {
     ...mapGetters(['userData']),
@@ -159,6 +213,23 @@ export default {
 
       return filteredCollections;
     },
+      filteredAndSortedCollections() {
+          let filteredCollections = this.collections.filter(collection => {
+              return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
+          });
+
+          filteredCollections.sort((a, b) => {
+              if (this.sortOrder === 'asc') {
+                  if (a.name < b.name) return -1;
+                  if (a.name > b.name) return 1;
+              } else {
+                  if (a.name < b.name) return 1;
+                  if (a.name > b.name) return -1;
+              }
+          });
+
+          return filteredCollections.filter(collection => collection.visibility === true);
+      },
     id() {
       return this.userData.id;
     },
