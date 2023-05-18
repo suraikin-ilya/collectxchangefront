@@ -7,15 +7,27 @@
                     <img class="block-image" :src="	'http://localhost:8000/'+item.obverse" alt="Image">
                     <h2 class="block-heading">Характеристики</h2>
                     <ul class="block-description">
+                        <li v-if="item.category != '' && item.category != null">Категория: <span>{{ item.category }}</span> </li>
                         <li v-if="item.material != '' && item.material != null" title="{{ item.material }}">Материал: <span>{{ item.material }}</span> </li>
                         <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
                         <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>
                         <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
-                        <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>
+                        <li v-if="item.WWC != '' && item.WWC != null">Номер по каталогу WWC: <span>{{ item.WWC }}</span> </li>
+                        <li v-if="item.CBRF != '' && item.CBRF != null">Номер по каталогу ЦБ РФ: <span>{{ item.CBRF }}</span> </li>
+                        <li v-if="item.country != '' && item.country != null">Страна: <span>{{ item.country }}</span> </li>
+                        <li v-if="item.width != '' && item.width != null">Длина: <span>{{ item.width }}</span> </li>
+                        <li v-if="item.height != '' && item.height != null">Ширина: <span>{{ item.height }}</span> </li>
+                        <li v-if="item.ISSN != '' && item.ISSN != null">ISSN: <span>{{ item.ISSN }}</span> </li>
+                        <li v-if="item.datePublish != '' && item.datePublish != null">Дата публикации: <span>{{ item.datePublish }}</span> </li>
+
                         <!-- Add more parameters as needed -->
                     </ul>
                     <h2 class="block-heading">Описание</h2>
                     <p class="block-description">{{ item.description }}</p>
+                    <div class="after-description">
+                        <span v-if="item.date_create != '' && item.date_create != null"> Дата публукации {{ item.date_create }}</span>
+                        <span v-if="item.views != '' && item.views != null"> Просмотры: {{ item.views }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -39,6 +51,7 @@
 
 import {useRoute} from "vue-router";
 import axios from "axios";
+import {mapGetters} from "vuex";
 
 export default {
     name: "ItemView",
@@ -59,19 +72,34 @@ export default {
         };
     },
     mounted() {
-        this.getItem()
+        this.getItem();
     },
     methods: {
         getItem() {
             axios.get(`http://localhost:8000/api/item/${this.itemId}/`)
                 .then(response => {
                     this.item = response.data;
+                    const itemOwner = parseInt(response.data.owner);
+                    const itemId = parseInt(response.data.id);
+                    const userId = parseInt(this.$store.state.id);
+                    if (itemOwner !== userId && !isNaN(userId)) {
+                        axios.post(`http://localhost:8000/api/increase_item_views/${itemId}/`)
+                            .then(response => {
+                                console.log(response.data.message);
+                            })
+                            .catch(error => {
+                                console.log(error.response.data.error);
+                            });
+                    }
                 })
                 .catch(error => {
                     console.log(error);
                 });
         },
-    }
+    },
+    computed: {
+        ...mapGetters(['userData']),
+    },
 }
 </script>
 
@@ -121,8 +149,8 @@ h2{
 
 .block-description {
     font-weight: 400;
-    font-size: 16px;
-    line-height: 19px;
+    font-size: 18px;
+    line-height: 25px;
     color: rgba(67, 67, 67, 0.8);
 }
 
@@ -201,5 +229,17 @@ li{
 
 .price-name{
     margin: 0 29%;
+}
+
+.after-description{
+    margin-top: 16px;
+}
+
+.after-description span{
+    margin-right: 5%;
+}
+
+.block-description span{
+    color: #000;
 }
 </style>
