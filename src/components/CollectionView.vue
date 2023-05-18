@@ -83,6 +83,18 @@ export default {
       axios.get(`http://localhost:8000/api/collection/${this.collectionId}/`)
           .then(response => {
             this.collection = response.data;
+              const collectionOwner = parseInt(response.data.owner);
+              const collectionId = parseInt(response.data.id);
+              const userId = parseInt(this.$store.state.id);
+              if (collectionOwner !== userId && !isNaN(userId)) {
+                  axios.post(`http://localhost:8000/api/increase_collection_views/${collectionId}/`)
+                      .then(response => {
+                          console.log(response.data.message);
+                      })
+                      .catch(error => {
+                          console.log(error.response.data.error);
+                      });
+              }
           })
           .catch(error => {
             console.log(error);
