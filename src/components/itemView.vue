@@ -9,7 +9,7 @@
                     <h2 class="block-heading">Характеристики</h2>
                     <ul class="block-description">
                         <li v-if="item.category != '' && item.category != null">Категория: <span>{{ item.category }}</span> </li>
-                        <li v-if="item.material != '' && item.material != null" title="{{ item.material }}">Материал: <span>{{ item.material }}</span> </li>
+                        <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>
                         <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
                         <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>
                         <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
@@ -20,8 +20,6 @@
                         <li v-if="item.height != '' && item.height != null">Ширина: <span>{{ item.height }}</span> </li>
                         <li v-if="item.ISSN != '' && item.ISSN != null">ISSN: <span>{{ item.ISSN }}</span> </li>
                         <li v-if="item.datePublish != '' && item.datePublish != null">Дата публикации: <span>{{ item.datePublish }}</span> </li>
-
-                        <!-- Add more parameters as needed -->
                     </ul>
                     <h2 class="block-heading">Описание</h2>
                     <p class="block-description">{{ item.description }}</p>
@@ -31,7 +29,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="right-part">
                 <div class="price-block">
                     <h2 v-if="item.price != '' && item.price != null" class="price-heading">{{item.price}} р</h2>
@@ -46,7 +43,7 @@
             </div>
             </div>
             <div v-if="!item.visibility">
-                <h2 class="block-heading">Предмет удалён, либо скрыт</h2>
+                <h2 class="block-heading">Предмет удалён</h2>
             </div>
         </div>
     </div>
@@ -129,10 +126,11 @@ h2{
     display: flex;
     flex-wrap: wrap;
     gap: 33px;
+    width: 100%;
 }
 
 .left-part {
-    width: calc(72.25% - 33px);
+    width: calc(72% - 33px);
 }
 
 .right-part {
