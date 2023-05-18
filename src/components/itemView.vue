@@ -1,6 +1,7 @@
 <template>
     <div v-if="item" class="wrapper">
         <div class="container">
+            <div v-if="item.visibility">
             <div class="left-part">
                 <div class="block">
                     <h2 class="block-heading">{{item.name}}</h2>
@@ -42,6 +43,10 @@
                     <img class="price-image" src="../assets/photo.png" alt="Image">
                     <p class="price-name">Nickname</p>
                 </div>
+            </div>
+            </div>
+            <div v-if="!item.visibility">
+                <h2 class="block-heading">Предмет удалён, либо скрыт</h2>
             </div>
         </div>
     </div>
