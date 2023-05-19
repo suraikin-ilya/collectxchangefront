@@ -1,22 +1,22 @@
 <template>
   <div class="wrapper">
     <h2>Последние публикации</h2>
-      <div class="card-wrapper" v-if="items">
-          <div v-for="item in filteredItems" :key="item.id" class="card">
-              <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
-              <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="'http://localhost:8000/'+item.obverse" alt="Изображение товара"></router-link>
-<!--              <ul class="card-features">-->
-<!--                  <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>-->
-<!--                  <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>-->
-<!--                  <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>-->
-<!--                  <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>-->
-<!--                  <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>-->
-<!--              </ul>-->
-              <div class="card-stats">
-                  <span>Nickname</span>
-                  <span class="card-views">{{ item.views}}</span>
-              </div>
-          </div>
+            <div class="card-wrapper" v-if="items">
+                <div v-for="item in filteredItems" :key="item.id" class="card">
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="'http://localhost:8000/'+item.obverse" alt="Изображение товара"></router-link>
+      <!--              <ul class="card-features">-->
+      <!--                  <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>-->
+      <!--                  <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>-->
+      <!--                  <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>-->
+      <!--                  <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>-->
+      <!--                  <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>-->
+      <!--              </ul>-->
+                    <div class="card-stats">
+                        <span>{{ item.owner }}</span>
+                        <span class="card-views">{{ item.views}}</span>
+                    </div>
+                </div>
       </div>
     <h2>Популярные коллекции</h2>
     <h2>Топ коллекционеров</h2>
@@ -45,12 +45,32 @@ export default {
       getItems() {
           axios.get(`http://localhost:8000/api/items/`)
               .then(response => {
-                  this.items = response.data;
+                  this.items = response.data.slice(0, 5);
+                  this.processGetOwner();
               })
               .catch(error => {
                   console.error(error);
               });
-      }
+      },
+        processGetOwner() {
+            this.items.forEach(item => {
+                this.getOwner(item.owner);
+            });
+        },
+        getOwner(itemOwner) {
+            axios.get(`http://localhost:8000/api/get_owner/${itemOwner}/`)
+                .then(response => {
+                    const itemOwner = response.data.id;
+                    const itemNickname = response.data.nickname;
+                    const item = this.items.find(item => item.owner === itemOwner);
+                    if (item) {
+                        item.owner = itemNickname;
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
   }
 }
 </script>
