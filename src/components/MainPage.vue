@@ -19,6 +19,19 @@
                 </div>
       </div>
     <h2>Популярные коллекции</h2>
+      <div class="card-wrapper">
+        <div v-for="collection in filteredCollections" :key="collection.id" class="collection-card">
+            <h3 class="collection-card-title">{{ collection.name }}</h3>
+            <div class="collection-card-images">
+                <img v-for="(obverse, index) in collectionImages" :src="obverse" :alt="'Изображение ' + (index + 1)" :key="index">
+            </div>
+            <p class="card-text">{{collection.description}}</p>
+            <div class="card-info">
+                <span class="card-nickname">{{ collection.owner }}</span>
+                <span class="collection-card-views">{{ collection.views }}</span>
+            </div>
+        </div>
+      </div>
     <h2>Топ коллекционеров</h2>
   </div>
 </template>
@@ -30,15 +43,21 @@ export default {
   name: "MainPage",
     data(){
       return{
-          items: []
+          items: [],
+          collections: [],
+          collectionImages: [],
       }
     },
     mounted() {
       this.getItems()
+      this.getCollections()
     },
     computed: {
         filteredItems() {
             return this.items.filter(item => item.visibility === true);
+        },
+        filteredCollections() {
+            return this.collections.filter(collection => collection.visibility === true);
         },
     },
     methods:{
@@ -52,9 +71,35 @@ export default {
                   console.error(error);
               });
       },
+        getCollections() {
+            axios.get(`http://localhost:8000/api/collections_by_views/`)
+                .then(response => {
+                    this.collections = response.data.slice(0, 3);
+                    this.processGetCollectionOwner();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        getItemsImage(collectionId){
+            axios.get(`http://localhost:8000/api/items/collection/${collectionId}/`)
+                .then(response => {
+                    const data = response.data;
+                    this.collectionImages = data.slice(0, 4).map(item => item.obverse); // Изменено название свойства
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
         processGetOwner() {
             this.items.forEach(item => {
                 this.getOwner(item.owner);
+            });
+        },
+        processGetCollectionOwner() {
+            this.collections.forEach(collection => {
+                this.getCollectionOwner(collection.owner);
+                this.getItemsImage(collection.id);
             });
         },
         getOwner(itemOwner) {
@@ -65,6 +110,20 @@ export default {
                     const item = this.items.find(item => item.owner === itemOwner);
                     if (item) {
                         item.owner = itemNickname;
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        getCollectionOwner(collectionOwner) {
+            axios.get(`http://localhost:8000/api/get_owner/${collectionOwner}/`)
+                .then(response => {
+                    const collectionOwner = response.data.id;
+                    const collectionNickname = response.data.nickname;
+                    const collection = this.collections.find(collection => collection.owner === collectionOwner);
+                    if (collection) {
+                        collection.owner = collectionNickname;
                     }
                 })
                 .catch(error => {
@@ -128,6 +187,90 @@ ul{
     height: auto;
 }
 
+.collection-card-title{
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    color: #434343;
+    padding-left: 25px;
+    padding-top: 15px;
+    margin-bottom: -15px;
+}
+
+.collection-card {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    margin-left: 50px;
+    width: 316px;
+    height: 476px;
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 125, 95, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 25px;
+    //padding: 10px;
+}
+
+.collection-card-images{
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0px;
+}
+
+.collection-card-images img {
+    width: calc(50%);
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 0px;
+}
+
+.card-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #007D5F;
+    opacity: 0.6;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    height: 85px;
+    overflow: hidden
+}
+
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 12px;
+    padding-left: 26px;
+    padding-bottom: 16px;
+}
+
+.card-info span {
+    margin-bottom: 0;
+}
+
+.card-nickname {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #841FEA;
+    opacity: 0.6;
+    margin-right: 120px;
+}
+
+.collection-card-views {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #007D5F;
+    opacity: 0.6;
+    margin-left: 25px;
+}
 
 .card-features li {
     margin-bottom: 5px;
@@ -175,6 +318,14 @@ ul{
 
 
 .card-stats span:nth-child(2){
+    margin-right: 28px;
+    background: url("../assets/views.svg");
+    background-repeat: no-repeat;
+    background-position: 9px 2px;
+    padding-left: 32px;
+}
+
+.card-info span:nth-child(2){
     margin-right: 28px;
     background: url("../assets/views.svg");
     background-repeat: no-repeat;
