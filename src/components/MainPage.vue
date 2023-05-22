@@ -21,10 +21,10 @@
     <h2>Популярные коллекции</h2>
       <div class="card-wrapper">
         <div v-for="collection in filteredCollections" :key="collection.id" class="collection-card">
-            <h3 class="collection-card-title">{{ collection.name }}</h3>
-            <div class="collection-card-images">
+            <router-link :to="{name: 'Collection', params: {collectionId: collection.id}}" style="text-decoration: none; color: inherit;"><h3 class="collection-card-title">{{ collection.name }}</h3></router-link>
+            <router-link :to="{name: 'Collection', params: {collectionId: collection.id}}" style="text-decoration: none; color: inherit;"><div class="collection-card-images">
                 <img v-for="(obverse, index) in collectionImages" :src="obverse" :alt="'Изображение ' + (index + 1)" :key="index">
-            </div>
+            </div></router-link>
             <p class="card-text">{{collection.description}}</p>
             <div class="card-info">
                 <span class="card-nickname">{{ collection.owner }}</span>
