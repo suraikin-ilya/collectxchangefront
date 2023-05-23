@@ -43,7 +43,7 @@
             </div>
             </div>
             <div v-if="!item.visibility">
-                <h2 class="block-heading">Предмет удалён</h2>
+                <h2 class="block-heading">Предмет удалён, либо недоступен</h2>
             </div>
         </div>
     </div>

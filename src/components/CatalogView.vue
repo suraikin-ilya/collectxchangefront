@@ -104,26 +104,49 @@
         </div>
         <div id="content">
             <h1>Каталог</h1>
-            <img src="../assets/cells-active.svg" alt="cells_active">
-            <img src="../assets/list-inactive.svg" alt="list_inactive" class="list-button">
-            <img src="../assets/cells-inactive.svg" alt="cells_active">
-            <img src="../assets/list-active.svg" alt="list_inactive" class="list-button">
+            <template v-if="showCells">
+                <img src="../assets/cells-active.svg" alt="cells_active">
+                <img src="../assets/list-inactive.svg" alt="list_inactive" class="list-button" @click="showListBlock">
+            </template>
+            <template v-if="showList">
+                <img src="../assets/cells-inactive.svg" alt="cells_active" @click="showCellsBlock">
+                <img src="../assets/list-active.svg" alt="list_inactive" class="list-button">
+            </template>
         </div >
         <div id="catalog">
-            <div v-for="item in items" :key="item.id" class="item-card">
-                <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                    <img class="item-image" :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}">
-                </router-link>
-                <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                    <h3 class="item-title">{{ item.name }}</h3>
-                </router-link>
-                <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                    <p v-if="item.price != '' && item.price != null" class="item-price">{{ item.price }} р</p>
-                </router-link>
-                    <div class="card-buttons">
-                        <button >Написать</button>
-                        <button >Обмен</button>
+            <template v-if="showCells">
+                <div v-for="item in items" :key="item.id" class="item-card">
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                        <img class="item-image" :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}">
+                    </router-link>
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                        <h3 class="item-title">{{ item.name }}</h3>
+                    </router-link>
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                        <p v-if="item.price != '' && item.price != null" class="item-price">{{ item.price }} р</p>
+                    </router-link>
+                        <div class="card-buttons">
+                            <button >Написать</button>
+                            <button v-if="item.trade">Обмен</button>
+                        </div>
+                </div>
+            </template>
+            <div class="container" v-if="showList">
+                <div v-for="item in items" :key="item.id" class="item-list">
+                    <img :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}" class="item_list-image">
+                    <div class="item_list-info">
+                        <h3 class="item_list-title">{{ item.name }}</h3>
+                        <div class="list_card-buttons">
+                            <button >Написать</button>
+                            <button v-if="item.trade">Обмен</button>
+                        </div>
+                        <p v-if="item.price != '' && item.price != null" class="item_list-price">{{ item.price }}</p>
+                        <p v-if="item.year != '' && item.year != null" class="item_list-year">{{ item.year }}</p>
+                        <p v-if="item.country != '' && item.country != null" class="item_list-country">{{ item.country }}</p>
+                        <p class="item_list-description">{{ item.description }}</p>
+
                     </div>
+                </div>
             </div>
         </div>
 
@@ -142,6 +165,8 @@ export default {
         return {
             categories: [],
             items: [],
+            showCells: true, // Первый блок будет отображаться по умолчанию
+            showList: false,
             // selectedCategory: 'Выберите категорию предмета',
         };
     },
@@ -166,6 +191,14 @@ export default {
                     console.error(error);
                 });
         },
+        showCellsBlock() {
+            this.showCells = true;
+            this.showList = false;
+        },
+        showListBlock() {
+            this.showCells = false;
+            this.showList  = true;
+        }
     },
 }
 </script>
@@ -465,4 +498,104 @@ export default {
   .item-card:hover .card-buttons {
       display: block;
   }
+
+  #content img{
+      cursor: pointer;
+      margin-right: 10px;
+  }
+
+  .item-list {
+      display: flex;
+      width: 100%;
+      height: 300px;
+      margin-bottom: 20px;
+      margin-top: 10px;
+      //margin-left: -1295px;
+      background: #FFFFFF;
+      border-radius: 10px;
+      justify-content: flex-start;
+  }
+
+  .item-list:hover{
+      background: rgba(0, 125, 95, 0.2);
+  }
+
+  .item_list-image {
+      width: 375px;
+      height: 274px;
+      object-fit: cover;
+      margin: 13px 20px;
+      border-radius: 10px;
+  }
+
+  .item_list-info {
+      padding: 10px;
+  }
+
+  .item_list-title {
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 28px;
+      color: #007D5F;
+      margin-top: 0;
+      display: inline-block;
+  }
+
+  .item_list-price,
+  .item_list-year,
+  .item_list-country {
+      margin: 5px 0;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 28px;
+      color: #434343;
+  }
+
+  .item_list-description {
+      margin-top: auto;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 19px;
+      width: 715px;
+      height: 122px;
+      color: #434343;
+      overflow: hidden;
+      word-wrap: break-word;
+  }
+
+  .container {
+      position: relative;
+      width: 100%;
+      max-width: 1200px; /* Пример фиксированной ширины контейнера */
+      //margin: 0 auto; /* Центрирование контейнера по горизонтали */
+      right: 300px;
+  }
+
+  .list_card-buttons {
+      display: none;
+      text-align: right;
+  }
+  .list_card-buttons button{
+      background: #ffffff;
+      border: 1px solid rgba(0, 125, 95, 0.59);
+      border-radius: 3px;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 19px;
+      color: #434343;
+      padding: 5px 28px;
+      cursor: pointer;
+  }
+  .list_card-buttons button:nth-child(1){
+      margin-right: 15px;
+  }
+  .item-list:hover .list_card-buttons {
+      display: inline-block;
+      float: right;
+      margin-right: 50px;
+  }
+
 </style>
