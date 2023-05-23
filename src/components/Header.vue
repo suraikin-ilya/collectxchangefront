@@ -150,6 +150,8 @@ export default {
 .header__nav ul{
   display: inline-block;
   min-width: 1100px;
+    position: relative;
+    bottom: 5px;
 }
 
 

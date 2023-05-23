@@ -11,13 +11,13 @@
                         <li v-if="item.category != '' && item.category != null">Категория: <span>{{ item.category }}</span> </li>
                         <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>
                         <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
-                        <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>
+                        <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }} г.</span></li>
                         <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
                         <li v-if="item.WWC != '' && item.WWC != null">Номер по каталогу WWC: <span>{{ item.WWC }}</span> </li>
                         <li v-if="item.CBRF != '' && item.CBRF != null">Номер по каталогу ЦБ РФ: <span>{{ item.CBRF }}</span> </li>
                         <li v-if="item.country != '' && item.country != null">Страна: <span>{{ item.country }}</span> </li>
-                        <li v-if="item.width != '' && item.width != null">Длина: <span>{{ item.width }}</span> </li>
-                        <li v-if="item.height != '' && item.height != null">Ширина: <span>{{ item.height }}</span> </li>
+                        <li v-if="item.width != '' && item.width != null">Длина: <span>{{ item.width }} мм</span> </li>
+                        <li v-if="item.height != '' && item.height != null">Ширина: <span>{{ item.height }} мм</span> </li>
                         <li v-if="item.ISSN != '' && item.ISSN != null">ISSN: <span>{{ item.ISSN }}</span> </li>
                         <li v-if="item.datePublish != '' && item.datePublish != null">Дата публикации: <span>{{ item.datePublish }}</span> </li>
                     </ul>
@@ -37,8 +37,9 @@
                         <button class="write-button"><span>написать</span></button>
                         <button v-if="item.trade != '' && item.trade != null" class="trade-button"><span class="trade-button_text">обмен</span></button>
                     </div>
+                    <router-link :to="{name: 'Profile', params: {profileId: item.owner}}" style="text-decoration: none; color: inherit;">
                     <img class="price-image" src="../assets/photo.png" alt="Image">
-                    <p class="price-name">Nickname</p>
+                        <p class="price-name">{{ item.owner }}</p></router-link>
                 </div>
             </div>
             </div>
@@ -54,6 +55,7 @@
 import {useRoute} from "vue-router";
 import axios from "axios";
 import {mapGetters} from "vuex";
+import moment from "moment/moment";
 
 export default {
     name: "ItemView",
@@ -81,6 +83,7 @@ export default {
             axios.get(`http://localhost:8000/api/item/${this.itemId}/`)
                 .then(response => {
                     this.item = response.data;
+                    this.item.date_create = moment(response.data.date_create).format('DD.MM.YYYY');
                     const itemOwner = parseInt(response.data.owner);
                     const itemId = parseInt(response.data.id);
                     const userId = parseInt(this.$store.state.id);
@@ -93,6 +96,15 @@ export default {
                                 console.log(error.response.data.error);
                             });
                     }
+                    axios.get(`http://localhost:8000/api/get_owner/${this.item.owner}/`)
+                        .then(response => {
+                            const itemNickname = response.data.nickname;
+                            this.item.owner = itemNickname;
+
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
                 })
                 .catch(error => {
                     console.log(error);
@@ -130,11 +142,16 @@ h2{
 }
 
 .left-part {
-    width: calc(72% - 33px);
+    display: inline-block;
+    width: 60%;
+    vertical-align: top;
+    margin-right: 40px;
 }
 
 .right-part {
-    width: 300px;
+    display: inline-block;
+    width: 30%;
+    vertical-align: top;
 }
 
 .block {
@@ -234,7 +251,12 @@ li{
 }
 
 .price-name{
-    margin: 0 29%;
+    margin-left: 28%;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 38px;
+    color: #434343;
 }
 
 .after-description{
