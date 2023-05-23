@@ -133,18 +133,24 @@
             </template>
             <div class="container" v-if="showList">
                 <div v-for="item in items" :key="item.id" class="item-list">
-                    <img :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}" class="item_list-image">
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                    <img :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}" class="item_list-image"></router-link>
                     <div class="item_list-info">
-                        <h3 class="item_list-title">{{ item.name }}</h3>
+                        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                            <h3 class="item_list-title">{{ item.name }}</h3></router-link>
                         <div class="list_card-buttons">
                             <button >Написать</button>
                             <button v-if="item.trade">Обмен</button>
                         </div>
-                        <p v-if="item.price != '' && item.price != null" class="item_list-price">{{ item.price }}</p>
-                        <p v-if="item.year != '' && item.year != null" class="item_list-year">{{ item.year }}</p>
-                        <p v-if="item.country != '' && item.country != null" class="item_list-country">{{ item.country }}</p>
-                        <p class="item_list-description">{{ item.description }}</p>
-
+                        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                            <p v-if="item.price != '' && item.price != null" class="item_list-price">{{ item.price }}</p>
+                        </router-link>
+                        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                            <p v-if="item.year != '' && item.year != null" class="item_list-year">{{ item.year }}</p></router-link>
+                        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                            <p v-if="item.country != '' && item.country != null" class="item_list-country">{{ item.country }}</p></router-link>
+                        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
+                            <p class="item_list-description">{{ item.description }}</p></router-link>
                     </div>
                 </div>
             </div>

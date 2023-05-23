@@ -151,10 +151,13 @@ h2{
 }
 
 .block-description {
+    max-width: 825px;
     font-weight: 400;
     font-size: 18px;
     line-height: 25px;
     color: rgba(67, 67, 67, 0.8);
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 .price-block {

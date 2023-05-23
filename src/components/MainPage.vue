@@ -13,7 +13,7 @@
       <!--                  <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>-->
       <!--              </ul>-->
                     <div class="card-stats">
-                        <span>{{ item.owner }}</span>
+                        <router-link :to="{name: 'Profile', params: {profileId: item.owner}}" style="text-decoration: none; color: inherit;"><span>{{ item.owner }}</span></router-link>
                         <span class="card-views">{{ item.views}}</span>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
             </div></router-link>
             <p class="card-text">{{collection.description}}</p>
             <div class="card-info">
-                <span class="card-nickname">{{ collection.owner }}</span>
+                <router-link :to="{name: 'Profile', params: {profileId: collection.owner}}" style="text-decoration: none; color: inherit;"><span class="card-nickname">{{ collection.owner }}</span></router-link>
                 <span class="collection-card-views">{{ collection.views }}</span>
             </div>
         </div>
@@ -62,7 +62,7 @@ export default {
     },
     methods:{
       getItems() {
-          axios.get(`http://localhost:8000/api/items/`)
+          axios.get(`http://localhost:8000/api/visible_items/`)
               .then(response => {
                   this.items = response.data.slice(0, 5);
                   this.processGetOwner();
