@@ -7,6 +7,7 @@ import CatalogView from "@/components/CatalogView.vue";
 import CollectionsView from "@/components/CollectionsView.vue";
 import CollectionView from "@/components/CollectionView.vue";
 import itemView from "@/components/itemView.vue";
+import profileView from "@/components/ProfileView.vue";
 
 
 
@@ -37,6 +38,11 @@ const router = createRouter({
             path: '/item/:itemId',
             name: 'Item',
             component: itemView,
+        },
+        {
+            path: '/profile/:profileId',
+            name: 'Profile',
+            component: profileView,
         },
     ]
 })
