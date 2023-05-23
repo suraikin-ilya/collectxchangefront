@@ -5,101 +5,101 @@
             <hr>
             <div id="search">
                 <label for="search-input" >Поиск</label>
-                <input type="text" id="search-input" placeholder="Поиск">
+                <input type="text" id="search-input" placeholder="Поиск" v-model="searchQuery">
             </div>
             <h3 style="margin-top: 10px;">Категория</h3>
             <div class="categories">
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="coin" value="Монета">
+                    <input class="custom-checkbox" type="checkbox" id="coin" value="Монета" v-model="selectedCategories">
                     <label for="coin">Монеты</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="banknote" value="Банкнота">
+                    <input class="custom-checkbox" type="checkbox" id="banknote" value="Банкнота" v-model="selectedCategories">
                     <label for="banknote">Банкноты</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="post_stamp" value="Почтовая марка">
+                    <input class="custom-checkbox" type="checkbox" id="post_stamp" value="Почтовая марка" v-model="selectedCategories">
                     <label for="post_stamp">Марки</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="journal" value="Журнал">
+                    <input class="custom-checkbox" type="checkbox" id="journal" value="Журнал" v-model="selectedCategories">
                     <label for="journal">Журналы</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="videogame" value="Видеоигра">
+                    <input class="custom-checkbox" type="checkbox" id="videogame" value="Видеоигра" v-model="selectedCategories">
                     <label for="videogame">Видеоигры</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="pin" value="Значок">
+                    <input class="custom-checkbox" type="checkbox" id="pin" value="Значок" v-model="selectedCategories">
                     <label for="pin">Значки</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="other" value="Другое">
+                    <input class="custom-checkbox" type="checkbox" id="other" value="Другое" v-model="selectedCategories">
                     <label for="other">Другое</label>
                 </div>
             </div>
             <hr style="margin-bottom: 10px">
             <h3>Доступность для обмена</h3>
             <div class="checkbox trade">
-                <input class="custom-checkbox" type="checkbox" id="trade" value="trade">
+                <input class="custom-checkbox" type="checkbox" id="trade" value="trade" v-model="isTradeAvailable">
                 <label for="trade">Доступен</label>
             </div>
             <hr style="margin-bottom: 10px">
             <div class="preservation">
                 <h3>Сохранность</h3>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="PF" value="PF">
+                    <input class="custom-checkbox" type="checkbox" id="PF" value="PF" v-model="selectedPreservation">
                     <label for="PF">Proof</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="UNC" value="UNC">
+                    <input class="custom-checkbox" type="checkbox" id="UNC" value="UNC" v-model="selectedPreservation">
                     <label for="UNC">Uncirculated</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="XF" value="XF">
+                    <input class="custom-checkbox" type="checkbox" id="XF" value="XF" v-model="selectedPreservation">
                     <label for="XF">Extremely fine</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="VF" value="VF">
+                    <input class="custom-checkbox" type="checkbox" id="VF" value="VF" v-model="selectedPreservation">
                     <label for="VF">Very fine</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="F" value="F">
+                    <input class="custom-checkbox" type="checkbox" id="F" value="F" v-model="selectedPreservation">
                     <label for="F">Fine</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="VG" value="VG">
+                    <input class="custom-checkbox" type="checkbox" id="VG" value="VG" v-model="selectedPreservation">
                     <label for="VG">Very good</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="G" value="G">
+                    <input class="custom-checkbox" type="checkbox" id="G" value="G" v-model="selectedPreservation">
                     <label for="G">Good</label>
                 </div>
                 <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" id="PR" value="PR">
+                    <input class="custom-checkbox" type="checkbox" id="PR" value="PR" v-model="selectedPreservation">
                     <label for="PR">Poor</label>
                 </div>
             </div>
             <hr style="margin-top: 10px">
-            <h3 style="margin-bottom: -12px">Дата публикации</h3>
-            <div id="filter-date">
-                <input type="text" id="date-from" placeholder="от" class="date-input catalog-input">
-                <input type="text" id="date-to" placeholder="до" class="date-input catalog-input">
-            </div>
+<!--            <h3 style="margin-bottom: -12px">Дата публикации</h3>-->
+<!--            <div id="filter-date">-->
+<!--                <input type="text" id="date-from" placeholder="от" class="date-input catalog-input">-->
+<!--                <input type="text" id="date-to" placeholder="до" class="date-input catalog-input">-->
+<!--            </div>-->
             <h3 style="margin-bottom: -12px">Вес</h3>
             <div id="filter-weight">
-                <input type="text" id="weight-from" placeholder="от" class="date-input catalog-input">
-                <input type="text" id="weight-to" placeholder="до" class="date-input catalog-input">
+                <input type="text" id="weight-from" placeholder="от" class="date-input catalog-input" v-model="weightFrom">
+                <input type="text" id="weight-to" placeholder="до" class="date-input catalog-input" v-model="weightTo">
             </div>
             <h3 style="margin-bottom: -12px">Год</h3>
             <div id="filter-year">
-                <input type="text" id="year-from" placeholder="от" class="date-input catalog-input">
-                <input type="text" id="year-to" placeholder="до" class="date-input catalog-input">
+                <input type="text" id="year-from" placeholder="от" class="date-input catalog-input" v-model="yearFrom">
+                <input type="text" id="year-to" placeholder="до" class="date-input catalog-input" v-model="yearTo">
             </div>
             <h3 style="margin-bottom: -12px">Цена</h3>
             <div id="filter-price">
-                <input type="text" id="price-from" placeholder="от" class="date-input catalog-input">
-                <input type="text" id="price-to" placeholder="до" class="date-input catalog-input">
+                <input type="text" id="price-from" placeholder="от" class="date-input catalog-input" v-model="priceFrom">
+                <input type="text" id="price-to" placeholder="до" class="date-input catalog-input" v-model="priceTo">
             </div>
         </div>
         <div id="content">
@@ -115,7 +115,7 @@
         </div >
         <div id="catalog">
             <template v-if="showCells">
-                <div v-for="item in items" :key="item.id" class="item-card">
+                <div v-for="item in filteredItems" :key="item.id" class="item-card">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                         <img class="item-image" :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}">
                     </router-link>
@@ -132,7 +132,7 @@
                 </div>
             </template>
             <div class="container" v-if="showList">
-                <div v-for="item in items" :key="item.id" class="item-list">
+                <div v-for="item in filteredItems" :key="item.id" class="item-list">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                     <img :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}" class="item_list-image"></router-link>
                     <div class="item_list-info">
@@ -173,7 +173,16 @@ export default {
             items: [],
             showCells: true, // Первый блок будет отображаться по умолчанию
             showList: false,
-            // selectedCategory: 'Выберите категорию предмета',
+            searchQuery: '',
+            selectedCategories: [],
+            selectedPreservation: [],
+            isTradeAvailable: false,
+            priceFrom: null,
+            priceTo: null,
+            yearFrom: null,
+            yearTo: null,
+            weightFrom: null,
+            weightTo: null,
         };
     },
     mounted(){
@@ -189,7 +198,7 @@ export default {
                 });
         },
         getItems() {
-            axios.get(`http://localhost:8000/api/items/`)
+            axios.get(`http://localhost:8000/api/visible_items/`)
                 .then(response => {
                     this.items = response.data;
                 })
@@ -205,6 +214,74 @@ export default {
             this.showCells = false;
             this.showList  = true;
         }
+    },
+    computed: {
+        filteredItems() {
+            let filteredItems = this.items;
+
+            if (this.searchQuery) {
+                const searchQuery = this.searchQuery.toLowerCase();
+                filteredItems = filteredItems.filter(item =>
+                    item.name.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            if (this.selectedCategories.length > 0) {
+                filteredItems = filteredItems.filter(item =>
+                    this.selectedCategories.includes(item.category)
+                );
+            }
+
+            if (this.selectedPreservation.length > 0) {
+                filteredItems = filteredItems.filter(item =>
+                    this.selectedPreservation.includes(item.preservation)
+                );
+            }
+
+            if (this.isTradeAvailable) {
+                filteredItems = filteredItems.filter(item =>
+                    item.trade
+                );
+            }
+
+            if (this.priceFrom !== null) {
+                filteredItems = filteredItems.filter(item =>
+                    item.price >= this.priceFrom
+                );
+            }
+
+            if (this.priceTo !== null) {
+                filteredItems = filteredItems.filter(item =>
+                    item.price <= this.priceTo
+                );
+            }
+
+            if (this.yearFrom !== null) {
+                filteredItems = filteredItems.filter(item =>
+                    item.year >= this.yearFrom
+                );
+            }
+
+            if (this.yearTo !== null) {
+                filteredItems = filteredItems.filter(item =>
+                    item.year <= this.yearTo
+                );
+            }
+
+            if (this.weightFrom !== null) {
+                filteredItems = filteredItems.filter(item =>
+                    item.weight >= this.weightFrom
+                );
+            }
+
+            if (this.weightTo !== null) {
+                filteredItems = filteredItems.filter(item =>
+                    item.weight <= this.weightTo
+                );
+            }
+
+            return filteredItems;
+        },
     },
 }
 </script>
@@ -236,7 +313,7 @@ export default {
   //bottom: 26px;
       margin-top: 180px;
       width: 318px;
-      height: 1040px;
+      height: auto;
       padding: 22px 7px 22px 15px;
       background: #FFFFFF;
       border: 1px solid #D9D9D9;
