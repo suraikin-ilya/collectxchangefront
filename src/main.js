@@ -8,6 +8,7 @@ import CollectionsView from "@/components/CollectionsView.vue";
 import CollectionView from "@/components/CollectionView.vue";
 import itemView from "@/components/itemView.vue";
 import profileView from "@/components/ProfileView.vue";
+import tradeView from "@/components/TradeView.vue";
 
 
 
@@ -43,6 +44,11 @@ const router = createRouter({
             path: '/profile/:profileId',
             name: 'Profile',
             component: profileView,
+        },
+        {
+            path: '/trade/:tradeId',
+            name: 'Trade',
+            component: tradeView,
         },
     ]
 })

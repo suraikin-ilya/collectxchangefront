@@ -127,7 +127,9 @@
                     </router-link>
                         <div class="card-buttons">
                             <button >Написать</button>
-                            <button v-if="item.trade">Обмен</button>
+                            <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
+                                <button v-if="item.trade">Обмен</button>
+                            </router-link>
                         </div>
                 </div>
             </template>
@@ -140,7 +142,9 @@
                             <h3 class="item_list-title">{{ item.name }}</h3></router-link>
                         <div class="list_card-buttons">
                             <button >Написать</button>
-                            <button v-if="item.trade">Обмен</button>
+                            <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
+                                <button v-if="item.trade">Обмен</button>
+                            </router-link>
                         </div>
                         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                             <p v-if="item.price != '' && item.price != null" class="item_list-price">{{ item.price }}</p>

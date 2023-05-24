@@ -180,6 +180,8 @@ button,
   display: inline-block;
   border: none;
   background: none;
+    position: relative;
+    bottom: 4px;
 }
 
 .header__login button {

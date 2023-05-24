@@ -35,7 +35,9 @@
                     <h2 v-if="item.trade != '' && item.trade != null && item.price === '' || item.price === null" class="price-heading">Только обмен</h2>
                     <div class="price-buttons">
                         <button class="write-button"><span>написать</span></button>
-                        <button v-if="item.trade != '' && item.trade != null" class="trade-button"><span class="trade-button_text">обмен</span></button>
+                        <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
+                            <button v-if="item.trade != '' && item.trade != null" class="trade-button"><span class="trade-button_text">обмен</span></button>
+                        </router-link>
                     </div>
                     <router-link :to="{name: 'Profile', params: {profileId: item.owner}}" style="text-decoration: none; color: inherit;">
                     <img class="price-image" src="../assets/photo.png" alt="Image">

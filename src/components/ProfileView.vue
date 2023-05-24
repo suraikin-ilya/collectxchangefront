@@ -9,7 +9,9 @@
                 <span>Количество обменов</span>
                 <div class="buttons">
                     <button>Написать</button>
-                    <button>Обмен</button>
+                    <router-link v-if="nickname" :to="{name: 'Trade', params: {tradeId: nickname}}" style="text-decoration: none;" class="trade-button" >
+                        Обмен
+                    </router-link>
                 </div>
             </div>
         </div>
@@ -145,7 +147,7 @@ export default {
     border-radius: 5px;
 }
 
-.buttons button:nth-child(2){
+.trade-button{
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
