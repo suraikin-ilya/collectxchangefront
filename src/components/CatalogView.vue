@@ -205,6 +205,7 @@ export default {
             axios.get(`http://localhost:8000/api/visible_items/`)
                 .then(response => {
                     this.items = response.data;
+                    this.processGetOwner();
                 })
                 .catch(error => {
                     console.error(error);
@@ -217,7 +218,26 @@ export default {
         showListBlock() {
             this.showCells = false;
             this.showList  = true;
-        }
+        },
+        processGetOwner() {
+            this.items.forEach(item => {
+                this.getOwner(item.owner);
+            });
+        },
+        getOwner(itemOwner) {
+            axios.get(`http://localhost:8000/api/get_owner/${itemOwner}/`)
+                .then(response => {
+                    const itemOwner = response.data.id;
+                    const itemNickname = response.data.nickname;
+                    const item = this.items.find(item => item.owner === itemOwner);
+                    if (item) {
+                        item.owner = itemNickname;
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
     },
     computed: {
         filteredItems() {
