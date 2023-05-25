@@ -3,12 +3,12 @@
         <div id="items">
             <h2>Ваши предметы на обмен</h2>
             <div class="items-on-trade">
-                <h3>Добавьте предметы которые хотите отдать</h3>
+                <h3 v-if="selected_trade_items.length === 0">Добавьте предметы которые хотите отдать</h3>
                 <div class="added-items">
-                    <div  class="item-card">
-                            <img src="../assets/test_picture.jpg" alt="">
-                            <span class="item-name">Название</span>
-                            <span class="item-price">Цена</span>
+                    <div  class="item-card" v-for="selectedTradeItem in selected_trade_items" :key="selectedTradeItem.id" @click="removeFromSelectedTradeItems(selectedTradeItem)">
+                        <img :src="'http://localhost:8000/'+selectedTradeItem.obverse" alt="">
+                        <span class="item-name">{{ selectedTradeItem.name }}</span>
+                        <span class="item-price">{{ selectedTradeItem.price }} р</span>
                     </div>
                 </div>
             </div>
@@ -20,10 +20,10 @@
                     </option>
                 </select>
                 <div class="added-items">
-                    <div  v-for="trade_item in filtered_trade_items" :key="trade_item.id" class="item-card">
+                    <div  v-for="trade_item in filtered_trade_items" :key="trade_item.id" class="item-card" @click="addToSelectedTradeItems(trade_item)">
                         <img :src="'http://localhost:8000/'+trade_item.obverse" alt="">
                         <span class="item-name">{{ trade_item.name }}</span>
-                        <span class="item-price">{{ trade_item.price }}</span>
+                        <span class="item-price">{{ trade_item.price }} р</span>
                     </div>
                 </div>
             </div>
@@ -32,14 +32,14 @@
             <span>Обмен</span>
         </div >
         <div id="items">
-            <h2>Предметы ?</h2>
+            <h2>Предметы {{ nickname }}</h2>
             <div class="items-on-trade">
-                <h3>Добавьте предметы которые хотите получить</h3>
+                <h3 v-if="selected_items.length === 0">Добавьте предметы которые хотите получить</h3>
                 <div class="added-items">
-                    <div  class="item-card">
-                        <img src="../assets/test_picture.jpg" alt="">
-                        <span class="item-name">Название</span>
-                        <span class="item-price">Цена</span>
+                    <div  class="item-card" v-for="selectedItem in selected_items" :key="selectedItem.id" @click="removeFromSelectedItems(selectedItem)">
+                        <img :src="'http://localhost:8000/'+selectedItem.obverse" alt="">
+                        <span class="item-name">{{ selectedItem.name }}</span>
+                        <span class="item-price">{{ selectedItem.price }} р</span>
                     </div>
                 </div>
             </div>
@@ -51,10 +51,10 @@
                     </option>
                 </select>
                 <div class="added-items">
-                    <div  v-for="item in filtered_items" :key="item.id" class="item-card">
+                    <div  v-for="item in filtered_items" :key="item.id" class="item-card" @click="addToSelectedItems(item)">
                         <img :src="'http://localhost:8000/'+item.obverse" alt="">
                         <span class="item-name">{{ item.name }}</span>
-                        <span class="item-price">{{ item.price }}</span>
+                        <span class="item-price">{{ item.price }} р</span>
                     </div>
                 </div>
             </div>
@@ -73,6 +73,7 @@ export default {
   name: "TradeView",
     data() {
         return {
+            nickname: '',
             userInfo: [],
             items: [],
             trade_items: [],
@@ -84,12 +85,15 @@ export default {
             filteredItems: [],
             selectedItemCategory: 'Выберите категорию предмета',
             selectedTradeCategory: 'Выберите категорию предмета',
+            selected_items: [],
+            selected_trade_items: [],
         };
     },
     mounted(){
         this.getItemsByUserId();
         this.getItemsForTrade();
         this.fetchCategories();
+        this.getNickname();
     },
     watch: {
         '$store.state.id'(newId) {
@@ -99,13 +103,39 @@ export default {
             }
         },
     },
-    // setup(){
-    //     const data = reactive({
-    //         selectedItemCategory: ref('Выберите категорию предмета').value,
-    //         selectedTradeCategory: ref('Выберите категорию предмета').value,
-    //     });
-    // },
     methods:{
+        getNickname(){
+            const route = useRoute();
+            this.nickname = route.params.tradeId;
+        },
+        addToSelectedItems(item) {
+            const index = this.filtered_items.indexOf(item);
+            if (index !== -1) {
+                this.filtered_items.splice(index, 1);
+                this.selected_items.push(item);
+            }
+        },
+        removeFromSelectedItems(item) {
+            const index = this.selected_items.indexOf(item);
+            if (index !== -1) {
+                this.selected_items.splice(index, 1);
+                this.filtered_items.push(item);
+            }
+        },
+        addToSelectedTradeItems(item) {
+            const index = this.trade_items.indexOf(item);
+            if (index !== -1) {
+                this.trade_items.splice(index, 1);
+                this.selected_trade_items.push(item);
+            }
+        },
+        removeFromSelectedTradeItems(item) {
+            const index = this.selected_trade_items.indexOf(item);
+            if (index !== -1) {
+                this.selected_trade_items.splice(index, 1);
+                this.trade_items.push(item);
+            }
+        },
         getItemsByUserId() {
             const route = useRoute();
             this.nickname = route.params.tradeId;
@@ -131,7 +161,6 @@ export default {
                     .then(response => response.json())
                     .then(data => {
                         this.trade_items = data;
-                        console.log(userId);
                     })
                     .catch(error => {
                         console.error(error);
@@ -255,7 +284,6 @@ export default {
       font-size: 16px;
       line-height: 19px;
       color: #434343;
-      margin-bottom: 20px;
   }
   .added-items{
       display: flex;
@@ -270,6 +298,7 @@ export default {
       background: #FFFFFF;
       box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
       border-radius: 0px 0px 5px 5px;
+      cursor: pointer;
   }
 
   .item-card img{

@@ -154,6 +154,7 @@ h2{
     display: inline-block;
     width: 30%;
     vertical-align: top;
+    float: right;
 }
 
 .block {
