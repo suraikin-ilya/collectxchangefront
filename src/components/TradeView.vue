@@ -13,15 +13,17 @@
                 </div>
             </div>
             <div class="items-on-trade">
-                <input type="text" id="search" placeholder="Поиск">
-                <select id="category">
-                    <option>Категория</option>
+                <input type="text" id="search" placeholder="Поиск" v-model="searchTradeValue">
+                <select id="category" v-model="selectedTradeCategory">
+                    <option v-for="trade_category in TradeCategories" :value="trade_category" :key="trade_category.id">
+                        {{trade_category}}
+                    </option>
                 </select>
                 <div class="added-items">
-                    <div  class="item-card">
-                        <img src="../assets/test_picture.jpg" alt="">
-                        <span class="item-name">Название</span>
-                        <span class="item-price">Цена</span>
+                    <div  v-for="trade_item in filtered_trade_items" :key="trade_item.id" class="item-card">
+                        <img :src="'http://localhost:8000/'+trade_item.obverse" alt="">
+                        <span class="item-name">{{ trade_item.name }}</span>
+                        <span class="item-price">{{ trade_item.price }}</span>
                     </div>
                 </div>
             </div>
@@ -42,15 +44,17 @@
                 </div>
             </div>
             <div class="items-on-trade">
-                <input type="text" id="search" placeholder="Поиск">
-                <select id="category">
-                    <option>Категория</option>
+                <input type="text" id="search" placeholder="Поиск" v-model="searchItemValue">
+                <select id="category" v-model="selectedItemCategory">>
+                    <option v-for="item_category in ItemCategories" :value="item_category" :key="item_category.id">
+                        {{item_category}}
+                    </option>
                 </select>
                 <div class="added-items">
-                    <div  class="item-card">
-                        <img src="../assets/test_picture.jpg" alt="">
-                        <span class="item-name">Название</span>
-                        <span class="item-price">Цена</span>
+                    <div  v-for="item in filtered_items" :key="item.id" class="item-card">
+                        <img :src="'http://localhost:8000/'+item.obverse" alt="">
+                        <span class="item-name">{{ item.name }}</span>
+                        <span class="item-price">{{ item.price }}</span>
                     </div>
                 </div>
             </div>
@@ -61,21 +65,129 @@
 
 <script>
 
+import {useRoute} from "vue-router";
+import moment from "moment/moment";
+import {mapGetters} from "vuex";
+
 export default {
   name: "TradeView",
     data() {
         return {
-
+            userInfo: [],
+            items: [],
+            trade_items: [],
+            ItemCategories: [],
+            TradeCategories: [],
+            searchItemValue: '',
+            searchTradeValue: '',
+            filteredTradeItems: [],
+            filteredItems: [],
+            selectedItemCategory: 'Выберите категорию предмета',
+            selectedTradeCategory: 'Выберите категорию предмета',
         };
     },
     mounted(){
-
+        this.getItemsByUserId();
+        this.getItemsForTrade();
+        this.fetchCategories();
     },
+    watch: {
+        '$store.state.id'(newId) {
+            const userId = parseInt(newId);
+            if (!isNaN(userId)) {
+                this.getItemsForTrade();
+            }
+        },
+    },
+    // setup(){
+    //     const data = reactive({
+    //         selectedItemCategory: ref('Выберите категорию предмета').value,
+    //         selectedTradeCategory: ref('Выберите категорию предмета').value,
+    //     });
+    // },
     methods:{
-
+        getItemsByUserId() {
+            const route = useRoute();
+            this.nickname = route.params.tradeId;
+            fetch(`http://localhost:8000/api/user/${this.nickname}/`)
+                .then(response => response.json())
+                .then(data => {
+                    this.userInfo = data
+                    this.userInfo.date_joined = moment(data.date_joined).format('DD.MM.YYYY');
+                    fetch(`http://localhost:8000/api/trade_items/${this.userInfo.id}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.items = data;
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                });
+        },
+        getItemsForTrade(){
+            const userId = parseInt(this.$store.state.id);
+            if (!isNaN(userId)) {
+                fetch(`http://localhost:8000/api/trade_items/${userId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.trade_items = data;
+                        console.log(userId);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+        },
+        async fetchCategories() {
+            try {
+                const response = await fetch('http://localhost:8000/api/categories/');
+                const data = await response.json();
+                this.ItemCategories = data;
+                this.TradeCategories = data;
+                this.selectedTradeCategory = this.TradeCategories[0];
+                this.selectedItemCategory = this.ItemCategories[0];
+            } catch (error) {
+                console.error('Ошибка при получении категорий:', error);
+            }
+        },
     },
     computed: {
-
+        ...mapGetters(['userData']),
+        userId() {
+            const id = this.$store.state.id;
+            return isNaN(id) ? null : parseInt(id);
+        },
+        id() {
+            return this.userData.id;
+        },
+        filtered_trade_items() {
+            if (this.searchTradeValue || this.selectedTradeCategory) {
+                // Фильтрация элементов на основе значения поиска и выбранной категории
+                return this.trade_items.filter(trade_item => {
+                    // Условия фильтрации
+                    const searchCondition = !this.searchTradeValue || trade_item.name.toLowerCase().includes(this.searchTradeValue.toLowerCase());
+                    const categoryCondition = !this.selectedTradeCategory || trade_item.category === this.selectedTradeCategory;
+                    return searchCondition && categoryCondition;
+                });
+            } else {
+                // Если поле поиска и категория пустые, возвращаем все элементы
+                return this.trade_items;
+            }
+        },
+        filtered_items() {
+            if (this.searchItemValue || this.selectedItemCategory) {
+                // Фильтрация элементов на основе значения поиска и выбранной категории
+                return this.items.filter(item => {
+                    // Условия фильтрации
+                    const searchCondition = !this.searchItemValue || item.name.toLowerCase().includes(this.searchItemValue.toLowerCase());
+                    const categoryCondition = !this.selectedTradeCategory || item.category === this.selectedItemCategory;
+                    return searchCondition && categoryCondition;
+                });
+            } else {
+                // Если поле поиска и категория пустые, возвращаем все элементы
+                return this.items;
+            }
+        },
     },
 }
 </script>
