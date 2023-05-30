@@ -1,4 +1,5 @@
 <template>
+    <div v-if="showMessage" :class="{ 'success-message': true, 'fade-out': !showMessage }">{{ message }}</div>
     <div id="wrapper">
         <div id="items">
             <h2>Ваши предметы на обмен</h2>
@@ -29,7 +30,7 @@
             </div>
         </div>
         <div id="trade-block">
-            <span>Обмен</span>
+            <span @click="saveTrade">Обмен</span>
         </div >
         <div id="items">
             <h2>Предметы {{ nickname }}</h2>
@@ -87,6 +88,8 @@ export default {
             selectedTradeCategory: 'Выберите категорию предмета',
             selected_items: [],
             selected_trade_items: [],
+            showMessage: false,
+            message: '',
         };
     },
     mounted(){
@@ -178,6 +181,48 @@ export default {
             } catch (error) {
                 console.error('Ошибка при получении категорий:', error);
             }
+        },
+        saveTrade() {
+            const data = {
+                user_from: this.$store.state.id,
+                user_to: this.userInfo.id,
+                items_from: this.selected_trade_items,
+                items_to: this.selected_items,
+                message: null,
+                status: null
+            };
+
+            fetch('http://localhost:8000/api/trade/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Ошибка при сохранении данных');
+                    }
+                })
+                .then(data => {
+                    this.message = 'Предложение обмена успешно отправлено.';
+                    this.showMessage = true;
+                    console.log(data);
+                    setTimeout(() => {
+                        this.showMessage = false;
+                    }, 3000); // 3000 миллисекунд = 3 секунды
+
+                    this.showMessage = false;
+                    this.$nextTick(() => {
+                        this.showMessage = true; // Переключаем обратно для повторного появления сообщения
+                    });
+                })
+                .catch(error => {
+                    // Обработка ошибок при сохранении данных
+                    console.error(error);
+                });
         },
     },
     computed: {
@@ -364,6 +409,42 @@ export default {
       background: #FFFFFF;
       border: 2px solid rgba(0, 125, 95, 0.59);
       border-radius: 6px;
+  }
+
+  .success-message {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 125, 95, 0.59);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+      animation: fade-in 0.5s ease-in forwards;
+  }
+
+  @keyframes fade-in {
+      from {
+          opacity: 0;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+
+  .fade-out {
+      animation: fade-out 0.5s ease-in forwards;
+  }
+
+  @keyframes fade-out {
+      from {
+          opacity: 1;
+      }
+      to {
+          opacity: 0;
+      }
   }
 
   option{
