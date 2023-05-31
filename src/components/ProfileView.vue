@@ -6,7 +6,7 @@
                 <span class="nickname">{{nickname}}</span>
                 <span>На сайте с {{ userInfo.date_joined }}</span>
                 <span>Количество предметов {{items.length}}</span>
-                <span>Количество обменов</span>
+                <span>Количество успешных обменов {{countTrades}}</span>
                 <div class="buttons">
                     <button>Написать</button>
                     <router-link v-if="nickname" :to="{name: 'Trade', params: {tradeId: nickname}}" style="text-decoration: none;" class="trade-button" >
@@ -40,6 +40,7 @@
 <script >
 import {useRoute} from "vue-router";
 import moment from "moment";
+import axios from "axios";
 
 export default {
     name: "ProfileView",
@@ -49,6 +50,8 @@ export default {
             nickname: null,
             items: [],
             userInfo: [],
+            trades: [],
+            trades_count: null,
         };
     },
     mounted(){
@@ -67,12 +70,32 @@ export default {
                         .then(response => response.json())
                         .then(data => {
                             this.items = data;
+                            this.getTrade();
                         })
                         .catch(error => {
                             console.error(error);
                         });
                 });
         },
+        getTrade() {
+            const userId = this.userInfo.id;
+            axios.get(`http://localhost:8000/api/trades/all/${userId}/`)
+                .then(response => {
+                    this.trades = response.data;
+                    this.countTrade();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        countTrade(){
+            return this.trades_count = this.trades.filter(item => item.status === true).length;
+        }
+    },
+    computed:{
+        countTrades(){
+            return this.trades_count;
+        }
     }
 }
 </script>

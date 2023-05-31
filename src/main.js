@@ -9,7 +9,7 @@ import CollectionView from "@/components/CollectionView.vue";
 import itemView from "@/components/itemView.vue";
 import profileView from "@/components/ProfileView.vue";
 import tradeView from "@/components/TradeView.vue";
-
+import TradeListView from "@/components/TradeListView.vue";
 
 
 const router = createRouter({
@@ -49,6 +49,11 @@ const router = createRouter({
             path: '/trade/:tradeId',
             name: 'Trade',
             component: tradeView,
+        },
+        {
+            path: '/trades/:tradeListId',
+            name: 'Trades',
+            component: TradeListView,
         },
     ]
 })

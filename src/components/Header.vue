@@ -22,7 +22,8 @@
         <button @click="isLoginOpen = true" class="login"><span class="button__login">Войти</span></button>
       </div>
       <div class="header__logout" v-if="auth">
-        <RouterLink to="trades"><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></RouterLink>
+          <router-link :to="{ name: 'Trades', params: { tradeListId: result.id} }"><span class="trade_count" v-if="trade_count > 0">{{trade_count}}</span></router-link>
+          <router-link :to="{ name: 'Trades', params: { tradeListId: result.id} }"><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></router-link>
         <RouterLink to="messages"><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
         <div class="dropdown">
           <RouterLink to="profile"><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
@@ -55,6 +56,7 @@ import {onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {computed} from "vue";
 
+
 export default {
   mounted() {
     console.log(this.$store); // should output the Vuex store object
@@ -69,12 +71,12 @@ export default {
   setup(){
     const result = ref(null)
     const store = useStore();
+    const trade_count = ref(null);
     onMounted(async() =>{
             const response = await fetch('http://localhost:8000/api/user', {
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
             });
-
             await store.dispatch('setAuth', true)
             console.log(response)
             if(response.ok) {
@@ -84,6 +86,13 @@ export default {
               await store.dispatch('setUser', { id, nickname });
             }else
               {await store.dispatch('setAuth', false)
+            }
+            const response_count = await fetch('http://localhost:8000/api/trades/count/' + result.value.id + '/');
+            if (response.ok) {
+                const data = await response_count.json();
+                trade_count.value = data.trade_count;
+                console.log(trade_count);
+                // Обрабатывайте tradeCount по вашей логике
             }
     })
     const auth = computed(() => store.state.authenticated)
@@ -98,13 +107,11 @@ export default {
     }
     // const result = this.response
     // console.log(result)
-
-
-
     return {
       auth,
       logout,
-      result
+      result,
+      trade_count
     }
   },
   name: 'PageHeader',
@@ -183,6 +190,7 @@ button,
     position: relative;
     bottom: 4px;
 }
+
 
 .header__login button {
   font-style: normal;
@@ -272,6 +280,21 @@ button,
 
 .dropdown{
   display: inline-block;
+}
+
+.trade_count{
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+    color: #FFFFFF;
+    background: #841FEA;
+    border: 1px solid #55BEA4;
+    padding: 2px 5px 2px 5px;
+    border-radius: 14px;
+    position: relative;
+    left: 44px;
+    bottom: 28px;
+    z-index: 999;
 }
 
 .dropdown:hover .header__dropdown {display: block;}
