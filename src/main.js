@@ -10,6 +10,9 @@ import itemView from "@/components/itemView.vue";
 import profileView from "@/components/ProfileView.vue";
 import tradeView from "@/components/TradeView.vue";
 import TradeListView from "@/components/TradeListView.vue";
+import chatView from "@/components/chatView.vue";
+import userChatView from "@/components/userChatView.vue";
+
 
 
 const router = createRouter({
@@ -55,6 +58,16 @@ const router = createRouter({
             name: 'Trades',
             component: TradeListView,
         },
+        {
+            path: '/chat',
+            name: 'Chat',
+            component: chatView,
+        },
+        {
+            path: '/chat/:userNickname',
+            name: 'UserChat',
+            component: userChatView,
+        }
     ]
 })
 

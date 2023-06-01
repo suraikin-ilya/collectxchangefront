@@ -24,7 +24,7 @@
       <div class="header__logout" v-if="auth">
           <router-link :to="{ name: 'Trades', params: { tradeListId: result.id} }"><span class="trade_count" v-if="trade_count > 0">{{trade_count}}</span></router-link>
           <router-link :to="{ name: 'Trades', params: { tradeListId: result.id} }"><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></router-link>
-        <RouterLink to="messages"><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
+        <RouterLink to="/chat"><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
         <div class="dropdown">
           <RouterLink to="profile"><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
           <div class="header__dropdown">

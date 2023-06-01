@@ -1021,7 +1021,7 @@ input {outline:none;}
 
 select {outline: none;}
 
-textarea {outline: none;}
+textarea {outline: none; resize: none;}
 
 .form__description{
   font-style: normal;
@@ -1031,6 +1031,7 @@ textarea {outline: none;}
   text-align: center;
   color: #434343;
   margin-bottom: 28px;
+  resize: none;
 }
 
 .form__title{
