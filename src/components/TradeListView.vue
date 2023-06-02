@@ -2,13 +2,19 @@
     <div class="wrapper">
         <div class="heading">
             <h2 class="block-heading">Предложения обмена</h2>
+            <div class="card-footer-buttons" >
+                <button @click="showReceivedItems">Полученные</button>
+                <button @click="showSentItems" style="color: #434343">Отправленные</button>
+                <button @click="showHistoryItems" style="color: darkorange">История</button>
+            </div>
         </div>
         <div class="content">
-            <div class="trade-list" v-if="selectedDate === ''">
-                <div class="card" v-for="trade in trades" :key="trade.id" :class="trade.status === false ? 'declined_status' : (trade.status === true ? 'accepted_status' : '')">
+            <div class="trade-list">
+                <h3 v-if="filteredTrades.length === 0">Нет обменов</h3>
+                <div class="card" v-for="trade in filteredTrades" :key="trade.id" :class="trade.status === false ? 'declined_status' : (trade.status === true ? 'accepted_status' : '')">
                     <div class="card-header">
                         <img src="../assets/photo.png" alt="Image">
-                        <span>{{ trade.user_from }} предлагает вам обменяться</span>
+                        <span>{{ trade.user_from }} предлагает {{ trade.user_to }} обменяться </span>
                     </div>
                     <div class="trade-info">
                         <h3>Предложение от {{ trade.user_from }}</h3>
@@ -29,7 +35,7 @@
                             </svg>
                             <hr>
                         </div>
-                        <h3>За ваши</h3>
+                        <h3>За</h3>
                         <div class="card-footer">
                             <div class="item-card" v-for="item in trade.items_to" :key="item.id">
                                 <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
@@ -40,7 +46,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer-buttons" v-if="trade.status === null">
+                    <div class="card-footer-buttons" v-if="trade.user_from !== userData.nickname">
                         <button @click="acceptTrade(trade.id)">Принять</button>
                         <button @click="declineTrade(trade.id)">Отклонить</button>
                         <button>Написать</button>
@@ -49,11 +55,13 @@
             </div>
         </div>
     </div>
-    <div class="sidebar">
-        <ul class="dates">
-            <li v-for="date in uniqueFilteredDates" :key="date" :class="{ 'selected': date === selectedDate}" @click="handleClick(date)">{{ date }}</li>
-        </ul>
-    </div>
+    <template v-if="uniqueFilteredDates.length > 0">
+        <div class="sidebar">
+            <ul class="dates">
+                <li v-for="date in uniqueFilteredDates" :key="date" :class="{ 'selected': date === selectedDate}" @click="handleClick(date)">{{ date }}</li>
+            </ul>
+        </div>
+    </template>
 </template>
 
 <script>
@@ -69,6 +77,9 @@ export default {
         return{
             trades: [],
             selectedDate: '',
+            showReceived: false,
+            showSent: false,
+            showHistory: false,
         }
     },
     setup() {
@@ -80,12 +91,13 @@ export default {
     },
     mounted() {
         this.getTrade();
+        this.showReceived = true;
     },
     methods: {
         getTrade() {
             // const route = useRoute();
             // const userId = route.params.tradeListId;
-            axios.get(`http://localhost:8000/api/trades/${this.userId}/`)
+            axios.get(`http://localhost:8000/api/trades/all/${this.userId}/`)
                 .then(response => {
                     this.trades = response.data;
                     this.processGetOwner();
@@ -102,12 +114,16 @@ export default {
         getOwner(itemOwner) {
             axios.get(`http://localhost:8000/api/get_owner/${itemOwner}/`)
                 .then(response => {
-                    const itemOwner = response.data.id;
+                    const itemOwnerId = response.data.id;
                     const itemNickname = response.data.nickname;
-                    const trade = this.trades.find(trade => trade.user_from === itemOwner);
-                    if (trade) {
-                        trade.user_from = itemNickname;
-                    }
+                    this.trades.forEach(trade => {
+                        if (trade.user_from === itemOwnerId) {
+                            trade.user_from = itemNickname;
+                        }
+                        if (trade.user_to === itemOwnerId) {
+                            trade.user_to = itemNickname;
+                        }
+                    });
                 })
                 .catch(error => {
                     console.error(error);
@@ -138,13 +154,39 @@ export default {
                 });
         },
         handleClick(date) {
-            this.selectedDate = date;
+            if (this.selectedDate === date) {
+                this.selectedDate = ''; // Сброс выбранной даты
+            } else {
+                this.selectedDate = date;
+            }
+        },
+        showReceivedItems() {
+            this.showReceived = true;
+            this.showSent = false;
+            this.showHistory = false;
+        },
+        showSentItems() {
+            this.showReceived = false;
+            this.showSent = true;
+            this.showHistory = false;
+        },
+        showHistoryItems() {
+            this.showReceived = false;
+            this.showSent = false;
+            this.showHistory = true;
+        },
+        formatDate(date) {
+            const d = new Date(date);
+            const day = d.getDate();
+            const month = d.getMonth() + 1;
+            const year = d.getFullYear();
+            return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
         },
     },
     computed: {
         ...mapGetters(['userData']),
         uniqueFilteredDates() {
-            const filteredDates = this.trades
+            const filteredDates = this.filteredTrades
                 .map(date => {
                     if (date.date_create) {
                         const d = new Date(date.date_create);
@@ -161,6 +203,35 @@ export default {
             });
 
             return uniqueDates.reverse();
+        },
+        filteredTrades() {
+            if (this.showReceived) {
+                return this.trades.filter(trade => {
+                    if (this.selectedDate === '') {
+                        return trade.user_to === this.userData.nickname && trade.status === null;
+                    } else {
+                        return trade.user_to === this.userData.nickname && trade.status === null && this.formatDate(trade.date_create) === this.selectedDate;
+                    }
+                });
+            } else if (this.showSent) {
+                return this.trades.filter(trade => {
+                    if (this.selectedDate === '') {
+                        return trade.user_from === this.userData.nickname && trade.status === null;
+                    } else {
+                        return trade.user_from === this.userData.nickname && trade.status === null && this.formatDate(trade.date_create) === this.selectedDate;
+                    }
+                });
+            } else if (this.showHistory) {
+                return this.trades.filter(trade => {
+                    if (this.selectedDate === '') {
+                        return trade.status !== null;
+                    } else {
+                        return trade.status !== null && this.formatDate(trade.date_create) === this.selectedDate;
+                    }
+                });
+            } else {
+                return [];
+            }
         },
     },
 
@@ -202,7 +273,7 @@ h2{
 .trade-info{
     background: #FFFFFF;
     border: 1px solid #007D5F;
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+    box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
     border-radius: 15px;
     margin-top: 18px;
     padding: 12px 25px 25px 25px;
@@ -212,7 +283,7 @@ h2{
     width: calc(100% - 82px);
     height: min-content;
     background: rgba(0, 125, 95, 0.09);
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+    box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
     border-radius: 15px;
     padding: 21px 21px 30px 21px;
 }
@@ -240,7 +311,7 @@ h2{
 
 .sidebar {
     position: fixed;
-    top: 185px; /* Расстояние сверху от верхней границы страницы */
+    top: 235px; /* Расстояние сверху от верхней границы страницы */
     left: 165px; /* Расстояние слева от левой границы страницы */
     width: 218px;
     max-height: 75vh;
@@ -248,7 +319,7 @@ h2{
     padding: 5px 0;
     background: #FFFFFF;
     border: 1px solid #D9D9D9;
-    box-shadow: 0px 4px 4px 1px rgba(0, 125, 95, 0.59);
+    box-shadow: 0 4px 4px 1px rgba(0, 125, 95, 0.59);
     border-radius: 10px;
     height: auto;
 }
@@ -323,7 +394,7 @@ h3{
     padding: 5px 20px;
     background: #007D5F;
     border: 0.1px solid #007D5F;
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+    box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
     border-radius: 5px;
 }
 
@@ -332,7 +403,7 @@ h3{
     padding: 5px 10px;
     background: #FFFFFF;
     border: none;
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+    box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
     border-radius: 5px;
 }
 
@@ -341,7 +412,7 @@ h3{
     padding: 5px 15px;
     background: #FFFFFF;
     border: none;
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+    box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
     border-radius: 5px;
 }
 
@@ -351,8 +422,8 @@ h3{
     margin-right: 14px;
     margin-bottom: 12px;
     background: #FFFFFF;
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
-    border-radius: 0px 0px 5px 5px;
+    box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
+    border-radius: 0 0 5px 5px;
     cursor: pointer;
 }
 
@@ -432,5 +503,9 @@ h3{
 
 .dates li:nth-child(1){
     margin-top: 10px;
+}
+
+.trade-list h3{
+    margin: 0 auto;
 }
 </style>
