@@ -9,26 +9,37 @@
                 </div>
                 <hr class="separator">
                 <div class="dialog">
+                    <span class="timestamp">13:45</span>
                     <div class="message received">
-                        <strong>Received Message:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
                     </div>
+                    <span class="timestamp">13:45</span>
                     <div class="message received">
-                        <strong>Received Message:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
                     </div>
+                    <span class="timestamp_sent">13:45</span>
                     <div class="message sent">
-                        <strong>Sent Message:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
                     </div>
+                    <span class="timestamp">13:45</span>
                     <div class="message received">
-                        <strong>Received Message:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
                     </div>
-
+                    <div v-for="message in messages" :key="message.id">
+                        <p>{{ message.body }}</p>
+                        <p>{{ message.timestamp }}</p>
+                    </div>
                     <!-- More message items here -->
                 </div>
                 <hr class="separator">
                 <div class="message-input">
                     <div class="textarea-container">
-                        <textarea id="message" type="text" class="input-field" placeholder="Напишите сообщение"></textarea>
-                        <img src="../assets/send-button.svg" class="send-button">
+                        <form @submit.prevent="submit">
+                            <textarea v-model="message" id="message" type="text" class="input-field" placeholder="Напишите сообщение"></textarea>
+                            <button type="submit">
+                                <img src="../assets/send-button.svg" alt="" class="send-button">
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -39,23 +50,58 @@
 <script>
 
 import {mapGetters} from "vuex";
-
+import axios from "axios";
+import Pusher from 'pusher-js';
+import {useRoute} from "vue-router";
 
 export default {
     name: "UserChatView",
     data(){
         return{
-
+            message: '',
+            messages: [],
         }
     },
     setup() {
-
+        const route = useRoute();
+        const userNickname = route.params.userNickname;
+        return {
+            userNickname,
+        };
     },
     mounted() {
-
+        this.loadMessages();
     },
     methods: {
+        loadMessages() {
+            const username = this.userNickname;
+            axios.get(`http://localhost:8000/api/messages/${username}/`)
+                .then(response => {
+                    this.messages = response.data.messages;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            Pusher.logToConsole = true;
+            const pusher = new Pusher('da33156e93b2fd99cc06', {
+                cluster: 'eu'
+            });
+            const channel = pusher.subscribe('chat');
+            channel.bind('new-message', data => {
+                const newMessage = data.message;
+                this.messages.push(newMessage);
+            });
+        },
+        async submit(){
+            await axios.post('http://localhost:8000/api/send-message', {
+                sender: this.userData.nickname,
+                recipient: this.userNickname,
+                body: this.message
+            });
 
+            this.message = ''
+            this.loadMessages();
+        },
     },
     computed: {
         ...mapGetters(['userData']),
@@ -203,4 +249,18 @@ h2{
     cursor: pointer;
 }
 
+.timestamp{
+    position: relative;
+    font-size: 10px;
+    color: #434343;
+    opacity: 0.8;
+}
+
+.timestamp_sent{
+    text-align: right;
+    float: right;
+    font-size: 10px;
+    opacity: 0.8;
+    color: #434343;
+}
 </style>
