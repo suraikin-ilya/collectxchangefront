@@ -5,26 +5,22 @@
             <input id="search" type="text" class="chat-input" placeholder="Поиск">
             <hr>
             <ul class="chat-list">
-                <li class="chat-item">
-                    <img src="../assets/photo.png" alt="Avatar" class="avatar">
-                    <div class="chat-content">
-                        <div>
-                            <span class="nickname">Nickname</span>
-                            <span class="unread-count">1</span>
+                    <li class="chat-item" v-for="chat in chats" :key="chat.timestamp">
+                        <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
+                        <img src="../assets/photo.png" alt="Avatar" class="avatar">
+                        </router-link>
+                        <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
+                        <div class="chat-content">
+                            <div>
+                                <span class="nickname">{{ chat.recipient }}</span>
+                                <span class="unread-count">{{ chat.formattedTimestamp}}</span>
+                            </div>
+                            <p class="chat-text">{{chat.body}}</p>
                         </div>
-                        <p class="chat-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                    </div>
-                </li>
-                <li class="chat-item">
-                    <img src="../assets/photo.png" alt="Avatar" class="avatar">
-                    <div class="chat-content">
-                        <div>
-                            <span class="nickname">Nickname</span>
-                            <span class="unread-count">1</span>
-                        </div>
-                        <p class="chat-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit dipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elitdolor sit amet, consectetur adipiscing elit  dolor sit amet, consectetur adipiscing elit dolor sit amet, consectetur adipiscing elit</p>
-                    </div>
-                </li>
+                        </router-link>
+
+                    </li>
+
             </ul>
         </div>
     </div>
@@ -33,23 +29,70 @@
 <script>
 
 import {mapGetters} from "vuex";
+import axios from "axios";
+import moment from "moment";
 
 
 export default {
     name: "ChatView",
     data(){
         return{
-
+            chats: [],
         }
     },
     setup() {
 
     },
     mounted() {
-
+        this.loadMessages();
     },
     methods: {
+        loadMessages() {
+            const username = this.userData.nickname;
+            axios.get(`http://localhost:8000/api/messages/${username}/`)
+                .then(response => {
+                    const messages = response.data.messages;
 
+                    const uniqueChats = [];
+
+                    messages.forEach(msg => {
+                        const sender = (msg.recipient === username) ? msg.recipient : msg.sender;
+                        const recipient = (msg.recipient === username) ? msg.sender : msg.recipient;
+                        const chatKey = [sender, recipient].sort().join('-');
+
+                        if (!uniqueChats.some(chat => chatKey === chat.key)) {
+                            uniqueChats.push({
+                                key: chatKey,
+                                sender,
+                                recipient,
+                                body: msg.body,
+                                timestamp: msg.timestamp,
+                            });
+                        }
+                    });
+
+                    const sortedChats = uniqueChats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                    sortedChats.forEach(chat => {
+                        const timestampMoment = moment(chat.timestamp);
+
+                        if (timestampMoment.isSame(moment(), 'day')) {
+                            chat.formattedTimestamp = timestampMoment.format('HH:mm'); // Форматирование времени для текущего дня
+                        } else {
+                            chat.formattedTimestamp = timestampMoment.format('DD.MM.YYYY HH:mm'); // Форматирование даты и времени
+                        }
+
+                        if (chat.recipient === username) {
+                            chat.sender = chat.recipient;
+                        }
+                    });
+
+                    this.chats = sortedChats;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
     },
     computed: {
         ...mapGetters(['userData']),
