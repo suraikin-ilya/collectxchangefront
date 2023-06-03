@@ -9,9 +9,9 @@
                     <span class="nickname">{{this.userNickname}}</span>
                 </div>
                 <hr class="separator">
-                <div class="dialog">
+                <div class="dialog" ref="dialogContainer">
                     <div v-for="message in messages" :key="message.id">
-                        <span :class="{'timestamp': true, 'timestamp_sent': isSentMessage(message)}">{{ formatTimestamp(message.timestamp) }}</span>
+                        <span :class="{'timestamp': true, 'timestamp_sent': isSentMessage(message), 'timestamp_received': isReceivedMessage(message)}">{{ formatTimestamp(message.timestamp) }}</span>
                         <div :class="{'message': true, 'sent': isSentMessage(message), 'received': isReceivedMessage(message)}">
                             <span>{{ message.body }}</span>
                         </div>
@@ -60,11 +60,26 @@ export default {
         this.loadMessages();
     },
     methods: {
+        beforeUnmount() {
+            const channel = this.pusher.subscribe('chat');
+            channel.unbind('new-message');
+        },
+        scrollToBottom() {
+            const container = this.$refs.dialogContainer;
+            container.scrollTop = container.scrollHeight;
+        },
         loadMessages() {
             const username = this.userNickname;
-            axios.get(`http://localhost:8000/api/messages/${username}/`)
+            const another_username = this.userData.nickname;
+            axios
+                .get(`http://localhost:8000/api/chat/${username}/${another_username}`)
                 .then(response => {
-                    this.messages = response.data.messages;
+                    const allMessages = response.data.messages;
+                    const mergedMessages = allMessages.sort(
+                        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+                    );
+                    this.messages = mergedMessages;
+                    this.$nextTick(this.scrollToBottom);
                 })
                 .catch(error => {
                     console.error(error);
@@ -75,25 +90,37 @@ export default {
             });
             const channel = pusher.subscribe('chat');
             channel.bind('new-message', data => {
-                const newMessage = data.message;
-                this.messages.push(newMessage);
+                const newMessage = {
+                    body: data.message,
+                    timestamp: data.timestamp,
+                    sender: data.sender,
+                    recipient: data.recipient
+                };
+
+                const existingMessage = this.messages.find(message => message.timestamp === newMessage.timestamp && message.sender === newMessage.sender && message.recipient === newMessage.recipient);
+
+                if (!existingMessage) {
+                    this.messages.push(newMessage);
+                }
             });
         },
         async submit(){
-            await axios.post('http://localhost:8000/api/send-message', {
+            const messageData = {
                 sender: this.userData.nickname,
                 recipient: this.userNickname,
                 body: this.message
-            });
-
-            this.message = ''
-            this.loadMessages();
+            }
+            await axios.post('http://localhost:8000/api/send-message', messageData)
+                .then(() => {
+                    this.message = '';
+                    this.loadMessages();
+                });
         },
         isSentMessage(message) {
             return message.sender === this.userData.nickname;
         },
         isReceivedMessage(message) {
-            return message.sender === this.userNickname;
+            return message.recipient === this.userData.nickname;
         },
         formatTimestamp(timestamp) {
             const date = new Date(timestamp);
@@ -109,6 +136,18 @@ export default {
     },
     computed: {
         ...mapGetters(['userData']),
+    },
+    watch: {
+        messages: {
+            immediate: true, // Запустить функцию обработчика при первом выполнении
+            deep: true, // Отслеживать изменения вложенных свойств массива
+            handler(newMessages) {
+                const lastMessage = newMessages[newMessages.length - 1];
+                if (lastMessage && this.isReceivedMessage(lastMessage)) {
+                    this.$nextTick(this.scrollToBottom);
+                }
+            },
+        },
     },
 }
 </script>
