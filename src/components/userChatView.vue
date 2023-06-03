@@ -5,29 +5,15 @@
             <div class="dialog-container">
                 <div class="user-info">
                     <img src="../assets/photo.png" alt="Avatar" class="avatar">
-                    <span class="nickname">Nickname</span>
+                    <span class="nickname">{{this.userNickname}}</span>
                 </div>
                 <hr class="separator">
                 <div class="dialog">
-                    <span class="timestamp">13:45</span>
-                    <div class="message received">
-                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-                    </div>
-                    <span class="timestamp">13:45</span>
-                    <div class="message received">
-                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-                    </div>
-                    <span class="timestamp_sent">13:45</span>
-                    <div class="message sent">
-                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-                    </div>
-                    <span class="timestamp">13:45</span>
-                    <div class="message received">
-                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-                    </div>
                     <div v-for="message in messages" :key="message.id">
-                        <p>{{ message.body }}</p>
-                        <p>{{ message.timestamp }}</p>
+                        <span :class="{'timestamp': true, 'timestamp_sent': isSentMessage(message)}">{{ formatTimestamp(message.timestamp) }}</span>
+                        <div :class="{'message': true, 'sent': isSentMessage(message), 'received': isReceivedMessage(message)}">
+                            <span>{{ message.body }}</span>
+                        </div>
                     </div>
                     <!-- More message items here -->
                 </div>
@@ -102,6 +88,18 @@ export default {
             this.message = ''
             this.loadMessages();
         },
+        isSentMessage(message) {
+            return message.sender === this.userData.nickname;
+        },
+        isReceivedMessage(message) {
+            return message.sender === this.userNickname;
+        },
+        formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
     },
     computed: {
         ...mapGetters(['userData']),
@@ -136,7 +134,21 @@ h2{
     height: 75vh;
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    overflow: hidden;
+}
+
+.dialog::-webkit-scrollbar {
+    width: 2px; /* Ширина полосы прокрутки */
+    background-color: transparent; /* Прозрачный фон */
+}
+
+.dialog::-webkit-scrollbar-thumb {
+    background-color: #007D5F; /* Цвет бегунка */
+    border-radius: 1px; /* Задаем радиус границы, чтобы создать круглый бегунок */
+}
+
+.dialog::-webkit-scrollbar-track {
+    background-color: transparent; /* Прозрачный фон трека (фон вокруг бегунка) */
 }
 
 .user-info {
@@ -167,7 +179,6 @@ h2{
 .dialog {
     height: auto;
     max-height: 100%;
-    overflow-y: auto;
     margin-top: 10px;
     padding: 0 10px;
     display: flex;
@@ -175,20 +186,23 @@ h2{
     flex-direction: column;
     flex: 1;
     overflow: auto;
+    overflow-y: scroll;
 }
+
+
 
 .message {
     margin-bottom: 10px;
     max-width: 600px;
-    min-height: 55px;
+    min-height: 35px;
     clear: both; /* Добавляем clear: both для сброса обтекания */
     overflow: hidden;
     font-style: normal;
     font-weight: 300;
     font-size: 16px;
     line-height: 19px;
-
     color: #434343;
+    word-wrap: break-word;
 }
 
 .received {
@@ -200,7 +214,6 @@ h2{
 }
 
 .sent {
-    align-self: flex-end;
     padding: 9px 20px;
     float: right;
     background-color: rgba(67, 67, 67, 0.25);
@@ -233,7 +246,7 @@ h2{
     padding: 5px;
     border: none;
     resize: none;
-    height: 100%;
+    height: 9vh;
     width: 96%;
     font-style: normal;
     font-weight: 300;
@@ -250,6 +263,7 @@ h2{
 }
 
 .timestamp{
+    float: left;
     position: relative;
     font-size: 10px;
     color: #434343;

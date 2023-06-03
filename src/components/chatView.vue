@@ -18,7 +18,6 @@
                             <p class="chat-text">{{chat.body}}</p>
                         </div>
                         </router-link>
-
                     </li>
 
             </ul>
