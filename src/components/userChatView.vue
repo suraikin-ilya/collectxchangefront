@@ -1,6 +1,7 @@
 <template>
     <div class="wrapper">
-        <h2>Сообщения</h2>
+        <router-link to="/chat" class="back-button"><img src="../assets/arrow-left.svg" alt="" style="display:inline-block; margin-right: 10px;"></router-link>
+        <h2 style="display:inline-block;">Сообщения</h2>
         <div class="container">
             <div class="dialog-container">
                 <div class="user-info">
@@ -21,7 +22,7 @@
                 <div class="message-input">
                     <div class="textarea-container">
                         <form @submit.prevent="submit">
-                            <textarea v-model="message" id="message" type="text" class="input-field" placeholder="Напишите сообщение"></textarea>
+                            <textarea v-model="message" id="message" type="text" class="input-field" placeholder="Напишите сообщение" @keydown.enter="handleEnter"></textarea>
                             <button type="submit">
                                 <img src="../assets/send-button.svg" alt="" class="send-button">
                             </button>
@@ -99,7 +100,12 @@ export default {
             const hours = date.getHours().toString().padStart(2, '0');
             const minutes = date.getMinutes().toString().padStart(2, '0');
             return `${hours}:${minutes}`;
-        }
+        },
+        handleEnter(event) {
+            if (event.key === 'Enter') {
+                this.submit();
+            }
+        },
     },
     computed: {
         ...mapGetters(['userData']),

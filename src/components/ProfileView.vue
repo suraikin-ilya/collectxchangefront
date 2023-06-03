@@ -7,12 +7,16 @@
                 <span>На сайте с {{ userInfo.date_joined }}</span>
                 <span>Количество предметов {{items.length}}</span>
                 <span>Количество успешных обменов {{countTrades}}</span>
-                <div class="buttons">
-                    <button>Написать</button>
-                    <router-link v-if="nickname" :to="{name: 'Trade', params: {tradeId: nickname}}" style="text-decoration: none;" class="trade-button" >
-                        Обмен
-                    </router-link>
-                </div>
+                <template v-if="nickname !== this.userData.nickname">
+                    <div class="buttons">
+                        <router-link v-if="nickname" :to="{name: 'UserChat', params: {userNickname: nickname}}" style="text-decoration: none; color: inherit;">
+                            <button>Написать</button>
+                        </router-link>
+                        <router-link v-if="nickname" :to="{name: 'Trade', params: {tradeId: nickname}}" style="text-decoration: none;" class="trade-button" >
+                            Обмен
+                        </router-link>
+                    </div>
+                </template>
             </div>
         </div>
         <hr style="width: 100%; border: 1px solid #007D5F; margin-bottom: 14px">
@@ -41,6 +45,7 @@
 import {useRoute} from "vue-router";
 import moment from "moment";
 import axios from "axios";
+import {mapGetters} from "vuex";
 
 export default {
     name: "ProfileView",
@@ -93,6 +98,7 @@ export default {
         }
     },
     computed:{
+        ...mapGetters(['userData']),
         countTrades(){
             return this.trades_count;
         }

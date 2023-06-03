@@ -1,9 +1,8 @@
 <template>
     <div class="wrapper">
         <h2>Сообщения</h2>
-        <div class="container">
-            <input id="search" type="text" class="chat-input" placeholder="Поиск">
-            <hr>
+        <h2 style="font-size: 26px" v-if="chats.length === 0">У вас ещё нет чатов с другими пользователями</h2>
+        <div class="container" v-if="chats.length > 0">
             <ul class="chat-list">
                     <li class="chat-item" v-for="chat in chats" :key="chat.timestamp">
                         <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
@@ -52,15 +51,15 @@ export default {
                 .then(response => {
                     const messages = response.data.messages;
 
-                    const uniqueChats = [];
+                    const uniqueChats = new Map();
 
                     messages.forEach(msg => {
                         const sender = (msg.recipient === username) ? msg.recipient : msg.sender;
                         const recipient = (msg.recipient === username) ? msg.sender : msg.recipient;
                         const chatKey = [sender, recipient].sort().join('-');
 
-                        if (!uniqueChats.some(chat => chatKey === chat.key)) {
-                            uniqueChats.push({
+                        if (!uniqueChats.has(chatKey) || new Date(msg.timestamp) > new Date(uniqueChats.get(chatKey).timestamp)) {
+                            uniqueChats.set(chatKey, {
                                 key: chatKey,
                                 sender,
                                 recipient,
@@ -70,7 +69,7 @@ export default {
                         }
                     });
 
-                    const sortedChats = uniqueChats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    const sortedChats = Array.from(uniqueChats.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
                     sortedChats.forEach(chat => {
                         const timestampMoment = moment(chat.timestamp);
@@ -207,13 +206,12 @@ input#search {
     font-size: 16px;
     line-height: 19px;
     color: #434343;
-
-    max-width: 100%;
-    word-wrap: break-word;
+    word-break: break-word;
+    -webkit-line-clamp: 3;
+    max-height: 57px; /* Высота, соответствующая трем строкам текста */
     overflow: hidden;
-    display: -webkit-box; /* Добавлено */
-    -webkit-line-clamp: 2; /* Добавлено */
-    -webkit-box-orient: vertical; /* Добавлено */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
     text-overflow: ellipsis;
 }
 

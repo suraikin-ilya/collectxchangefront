@@ -125,12 +125,16 @@
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                         <p v-if="item.price != '' && item.price != null" class="item-price">{{ item.price }} р</p>
                     </router-link>
+                    <template v-if="item.owner !== this.userData.nickname">
                         <div class="card-buttons">
-                            <button >Написать</button>
+                            <router-link :to="{name: 'UserChat', params: {userNickname: item.owner}}" style="text-decoration: none; color: inherit;">
+                                <button>Написать</button>
+                            </router-link>
                             <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
                                 <button v-if="item.trade">Обмен</button>
                             </router-link>
                         </div>
+                    </template>
                 </div>
             </template>
             <div class="container" v-if="showList">
@@ -140,12 +144,15 @@
                     <div class="item_list-info">
                         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                             <h3 class="item_list-title">{{ item.name }}</h3></router-link>
-                        <div class="list_card-buttons">
-                            <button >Написать</button>
-                            <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
-                                <button v-if="item.trade">Обмен</button>
-                            </router-link>
-                        </div>
+                        <template v-if="item.owner !== this.userData.nickname">
+                            <div class="list_card-buttons">
+                                <router-link :to="{name: 'UserChat', params: {userNickname: item.owner}}" style="text-decoration: none; color: inherit;">
+                                    <button>Написать</button> </router-link>
+                                <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
+                                    <button v-if="item.trade">Обмен</button>
+                                </router-link>
+                            </div>
+                        </template>
                         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                             <p v-if="item.price != '' && item.price != null" class="item_list-price">{{ item.price }}</p>
                         </router-link>
@@ -168,6 +175,7 @@
 
 
 import axios from "axios";
+import {mapGetters} from "vuex";
 
 export default {
   name: "CatalogView",
@@ -240,6 +248,7 @@ export default {
         },
     },
     computed: {
+        ...mapGetters(['userData']),
         filteredItems() {
             let filteredItems = this.items;
 

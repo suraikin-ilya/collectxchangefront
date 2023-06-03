@@ -33,12 +33,16 @@
                 <div class="price-block">
                     <h2 v-if="item.price != '' && item.price != null" class="price-heading">{{item.price}} р</h2>
                     <h2 v-if="item.trade != '' && item.trade != null && item.price === '' || item.price === null" class="price-heading">Только обмен</h2>
-                    <div class="price-buttons">
-                        <button class="write-button"><span>написать</span></button>
-                        <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
-                            <button v-if="item.trade != '' && item.trade != null" class="trade-button"><span class="trade-button_text">обмен</span></button>
-                        </router-link>
-                    </div>
+                    <template v-if="item.owner !== this.userData.nickname">
+                        <div class="price-buttons">
+                            <router-link :to="{name: 'UserChat', params: {userNickname: item.owner}}" style="text-decoration: none; color: inherit;">
+                                <button class="write-button"><span>написать</span></button>
+                            </router-link>
+                            <router-link :to="{name: 'Trade', params: {tradeId: item.owner}}" style="text-decoration: none; color: inherit;">
+                                <button v-if="item.trade != '' && item.trade != null" class="trade-button"><span class="trade-button_text">обмен</span></button>
+                            </router-link>
+                        </div>
+                    </template>
                     <router-link :to="{name: 'Profile', params: {profileId: item.owner}}" style="text-decoration: none; color: inherit;">
                     <img class="price-image" src="../assets/photo.png" alt="Image">
                         <p class="price-name">{{ item.owner }}</p></router-link>
