@@ -19,7 +19,7 @@
           </div>
           <div class="form__group">
               <label for="avatar" class="form__label">Аватар</label>
-              <div class="form__input-group">
+              <div class="form__input-group form__input-file">
                   <input type="file" id="avatar" name="avatar" accept="image/*" @change="handleFileChange">
               </div>
           </div>
@@ -282,4 +282,9 @@ input#nickname {
     color: #ff3030;
 }
 input {outline:none;}
+
+#avatar{
+    width: 22vmax;
+}
+
 </style>
