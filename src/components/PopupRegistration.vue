@@ -18,6 +18,12 @@
             </div>
           </div>
           <div class="form__group">
+              <label for="avatar" class="form__label">Аватар</label>
+              <div class="form__input-group">
+                  <input type="file" id="avatar" name="avatar" accept="image/*" @change="handleFileChange">
+              </div>
+          </div>
+          <div class="form__group">
             <label for="password" class="form__label">Пароль</label>
             <div class="form__input-group">
               <input v-model="data.password" type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
@@ -50,8 +56,11 @@ export default {
             email: "",
             password: "",
             check_password: "",
+            avatar: null,
         });
-
+        const handleFileChange = (event) => {
+            data.avatar = event.target.files[0];
+        };
         const error = reactive({
             message: "",
         });
@@ -61,11 +70,16 @@ export default {
                 error.message = "Пароли не совпадают";
                 return;
             }
+            const formData = new FormData();
+            formData.append("nickname", data.nickname);
+            formData.append("email", data.email);
+            formData.append("password", data.password);
+            formData.append("check_password", data.check_password);
+            formData.append("avatar", data.avatar);
             try {
                 const response = await fetch("http://localhost:8000/api/register", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
+                    body: formData, // Используем formData вместо JSON.stringify(data)
                 });
 
                 if (!response.ok) {
@@ -85,6 +99,7 @@ export default {
             data,
             error,
             submit,
+            handleFileChange,
         };
     },
   props: {
