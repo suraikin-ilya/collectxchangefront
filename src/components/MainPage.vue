@@ -64,7 +64,11 @@ export default {
       getItems() {
           axios.get(`http://localhost:8000/api/visible_items/`)
               .then(response => {
-                  this.items = response.data.slice(0, 5);
+                  // Сортировка предметов по убыванию даты создания
+                  const sortedItems = response.data.sort((a, b) => new Date(b.date_create) - new Date(a.date_create));
+
+                  // Сохранение только первых 5 предметов
+                  this.items = sortedItems.slice(0, 5);
                   this.processGetOwner();
               })
               .catch(error => {
