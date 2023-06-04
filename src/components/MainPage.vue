@@ -22,8 +22,9 @@
       <div class="card-wrapper">
         <div v-for="collection in filteredCollections" :key="collection.id" class="collection-card">
             <router-link :to="{name: 'Collection', params: {collectionId: collection.id}}" style="text-decoration: none; color: inherit;"><h3 class="collection-card-title">{{ collection.name }}</h3></router-link>
-            <router-link :to="{name: 'Collection', params: {collectionId: collection.id}}" style="text-decoration: none; color: inherit;"><div class="collection-card-images">
-                <img v-for="(obverse, index) in collectionImages" :src="obverse" :alt="'Изображение ' + (index + 1)" :key="index">
+            <router-link :to="{name: 'Collection', params: {collectionId: collection.id}}" style="text-decoration: none; color: inherit;">
+                <div class="collection-card-images">
+                <img v-for="(obverse, index) in collection.collectionImages" :src="obverse" :alt="'Изображение ' + (index + 1)" :key="index">
             </div></router-link>
             <p class="card-text">{{collection.description}}</p>
             <div class="card-info">
@@ -89,7 +90,10 @@ export default {
             axios.get(`http://localhost:8000/api/items/collection/${collectionId}/`)
                 .then(response => {
                     const data = response.data;
-                    this.collectionImages = data.slice(0, 4).map(item => item.obverse); // Изменено название свойства
+                    const collection = this.collections.find(c => c.id === collectionId); // Найти соответствующую коллекцию
+                    if (collection) {
+                        collection.collectionImages = data.slice(0, 4).map(item => item.obverse); // Присвоить изображения конкретной коллекции
+                    }
                 })
                 .catch(error => {
                     console.error(error);
@@ -103,7 +107,9 @@ export default {
         processGetCollectionOwner() {
             this.collections.forEach(collection => {
                 this.getCollectionOwner(collection.owner);
-                this.getItemsImage(collection.id);
+                if (!collection.collectionImages) { // Проверка наличия изображений коллекции
+                    this.getItemsImage(collection.id);
+                }
             });
         },
         getOwner(itemOwner) {
