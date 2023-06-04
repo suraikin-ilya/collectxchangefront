@@ -114,6 +114,7 @@ export default {
       trade_count
     }
   },
+
   name: 'PageHeader',
   props: {
     msg: String

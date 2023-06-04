@@ -15,6 +15,7 @@
               <input v-model="data.password" type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
             </div>
           </div>
+          <div v-if="error" class="error-message">{{ error }}</div>
           <div class="form__actions">
             <button type="submit" class="form__button form__button--login">Войти</button>
             <button type="button" class="form__button form__button--register" >Регистрация</button>
@@ -26,32 +27,53 @@
 </template>
 
 <script>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {useStore} from "vuex";
 
 
 export default {
-  setup(props, context){
-    const data = reactive({
-      email: '',
-      password: '',
-    });
-    const store = useStore()
-    const submit = async () => {
-      await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-        body: JSON.stringify(data)
-      });
-      await store.dispatch('setAuth', true);
-      context.emit('close');
-    }
-    return{
-      data,
-      submit,
-    }
-  },
+    setup(props, context) {
+        const data = reactive({
+            email: "",
+            password: "",
+        });
+        const store = useStore();
+
+        const isLoginOpen = ref(false); // Объявление переменной состояния isLoginOpen
+
+        const error = ref(""); // Переменная состояния для отображения ошибки
+
+        const submit = async () => {
+            try {
+                const response = await fetch("http://localhost:8000/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    await store.dispatch("setAuth", true);
+                    context.emit("close");
+                    isLoginOpen.value = false; // Закрытие попапа авторизации при успешной авторизации
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    error.value = errorData.detail; // Установка сообщения об ошибке
+                }
+            } catch (error) {
+                console.error(error);
+                // Обработка других ошибок, если необходимо
+            }
+        };
+
+        return {
+            data,
+            submit,
+            isLoginOpen, // Возвращение переменной состояния isLoginOpen
+            error, // Возвращение переменной состояния error
+        };
+    },
   props: {
     isOpen:{
       type: Boolean,
@@ -202,5 +224,9 @@ input#password {
   padding-left: 36px;
 }
 
+.error-message{
+    margin: 0 auto 5px auto;
+    color: #ff3030;
+}
 input {outline:none;}
 </style>

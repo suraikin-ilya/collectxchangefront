@@ -29,6 +29,7 @@
               <input v-model="data.check_password" type="password" id="check_password" name="check_password" class="form__input form__input--password" placeholder="Повторите пароль" required>
             </div>
           </div>
+            <p v-if="error.message" class="form__error">{{ error.message }}</p>
           <div class="form__actions">
             <button type="submit" class="form__button form__button--create">Создать</button>
           </div>
@@ -43,25 +44,48 @@ import {reactive} from "vue";
 
 
 export default {
-  setup(props, context) {
-    const data = reactive({
-      nickname: '',
-      email: '',
-      password: ''
-    });
-    const submit = async () => {
-      await fetch('http://localhost:8000/api/register', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-      });
-      context.emit('close');
-    }
+    setup(props, context) {
+        const data = reactive({
+            nickname: "",
+            email: "",
+            password: "",
+            check_password: "",
+        });
 
-    return {
-        data,
-        submit
-      }
+        const error = reactive({
+            message: "",
+        });
+
+        const submit = async () => {
+            if (data.password !== data.check_password) {
+                error.message = "Пароли не совпадают";
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:8000/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    error.message = errorData.detail || errorData.email?.[0] || errorData.nickname?.[0];
+                    return;
+                }
+
+                context.emit("close");
+                window.location.reload();
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        return {
+            data,
+            error,
+            submit,
+        };
     },
   props: {
     isOpen:{
@@ -238,6 +262,9 @@ input#nickname {
   padding-left: 36px;
 }
 
-
+.form__error{
+    margin: 0 auto 5px auto;
+    color: #ff3030;
+}
 input {outline:none;}
 </style>
