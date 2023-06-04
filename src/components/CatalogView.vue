@@ -125,7 +125,7 @@
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                         <p v-if="item.price != '' && item.price != null" class="item-price">{{ item.price }} р</p>
                     </router-link>
-                    <template v-if="item.owner !== this.userData.nickname">
+                    <template v-if="item.owner !== this.userData.nickname && this.userData.authenticated !== false">
                         <div class="card-buttons">
                             <router-link :to="{name: 'UserChat', params: {userNickname: item.owner}}" style="text-decoration: none; color: inherit;">
                                 <button>Написать</button>

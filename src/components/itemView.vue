@@ -33,7 +33,7 @@
                 <div class="price-block">
                     <h2 v-if="item.price != '' && item.price != null" class="price-heading">{{item.price}} р</h2>
                     <h2 v-if="item.trade != '' && item.trade != null && item.price === '' || item.price === null" class="price-heading">Только обмен</h2>
-                    <template v-if="item.owner !== this.userData.nickname">
+                    <template v-if="item.owner !== this.userData.nickname && this.userData.authenticated !== false">
                         <div class="price-buttons">
                             <router-link :to="{name: 'UserChat', params: {userNickname: item.owner}}" style="text-decoration: none; color: inherit;">
                                 <button class="write-button"><span>написать</span></button>

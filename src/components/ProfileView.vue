@@ -7,7 +7,7 @@
                 <span>На сайте с {{ userInfo.date_joined }}</span>
                 <span>Количество предметов {{items.length}}</span>
                 <span>Количество успешных обменов {{countTrades}}</span>
-                <template v-if="nickname !== this.userData.nickname">
+                <template v-if="nickname !== this.userData.nickname && this.userData.authenticated !== false">
                     <div class="buttons">
                         <router-link v-if="nickname" :to="{name: 'UserChat', params: {userNickname: nickname}}" style="text-decoration: none; color: inherit;">
                             <button>Написать</button>
