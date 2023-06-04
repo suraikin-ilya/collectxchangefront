@@ -5,7 +5,7 @@
         <div class="container">
             <div class="dialog-container">
                 <div class="user-info">
-                    <img src="../assets/photo.png" alt="Avatar" class="avatar">
+                    <img :src="'http://localhost:8000/'+ avatar" alt="Avatar" class="avatar">
                     <span class="nickname">{{this.userNickname}}</span>
                 </div>
                 <hr class="separator">
@@ -47,6 +47,7 @@ export default {
         return{
             message: '',
             messages: [],
+            avatar: '',
         }
     },
     setup() {
@@ -58,6 +59,7 @@ export default {
     },
     mounted() {
         this.loadMessages();
+        this.getAvatar();
     },
     methods: {
         beforeUnmount() {
@@ -133,6 +135,12 @@ export default {
                 this.submit();
             }
         },
+        getAvatar(){
+            axios.get(`http://localhost:8000/api/avatar/${this.userNickname}`)
+                .then(response => {
+                    this.avatar = response.data.avatar_url;
+                })
+        }
     },
     computed: {
         ...mapGetters(['userData']),
@@ -215,6 +223,7 @@ h2{
 .avatar {
     width: 40px;
     height: 40px;
+    border-radius: 50%;
 }
 
 .nickname {

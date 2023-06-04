@@ -26,7 +26,10 @@
           <router-link :to="{ name: 'Trades', params: { tradeListId: result.id} }"><img src="../assets/notification.svg" alt="уведомления" class="header__auth"></router-link>
         <RouterLink to="/chat"><img src="../assets/message.svg" alt="сообщения" class="header__auth"></RouterLink>
         <div class="dropdown">
-          <RouterLink to="profile"><img src="../assets/photo.png" alt="фото профиля" class="header__auth"></RouterLink>
+          <RouterLink to="profile">
+              <img v-if="!auth" src="../assets/photo.png" alt="фото профиля" class="avatar">
+              <img v-if="auth" :src="'http://localhost:8000/'+result.avatar" alt="фото профиля" class="avatar">
+          </RouterLink>
           <div class="header__dropdown">
             <li><router-link :to="{ name: 'Collections', params: { userId: result.id} }">Мои коллекции</router-link></li>
             <li><RouterLink to="profile">Профиль</RouterLink></li>
@@ -127,12 +130,12 @@ export default {
 
 .header {
   position: fixed;
-  top: 0;
+  top: 0px;
   left: 0;
   right: 0;
   z-index: 100;
   background-color: #55BEA4;
-  padding-top: 23px;
+  padding-top: 13px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -234,6 +237,14 @@ button,
   margin-right: 30px;
   position: relative;
   margin-bottom: -10px;
+}
+
+.avatar{
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    position: relative;
+    top: 15px;
 }
 
 .header__logout{

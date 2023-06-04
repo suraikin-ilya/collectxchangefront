@@ -44,7 +44,7 @@
                         </div>
                     </template>
                     <router-link :to="{name: 'Profile', params: {profileId: item.owner}}" style="text-decoration: none; color: inherit;">
-                    <img class="price-image" src="../assets/photo.png" alt="Image">
+                    <img class="price-image" :src="'http://localhost:8000/'+avatar" alt="{{avatar}}">
                         <p class="price-name">{{ item.owner }}</p></router-link>
                 </div>
             </div>
@@ -67,7 +67,8 @@ export default {
     name: "ItemView",
     data(){
         return{
-            item: null
+            item: null,
+            avatar: '',
         }
     },
     beforeRouteUpdate(to, from, next) {
@@ -106,15 +107,18 @@ export default {
                         .then(response => {
                             const itemNickname = response.data.nickname;
                             this.item.owner = itemNickname;
-
+                            axios.get(`http://localhost:8000/api/avatar/${itemNickname}`)
+                                .then(response => {
+                                    this.avatar = response.data.avatar_url;
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                });
                         })
                         .catch(error => {
-                            console.error(error);
+                            console.log(error);
                         });
                 })
-                .catch(error => {
-                    console.log(error);
-                });
         },
     },
     computed: {
@@ -199,8 +203,10 @@ h2{
 }
 
 .price-image {
-    width: 100%;
-    margin-bottom: 10px;
+    width: 130px;
+    height: 130px;
+    margin: 0 20%;
+    border-radius: 50%;
 }
 
 .price-name {
@@ -249,12 +255,6 @@ li{
     line-height: 38px;
     color: #ffffff;
     display: block;
-}
-
-.price-image{
-    width: 130px;
-    height: 130px;
-    margin: 0 20%;
 }
 
 .price-name{

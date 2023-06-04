@@ -6,7 +6,7 @@
             <ul class="chat-list">
                     <li class="chat-item" v-for="chat in chats" :key="chat.timestamp">
                         <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
-                        <img src="../assets/photo.png" alt="Avatar" class="avatar">
+                        <img :src="'http://localhost:8000/'+chat.avatar" alt="Avatar" class="avatar">
                         </router-link>
                         <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
                         <div class="chat-content">
@@ -45,53 +45,65 @@ export default {
         this.loadMessages();
     },
     methods: {
-        loadMessages() {
+        async loadMessages() {
             const username = this.userData.nickname;
-            axios.get(`http://localhost:8000/api/messages/${username}/`)
-                .then(response => {
-                    const messages = response.data.messages;
+            try {
+                const response = await axios.get(`http://localhost:8000/api/messages/${username}/`);
+                const messages = response.data.messages;
 
-                    const uniqueChats = new Map();
+                const uniqueChats = new Map();
 
-                    messages.forEach(msg => {
-                        const sender = (msg.recipient === username) ? msg.recipient : msg.sender;
-                        const recipient = (msg.recipient === username) ? msg.sender : msg.recipient;
-                        const chatKey = [sender, recipient].sort().join('-');
+                messages.forEach(msg => {
+                    const sender = (msg.recipient === username) ? msg.recipient : msg.sender;
+                    const recipient = (msg.recipient === username) ? msg.sender : msg.recipient;
+                    const chatKey = [sender, recipient].sort().join('-');
 
-                        if (!uniqueChats.has(chatKey) || new Date(msg.timestamp) > new Date(uniqueChats.get(chatKey).timestamp)) {
-                            uniqueChats.set(chatKey, {
-                                key: chatKey,
-                                sender,
-                                recipient,
-                                body: msg.body,
-                                timestamp: msg.timestamp,
-                            });
-                        }
-                    });
-
-                    const sortedChats = Array.from(uniqueChats.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-                    sortedChats.forEach(chat => {
-                        const timestampMoment = moment(chat.timestamp);
-
-                        if (timestampMoment.isSame(moment(), 'day')) {
-                            chat.formattedTimestamp = timestampMoment.format('HH:mm'); // Форматирование времени для текущего дня
-                        } else {
-                            chat.formattedTimestamp = timestampMoment.format('DD.MM.YYYY HH:mm'); // Форматирование даты и времени
-                        }
-
-                        if (chat.recipient === username) {
-                            chat.sender = chat.recipient;
-                        }
-                    });
-
-                    this.chats = sortedChats;
-                })
-                .catch(error => {
-                    console.error(error);
+                    if (!uniqueChats.has(chatKey) || new Date(msg.timestamp) > new Date(uniqueChats.get(chatKey).timestamp)) {
+                        uniqueChats.set(chatKey, {
+                            key: chatKey,
+                            sender,
+                            recipient,
+                            body: msg.body,
+                            timestamp: msg.timestamp,
+                        });
+                    }
                 });
-        }
+
+                const sortedChats = Array.from(uniqueChats.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                sortedChats.forEach(chat => {
+                    const timestampMoment = moment(chat.timestamp);
+
+                    if (timestampMoment.isSame(moment(), 'day')) {
+                        chat.formattedTimestamp = timestampMoment.format('HH:mm'); // Форматирование времени для текущего дня
+                    } else {
+                        chat.formattedTimestamp = timestampMoment.format('DD.MM.YYYY HH:mm'); // Форматирование даты и времени
+                    }
+
+                    if (chat.recipient === username) {
+                        chat.sender = chat.recipient;
+                    }
+                });
+
+                this.chats = sortedChats;
+                await this.getAvatarForChats(this.chats);
+ // Вызов функции для получения аватаров для каждого элемента chats
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getAvatarForChats(chats) {
+            for (const chat of chats) {
+                try {
+                    const response = await axios.get(`http://localhost:8000/api/avatar/${chat.recipient}`);
+                    chat.avatar = response.data.avatar_url;
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        },
     },
+
     computed: {
         ...mapGetters(['userData']),
     },
@@ -175,6 +187,7 @@ input#search {
     width: 75px;
     height: 75px;
     margin-right: 27px;
+    border-radius: 50%;
 }
 
 .nickname {

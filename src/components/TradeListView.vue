@@ -13,7 +13,7 @@
                 <h3 v-if="filteredTrades.length === 0">Нет обменов</h3>
                 <div class="card" v-for="trade in filteredTrades" :key="trade.id" :class="trade.status === false ? 'declined_status' : (trade.status === true ? 'accepted_status' : '')">
                     <div class="card-header">
-                        <img src="../assets/photo.png" alt="Image">
+                        <img :src="'http://localhost:8000/'+ trade.avatar" alt="Image" class="trade-image">
                         <span>{{ trade.user_from }} предлагает {{ trade.user_to }} обменяться </span>
                     </div>
                     <div class="trade-info">
@@ -94,17 +94,25 @@ export default {
         this.showReceived = true;
     },
     methods: {
-        getTrade() {
-            // const route = useRoute();
-            // const userId = route.params.tradeListId;
-            axios.get(`http://localhost:8000/api/trades/all/${this.userId}/`)
-                .then(response => {
-                    this.trades = response.data;
-                    this.processGetOwner();
-                })
-                .catch(error => {
+        async getTrade() {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/trades/all/${this.userId}/`);
+                this.trades = response.data;
+                this.processGetOwner();
+                await this.getAvatarForTrades(); // Вызов функции для получения аватаров для каждого элемента trades
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async getAvatarForTrades() {
+            for (const trade of this.trades) {
+                try {
+                    const response = await axios.get(`http://localhost:8000/api/avatar/${trade.user_from}`);
+                    trade.avatar = response.data.avatar_url;
+                } catch (error) {
                     console.error(error);
-                });
+                }
+            }
         },
         processGetOwner() {
             this.trades.forEach(trade => {
@@ -479,6 +487,10 @@ h3{
     padding: 0;
     list-style: none;
     font-size: 26px;
+}
+
+.trade-image{
+    border-radius: 50%;
 }
 
 .dates li{

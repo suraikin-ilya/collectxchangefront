@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="profile">
-            <div class="profile-photo"><img src="../assets/test_picture.jpg" alt=""></div>
+            <div class="profile-photo"><img :src="'http://localhost:8000/'+ userInfo.avatar" alt=""></div>
             <div class="profile-info">
                 <span class="nickname">{{nickname}}</span>
                 <span>На сайте с {{ userInfo.date_joined }}</span>
