@@ -364,6 +364,8 @@ export default {
       margin-left: -180px;
       display: flex;
       flex-wrap: wrap;
+      float: left;
+      width: 100%;
       //justify-content: space-between;
   }
 
@@ -684,9 +686,10 @@ export default {
   .container {
       position: relative;
       width: 100%;
+
       max-width: 1200px; /* Пример фиксированной ширины контейнера */
       //margin: 0 auto; /* Центрирование контейнера по горизонтали */
-      right: 300px;
+      
   }
 
   .list_card-buttons {
