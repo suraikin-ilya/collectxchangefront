@@ -12,16 +12,17 @@
       </div>
       <div class="sort-by">
         <span>Cортировать по:</span>
-          <button>Названию</button>
-          <button>Дате создания</button>
-          <button>Статусу</button>
-          <button>Году</button>
-          <button>Цене</button>
+          <button @click="toggleSortOrder('name')">Названию</button>
+          <button @click="toggleSortOrder('created_date')">Дате создания</button>
+          <button @click="toggleSortOrder('views')">Просмотрам</button>
+          <button @click="toggleSortOrder('trade')">Статусу</button>
+          <button @click="toggleSortOrder('year')">Году</button>
+          <button @click="toggleSortOrder('price')">Цене</button>
       </div>
     </div>
     <hr>
     <div class="card-wrapper">
-      <div v-for="item in filteredItems" :key="item.id" class="card">
+      <div v-for="item in sortedItems" :key="item.id" class="card">
         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="item.obverse" alt="Изображение товара"></router-link>
         <ul class="card-features">
@@ -76,6 +77,13 @@ export default {
       token: null,
       items: [],
       searchQuery: '',
+      sortOrder: 'asc',
+      dateSortOrder: 'asc',
+      viewsSortOrder: 'asc',
+      tradeSortOrder: 'asc',
+      yearSortOrder: 'asc',
+      priceSortOrder: 'asc',
+      property: '',
     };
   },
   mounted() {
@@ -154,35 +162,131 @@ export default {
       getItems() {
           axios.get(`http://localhost:8000/api/items/collection/${this.collectionId}/`)
               .then(response => {
-                  this.items = response.data;
+                  this.items = response.data.filter(item => item.visibility === true);
               })
               .catch(error => {
                   console.error(error);
               });
       },
+      toggleSortOrder(property) {
+          if (this.property === property) {
+              if (property === 'name') {
+                  this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'date_create') {
+                  this.dateCreateSortOrder = this.dateCreateSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'views') {
+                  this.viewsSortOrder = this.viewsSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'trade') {
+                  this.tradeSortOrder = this.tradeSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'yearCount') {
+                  this.yearSortOrder = this.yearSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'priceCount') {
+                  this.priceSortOrder = this.priceSortOrder === 'asc' ? 'desc' : 'asc';
+              }
+          } else {
+              this.property = property;
+              this.sortOrder = property === 'name' ? 'asc' : '';
+              this.dateCreateSortOrder = property === 'date_create' ? 'asc' : '';
+              this.viewsSortOrder = property === 'views' ? 'asc' : '';
+              this.tradeSortOrder = property === 'trade' ? 'asc' : '';
+              this.yearSortOrder = property === 'yearCount' ? 'asc' : '';
+              this.priceSortOrder = property === 'priceCount' ? 'asc' : '';
+          }
+
+          this.sortedItems = this.items.slice().sort((a, b) => {
+              if (property === 'name') {
+                  const nameA = a.name.toLowerCase();
+                  const nameB = b.name.toLowerCase();
+                  return this.sortOrder === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+              } else if (property === 'date_create') {
+                  const dateA = new Date(a.date_create);
+                  const dateB = new Date(b.date_create);
+                  const sortOrder = this.dateCreateSortOrder === 'asc' ? 1 : -1;
+                  return (dateA - dateB) * sortOrder;
+              } else if (property === 'views') {
+                  const sortOrder = this.viewsSortOrder === 'asc' ? 1 : -1;
+                  return (a.views - b.views) * sortOrder;
+              } else if (property === 'trade') {
+                  const sortOrder = this.tradeSortOrder === 'asc' ? 1 : -1;
+                  return (a.trade - b.trade) * sortOrder;
+              } else if (property === 'year') {
+                  const sortOrder = this.yearSortOrder === 'asc' ? 1 : -1;
+                  return (a.year - b.year) * sortOrder;
+              } else if (property === 'price') {
+                  const sortOrder = this.priceSortOrder === 'asc' ? 1 : -1;
+                  return (a.price - b.price) * sortOrder;
+              }
+          });
+          }
   },
   computed: {
-    ...mapGetters(['userData']),
-    id() {
-      return this.userData.id;
-    },
-    compareResult() {
-      return this.compareResult;
-    },
-    filteredItems() {
-        if (this.searchQuery) {
-            return this.items.filter(item => {
-                for (const key in item) {
-                    if (item[key] && item[key].toString().toLowerCase().includes(this.searchQuery.toLowerCase())) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-        } else {
-            return this.items;
-        }
-    },
+      ...mapGetters(['userData']),
+      id() {
+          return this.userData.id;
+      },
+      compareResult() {
+          return this.compareResult;
+      },
+      sortedItems() {
+          let filteredItems = this.items.filter(item => {
+              return item.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+          });
+
+          filteredItems.sort((a, b) => {
+              if (this.property === 'name') {
+                  if (this.sortOrder === 'asc') {
+                      return a.name.localeCompare(b.name);
+                  } else {
+                      return b.name.localeCompare(a.name);
+                  }
+              } else if (this.property === 'date_create') {
+                  if (this.dateCreateSortOrder === 'asc') {
+                      return new Date(a.date_create).getTime() - new Date(b.date_create).getTime();
+                  } else {
+                      return new Date(b.date_create).getTime() - new Date(a.date_create).getTime();
+                  }
+              } else if (this.property === 'trade') {
+                  if (this.tradeSortOrder === 'asc') {
+                      return a.trade - b.trade;
+                  } else {
+                      return b.trade - a.trade;
+                  }
+              } else if (this.property === 'year') {
+                  // Sorting by yearCount (handling null values)
+                  if (a.year === null && b.year === null) {
+                      return 0;
+                  } else if (a.year === null) {
+                      return 1;
+                  } else if (b.year === null) {
+                      return -1;
+                  } else {
+                      const sortOrder = this.yearSortOrder === 'asc' ? 1 : -1;
+                      return (a.year - b.year) * sortOrder;
+                  }
+              } else if (this.property === 'price') {
+                  // Sorting by priceCount (handling null values)
+                  if (a.price === null && b.price === null) {
+                      return 0;
+                  } else if (a.price === null) {
+                      return 1;
+                  } else if (b.price === null) {
+                      return -1;
+                  } else {
+                      const sortOrder = this.priceSortOrder === 'asc' ? 1 : -1;
+                      return (a.price - b.price) * sortOrder;
+                  }
+              }
+              else if (this.property === 'views') {
+                  if (this.viewsSortOrder === 'asc') {
+                      return a.views - b.views;
+                  } else {
+                      return b.views - a.views;
+                  }
+              }
+          });
+
+          return filteredItems;
+      },
   }
 }
 </script>

@@ -229,7 +229,6 @@ export default {
           let filteredCollections = this.collections.filter(collection => {
               return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
           });
-
           filteredCollections.sort((a, b) => {
               if (this.property === 'name') {
                   if (this.sortOrder === 'asc') {
