@@ -10,9 +10,10 @@
       <div class="sort-by">
         <span>Cортировать по:</span>
           <button @click="toggleSortOrder('name')">Названию</button>
-          <button>Дате создания</button>
-          <button>Статусу</button>
-          <button>Количеству</button>
+          <button @click="toggleSortOrder('created_date')">Дате создания</button>
+          <button @click="toggleSortOrder('views')">Просмотрам</button>
+          <button @click="toggleSortOrder('visibility')">Статусу</button>
+          <button @click="toggleSortOrder('itemCount')">Количеству</button>
       </div>
 <!--      <div class="category-filter">-->
 <!--        <input class="custom-checkbox" type="checkbox" id="coins" value="coins">-->
@@ -125,7 +126,9 @@ export default {
       sortOrder: 'asc',
       dateSortOrder: 'asc',
       statusSortOrder: 'asc',
-      property: ''
+      property: '',
+      itemCountSortOrder: 'asc',
+      viewsSortOrder: 'asc',
     }
   },
   mounted() {
@@ -171,15 +174,61 @@ export default {
             console.log(error);
           });
     },
-    toggleSortOrder(property) {
-      if (property === 'name') {
-        if (this.sortOrder === 'asc') {
-          this.sortOrder = 'desc';
-        } else {
-          this.sortOrder = 'asc';
-        }
-      }
-    },
+      toggleSortOrder(property) {
+          if (this.property === property) {
+              if (property === 'name') {
+                  this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'created_date') {
+                  this.dateSortOrder = this.dateSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'visibility') {
+                  this.statusSortOrder = this.statusSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'itemCount') {
+                  this.itemCountSortOrder = this.itemCountSortOrder === 'asc' ? 'desc' : 'asc';
+              } else if (property === 'views') {
+                  this.viewsSortOrder = this.viewsSortOrder === 'asc' ? 'desc' : 'asc';
+              }
+          } else {
+              this.property = property;
+              this.sortOrder = property === 'name' ? 'asc' : '';
+              this.dateSortOrder = property === 'created_date' ? 'asc' : '';
+              this.statusSortOrder = property === 'visibility' ? 'asc' : '';
+              this.itemCountSortOrder = property === 'itemCount' ? 'asc' : '';
+              this.viewsSortOrder = property === 'views' ? 'asc' : '';
+          }
+
+          if (property === 'itemCount') {
+              this.filteredAndSortedCollections.sort((a, b) => {
+                  const countA = a.itemCount;
+                  const countB = b.itemCount;
+                  if (this.itemCountSortOrder === 'asc') {
+                      return countA - countB;
+                  } else {
+                      return countB - countA;
+                  }
+              });
+          } else if (property === 'views') {
+              this.filteredAndSortedCollections.sort((a, b) => {
+                  const viewsA = a.views;
+                  const viewsB = b.views;
+                  if (this.viewsSortOrder === 'asc') {
+                      return viewsA - viewsB;
+                  } else {
+                      return viewsB - viewsA;
+                  }
+              });
+          } else if (property === 'created_date') {
+              this.filteredAndSortedCollections.sort((a, b) => {
+                  const dateA = new Date(a.created_date);
+                  const dateB = new Date(b.created_date);
+                  if (this.dateSortOrder === 'asc') {
+                      return dateA.getTime() - dateB.getTime();
+                  } else {
+                      return dateB.getTime() - dateA.getTime();
+                  }
+              });
+          }
+          this.filteredAndSortedCollections = this.filteredAndSortedCollections.filter(collection => collection.visibility === true);
+      },
       getCollectionItemCount(collectionId) {
           axios.get(`http://localhost:8000/api/item/count/${collectionId}/`)
               .then(response => {
@@ -192,43 +241,79 @@ export default {
               .catch(error => {
                   console.error(error);
               });
-      }
-  },
+      },
+      },
   computed: {
     ...mapGetters(['userData']),
-    sortedCollections() {
-      let filteredCollections = this.collections.filter(collection => {
-        return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
-      });
+      sortedCollections() {
+          let filteredCollections = this.collections.filter(collection => {
+              return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
+          });
 
-      filteredCollections.sort((a, b) => {
-        if (this.sortOrder === 'asc') {
-          if (a.name < b.name) return -1;
-          if (a.name > b.name) return 1;
-        } else {
-          if (a.name < b.name) return 1;
-          if (a.name > b.name) return -1;
-        }
-      });
+          filteredCollections.sort((a, b) => {
+              if (this.property === 'name') {
+                  if (this.sortOrder === 'asc') {
+                      return a.name.localeCompare(b.name);
+                  } else {
+                      return b.name.localeCompare(a.name);
+                  }
+              } else if (this.property === 'created_date') {
+                  if (this.dateSortOrder === 'asc') {
+                      return new Date(a.created_date).getTime() - new Date(b.created_date).getTime();
+                  } else {
+                      return new Date(b.created_date).getTime() - new Date(a.created_date).getTime();
+                  }
+              } else if (this.property === 'visibility') {
+                  if (this.statusSortOrder === 'asc') {
+                      return a.visibility - b.visibility;
+                  } else {
+                      return b.visibility - a.visibility;
+                  }
+              } else if (this.property === 'itemCount') {
+                  if (this.itemCountSortOrder === 'asc') {
+                      return a.itemCount - b.itemCount;
+                  } else {
+                      return b.itemCount - a.itemCount;
+                  }
+              } else if (this.property === 'views') {
+                  if (this.viewsSortOrder === 'asc') {
+                      return a.views - b.views;
+                  } else {
+                      return b.views - a.views;
+                  }
+              }
+          });
 
-      return filteredCollections;
-    },
+          return filteredCollections;
+      },
       filteredAndSortedCollections() {
           let filteredCollections = this.collections.filter(collection => {
               return collection.name.toLowerCase().includes(this.searchCollection.toLowerCase());
           });
 
           filteredCollections.sort((a, b) => {
-              if (this.sortOrder === 'asc') {
-                  if (a.name < b.name) return -1;
-                  if (a.name > b.name) return 1;
-              } else {
-                  if (a.name < b.name) return 1;
-                  if (a.name > b.name) return -1;
+              if (this.property === 'name') {
+                  if (this.sortOrder === 'asc') {
+                      return a.name.localeCompare(b.name);
+                  } else {
+                      return b.name.localeCompare(a.name);
+                  }
+              } else if (this.property === 'created_date') {
+                  // ...
+              } else if (this.property === 'visibility') {
+                  // ...
+              } else if (this.property === 'itemCount') {
+                  // ...
+              } else if (this.property === 'views') {
+                  if (this.viewsSortOrder === 'asc') {
+                      return a.views - b.views;
+                  } else {
+                      return b.views - a.views;
+                  }
               }
           });
 
-          return filteredCollections.filter(collection => collection.visibility === true);
+          return this.sortedCollections.filter(collection => collection.visibility === true);
       },
     id() {
       return this.userData.id;
