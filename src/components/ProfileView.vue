@@ -15,6 +15,9 @@
                         <router-link v-if="nickname" :to="{name: 'Trade', params: {tradeId: nickname}}" style="text-decoration: none;" class="trade-button" >
                             Обмен
                         </router-link>
+                            <router-link v-if="userInfo.id" :to="{name: 'Collections', params: {userId: userInfo.id}}" style="text-decoration: none; color: inherit;">
+                                <button>Коллекции</button>
+                            </router-link>
                     </div>
                 </template>
             </div>
@@ -155,7 +158,7 @@ export default {
     justify-content: flex-end;
     align-items: flex-start;
     margin-top: -145px;
-    margin-right: 300px;
+    margin-right: 20vh;
 }
 .buttons button {
     margin-left: 10px;
@@ -175,6 +178,22 @@ export default {
     box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
     border-radius: 5px;
 }
+
+.buttons button:nth-child(3){
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+    padding: 5px 15px;
+    color: #55BEA4;
+    background: #FFFFFF;
+    border: 0.1px solid #55BEA4;
+    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+    border-radius: 5px;
+    margin-left: 20px;
+}
+
+
 
 .trade-button{
     font-style: normal;
