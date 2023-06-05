@@ -1,20 +1,18 @@
 <template>
   <div class="wrapper">
-    <div v-if="compareIds()">
-      <h2>{{collection.name}}</h2>
-      <button class="create-btn" @click="isOpen = true">Добавить</button>
-    </div>
+    <h2 v-if="collection">{{collection.name}}</h2>
+    <button v-if="compareIds()" class="create-btn" @click="isOpen = true">Добавить</button>
     <div class="filter">
       <div class="search-field">
-        <input id="search" type="text" placeholder="поиск">
+        <input id="search" type="text" placeholder="поиск" v-model="searchQuery">
       </div>
       <div class="sort-by">
         <span>Cортировать по:</span>
-        <button>Названию</button>
-        <button>Дате создания</button>
-        <button>Статусу</button>
-        <button>Году</button>
-        <button>Цене</button>
+          <button>Названию</button>
+          <button>Дате создания</button>
+          <button>Статусу</button>
+          <button>Году</button>
+          <button>Цене</button>
       </div>
     </div>
     <hr>
@@ -29,16 +27,24 @@
           <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
           <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>
         </ul>
-        <div class="card-stats">
+        <div class="card-stats" v-if="compareIds()">
           <img v-if="item.visibility" @click="toggleVisibility(item.id)" src="../assets/views.svg" alt="views" class="icon-views"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
           <img v-if="!item.visibility" @click="toggleVisibility(item.id)" src="../assets/visibility-none.svg" alt="views" class="icon-views"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
-          <div class="card-buttons">
+          <div class="card-buttons" v-if="compareIds()">
             <img  v-if="!item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
             <img  v-if="item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/trade-active.svg" alt="Выключить обмен">
             <img class="card-button" src="../assets/edit.svg" alt="Редактировать">
             <img @click="deleteItem(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
           </div>
         </div>
+          <div class="card-stats" v-if="!compareIds()">
+              <img v-if="item.visibility"  src="../assets/views.svg" alt="views" class="icon-views no-pointer-img"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
+              <img v-if="!item.visibility" src="../assets/visibility-none.svg" alt="views" class="icon-views no-pointer-img"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
+                  <div  class="card-buttons" >
+                      <img v-if="item.trade" src="../assets/trade-active.svg" alt="" class="card-button no-pointer">
+                      <img v-if="!item.trade" src="../assets/toggle_trade.svg" alt="" class="card-button no-pointer">
+                  </div>
+          </div>
       </div>
     </div>
     <popup-item
@@ -64,12 +70,13 @@ export default {
       collection: null,
       loading: true,
       token: null,
-      items: []
+      items: [],
+      searchQuery: '',
     };
   },
   mounted() {
     this.getCollections();
-    this.getItems()
+    this.getItems();
   },
   setup() {
     const route = useRoute();
@@ -148,7 +155,7 @@ export default {
               .catch(error => {
                   console.error(error);
               });
-      }
+      },
   },
   computed: {
     ...mapGetters(['userData']),
@@ -163,213 +170,219 @@ export default {
 </script>
 
 <style scoped>
-  .wrapper{
-    width: 62.5%;
-    max-width: 100%;
-    margin: 83px auto 0 auto;
-    padding-left: 42px;
-    padding-right: 42px;
-    padding-top: 36px;
-  }
-  h2{
-    font-style: normal;
-    font-weight: 600;
-    font-size: 48px;
-    line-height: 57px;
-    margin-bottom: 12px;
-    color: rgba(67, 67, 67, 1);
-    display: inline-block;
-  }
-  hr{
-    margin-top: 30px;
-    max-width: 44%;
-    color: #434343;
-    margin-bottom: 30px;
-  }
-  .create-btn{
-    display: inline-block;
-    margin-left: 35%;
-    font-weight: 400;
-    font-size: 48px;
-    line-height: 57px;
-    color: #FFFFFF;
-    background-color: #55BEA4;
-    box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
-    border-radius: 100px;
-    padding: 7px 41px 7px 41px;
-    border: none;
+.wrapper{
+  width: 62.5%;
+  max-width: 100%;
+  margin: 83px auto 0 auto;
+  padding-left: 42px;
+  padding-right: 42px;
+  padding-top: 36px;
+}
+h2{
+  font-style: normal;
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 57px;
+  margin-bottom: 12px;
+  color: rgba(67, 67, 67, 1);
+  display: inline-block;
+}
+hr{
+  margin-top: 30px;
+  max-width: 44%;
+  color: #434343;
+  margin-bottom: 30px;
+}
+.create-btn{
+  display: inline-block;
+  margin-left: 35%;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 57px;
+  color: #FFFFFF;
+  background-color: #55BEA4;
+  box-shadow: 0px 4px 4px rgba(0, 125, 95, 0.25);
+  border-radius: 100px;
+  padding: 7px 41px 7px 41px;
+  border: none;
+  cursor: pointer;
+}
+.search-field{
+  margin-top: 12px;
+  display: inline-block;
+  margin-right: 40px;
+}
+.search-field input{
+  min-width: 257px;
+  min-height: 29px;
+  border: 2px solid #55BEA4;
+  border-radius: 100px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #434343;
+  opacity: 0.6;
+  padding-left: 30px;
+}
+.search-field input:active{
+  border: 2px solid #55BEA4;
+}
+input#search {
+  background-image: url('../assets/search.svg');
+  background-repeat: no-repeat;
+  background-position: 9px 5px;
+  padding-left: 36px;
+}
+option{
+  scrollbar-width: none;
+}
+.category-filter label{
+  margin-right: 14px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #007D5F;
+  opacity: 0.6;
+}
+.sort-by span{
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 17px;
+  color: #007D5F;
+  opacity: 0.6;
+  margin-right: 22px;
+}
+.sort-by button{
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 17px;
+  color: #007D5F;
+  opacity: 0.6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 22px;
+}
+.sort-by{
+  display: inline-block;
+}
+.card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -41px;
+}
+
+.card {
+  width: calc(25% - 41px);
+  margin-left: 41px;
+  margin-bottom: 20px;
+  height: max-content;
+  padding: 10px 0 8px 0;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 125, 95, 0.25);
+  border-radius: 25px;
+}
+
+.card-title {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  color: #434343;
+  margin-bottom: 10px;
+  padding-left: 11px;
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 4px;
+}
+
+.card-features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.card-features li {
+  margin-bottom: 5px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #007D5F;
+
+  margin-right: 5px;
+  padding-left: 8px;
+}
+
+.card-features li span {
+  color: #434343;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+}
+
+.card-stats {
+  display: flex;
+  //justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-top: 10px;
+  padding-left: 8px;
+}
+
+.card-stats span{
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #007D5F;
+  opacity: 0.6;
+  padding-left: 2px;
+}
+
+.card-views {
+  //position: relative;
+  margin-left: 3px;
+}
+
+.icon-views{
     cursor: pointer;
-  }
-  .search-field{
-    margin-top: 42px;
-    display: inline-block;
-    margin-right: 40px;
-  }
-  .search-field input{
-    min-width: 257px;
-    min-height: 29px;
-    border: 2px solid #55BEA4;
-    border-radius: 100px;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 17px;
-    color: #434343;
-    opacity: 0.6;
-    padding-left: 30px;
-  }
-  .search-field input:active{
-    border: 2px solid #55BEA4;
-  }
-  input#search {
-    background-image: url('../assets/search.svg');
-    background-repeat: no-repeat;
-    background-position: 9px 5px;
-    padding-left: 36px;
-  }
-  option{
-    scrollbar-width: none;
-  }
-  .category-filter label{
-    margin-right: 14px;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 17px;
-    color: #007D5F;
-    opacity: 0.6;
-  }
-  .sort-by span{
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 17px;
-    color: #007D5F;
-    opacity: 0.6;
-    margin-right: 22px;
-  }
-  .sort-by button{
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 17px;
-    color: #007D5F;
-    opacity: 0.6;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right: 22px;
-  }
-  .sort-by{
-    display: inline-block;
-  }
-  .card-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: -41px;
-  }
+}
 
-  .card {
-    width: calc(25% - 41px);
-    margin-left: 41px;
-    margin-bottom: 20px;
-    height: max-content;
-    padding: 10px 0 8px 0;
-    background: #FFFFFF;
-    border: 1px solid rgba(0, 125, 95, 0.25);
-    border-radius: 25px;
-  }
+.card-buttons {
+    margin-left: 80px;
+}
+.card-button{
+  cursor: pointer;
+}
+.card-button:nth-child(1){
+  height: 25px;
+  width: 25px;
+  margin-right: 10px;
+}
+.card-button:nth-child(2){
+  height: 23px;
+  width: 23px;
+  margin-right: 10px;
+}
+.card-button:nth-child(3){
+  height: 28px;
+  width: 28px;
+  margin-right: 15px;
+}
 
-  .card-title {
-    font-style: normal;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 19px;
-    color: #434343;
-    margin-bottom: 10px;
-    padding-left: 11px;
-  }
+.no-pointer{
+    cursor: default;
+    margin-left: 80px;
+}
 
-  .card-image {
-    width: 100%;
-    height: auto;
-    margin-bottom: 4px;
-  }
-
-  .card-features {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 14px;
-  }
-
-  .card-features li {
-    margin-bottom: 5px;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 17px;
-    color: #007D5F;
-
-    margin-right: 5px;
-    padding-left: 8px;
-  }
-
-  .card-features li span {
-    color: #434343;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-  }
-
-  .card-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    margin-top: 10px;
-    padding-left: 8px;
-  }
-
-  .card-stats span{
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 17px;
-    color: #007D5F;
-    opacity: 0.6;
-    padding-left: 2px;
-  }
-
-  .card-views {
-    position: relative;
-    margin-left: -80px;
-  }
-
-  .icon-views{
-      cursor: pointer;
-  }
-
-  .card-buttons {
-    /*display: flex;*/
-    /*justify-content: flex-end;*/
-    /*margin-right: 20px;*/
-  }
-  .card-button{
-    cursor: pointer;
-  }
-  .card-button:nth-child(1){
-    height: 25px;
-    width: 25px;
-    margin-right: 8px;
-  }
-  .card-button:nth-child(2){
-    height: 23px;
-    width: 23px;
-    margin-right: 8px;
-  }
-  .card-button:nth-child(3){
-    height: 28px;
-    width: 28px;
-    margin-right: 15px;
-  }
-
+.no-pointer-img{
+    cursor: default;
+}
 </style>
