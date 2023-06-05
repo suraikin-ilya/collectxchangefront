@@ -6,20 +6,20 @@
           <h2 class="form__title">Создать коллекцию</h2>
           <h3 class="form__description">Введите данные</h3>
           <div class="form__group">
-            <label for="email" class="form__label">Навзвание коллекции</label>
+            <label for="email" class="form__label">Навзвание коллекции*</label>
             <div class="form__input-group">
-              <input v-model="data.name" type="text" id="name" name="name" class="form__input" placeholder="Название коллекции*" required>
+              <input v-model="data.name" type="text" id="name" name="name" class="form__input" placeholder="Название коллекции" required>
             </div>
           </div>
           <div class="form__group">
-            <label for="password" class="form__label">Описание коллекции</label>
+            <label for="password" class="form__label">Описание коллекции*</label>
             <div class="form__input-group">
               <textarea v-model="data.description" type="text" id="description" name="description" class="form__input" placeholder="Напишите описание коллекции"> </textarea>
             </div>
           </div>
           <div class="form__group">
             <input v-model="data.visibility" class="custom-checkbox" type="checkbox" id="visibility" value="visibility">
-            <label for="visibility">Виден другим пользователям</label>
+            <label for="visibility">Видна другим пользователям на сайте</label>
           </div>
           <div class="form__actions">
             <button type="submit" class="form__button form__button--create">Создать</button>

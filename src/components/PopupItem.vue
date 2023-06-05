@@ -14,7 +14,7 @@
           <div class="form__group">
             <label for="category" class="form__label">Категория добавляемого предмета*</label>
             <div class="form__input-group-select">
-              <select v-model="selectedCategory" id="category" >
+              <select v-model="selectedCategory" id="category" required>
                 <option>Выберите категорию предмета</option>
                 <option v-for="category in categories" :value="category" :key="category.id">
                   {{ category }}
@@ -44,7 +44,7 @@
               <div class="form__group">
                 <label for="country" class="form__label">Страна*</label>
                 <div class="form__input-group-select">
-                  <select id="country" v-model="data.selectedCountry">
+                  <select id="country" v-model="data.selectedCountry" required>
                     <option value="" disabled selected >Выберите страну</option>
                     <option v-for="country in countries" :value="country.name" :key="country.id">
                       {{ country.name }}
@@ -73,7 +73,7 @@
                 <div class="form__group">
                     <label for="preservation" class="form__label">Сохранность*</label>
                     <div class="form__input-group-select">
-                        <select id="preservation" v-model="selectedPreservation">
+                        <select id="preservation" v-model="selectedPreservation" required>
                             <option value="" disabled selected>Выберите сохранность предмета</option>
                             <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
                                 {{ preservation.category }}
@@ -88,15 +88,15 @@
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите фото реверс</label>
+                    <label for="photo" class="form__label">Загрузите фото реверс*</label>
                     <div class="form__input-group input-file">
-                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото" required>
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
-                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото" required>
                     </div>
                 </div>
                 <div class="form__group">
@@ -128,7 +128,7 @@
                 <div class="form__group">
                     <label for="country" class="form__label">Страна*</label>
                     <div class="form__input-group-select">
-                        <select id="country" v-model="data.selectedCountry">
+                        <select id="country" v-model="data.selectedCountry" required>
                             <option value="" disabled selected>Выберите страну</option>
                             <option v-for="country in countries" :value="country.name" :key="country.id">
                                 {{ country.name }}
@@ -163,7 +163,7 @@
                 <div class="form__group">
                     <label for="preservation" class="form__label">Сохранность*</label>
                     <div class="form__input-group-select">
-                        <select id="preservation" v-model="selectedPreservation">
+                        <select id="preservation" v-model="selectedPreservation" required>
                             <option value="" disabled selected>Выберите сохранность предмета</option>
                             <option v-for="preservation in preservations" :value="preservation.category" :key="preservation.id">
                                 {{ preservation.category }}
@@ -174,19 +174,19 @@
                 <div class="form__group">
                     <label for="obverse" class="form__label">Загрузите фото аверс*</label>
                     <div class="form__input-group input-file">
-                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
+                        <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото" required>
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите фото реверс</label>
+                    <label for="photo" class="form__label">Загрузите фото реверс*</label>
                     <div class="form__input-group input-file">
-                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
+                        <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото" required>
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
-                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
+                        <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото" required>
                     </div>
                 </div>
                 <div class="form__group">
@@ -251,19 +251,19 @@
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <label for="obverse" class="form__label">Загрузите фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
                     </div>
@@ -326,19 +326,19 @@
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <label for="obverse" class="form__label">Загрузите фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
                     </div>
@@ -402,19 +402,19 @@
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <label for="obverse" class="form__label">Загрузите фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
                     </div>
@@ -484,19 +484,19 @@
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="obverse" class="form__label">Загрузите фото</label>
+                    <label for="obverse" class="form__label">Загрузите фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleObverseChange" accept="image/*" type="file" id="obverse" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleReverseChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Загрузите фото">
                     </div>
                 </div>
                 <div class="form__group">
-                    <label for="photo" class="form__label">Загрузите дополнительное фото</label>
+                    <label for="photo" class="form__label">Загрузите дополнительное фото*</label>
                     <div class="form__input-group input-file">
                         <input @change="handleExtraPhotoChange" accept="image/*" type="file" id="photo" name="photo" class="form__input" placeholder="Дополнительное фото">
                     </div>
