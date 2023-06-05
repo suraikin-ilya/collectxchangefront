@@ -13,44 +13,44 @@
       <div class="sort-by">
         <span>Cортировать по:</span>
           <button @click="toggleSortOrder('name')">Названию</button>
-          <button @click="toggleSortOrder('created_date')">Дате создания</button>
+<!--          <button @click="toggleSortOrder('created_date')">Дате создания</button>-->
           <button @click="toggleSortOrder('views')">Просмотрам</button>
           <button @click="toggleSortOrder('trade')">Статусу</button>
-          <button @click="toggleSortOrder('year')">Году</button>
-          <button @click="toggleSortOrder('price')">Цене</button>
+<!--          <button @click="toggleSortOrder('year')">Году</button>-->
+<!--          <button @click="toggleSortOrder('price')">Цене</button>-->
       </div>
     </div>
     <hr>
     <div class="card-wrapper">
       <div v-for="item in sortedItems" :key="item.id" class="card">
-        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
-        <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="item.obverse" alt="Изображение товара"></router-link>
-        <ul class="card-features">
-          <li v-if="item.material != '' && item.material != null" title="{{ item.material }}">Материал: <span>{{ item.material }}</span> </li>
-          <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
-          <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>
-          <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
-          <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>
-        </ul>
-        <div class="card-stats" v-if="compareIds()">
-          <img v-if="item.visibility" @click="toggleVisibility(item.id)" src="../assets/views.svg" alt="views" class="icon-views"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
-          <img v-if="!item.visibility" @click="toggleVisibility(item.id)" src="../assets/visibility-none.svg" alt="views" class="icon-views"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
-          <div class="card-buttons" v-if="compareIds()">
-            <img  v-if="!item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
-            <img  v-if="item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/trade-active.svg" alt="Выключить обмен">
-            <img class="card-button" src="../assets/edit.svg" alt="Редактировать">
-            <img @click="deleteItem(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
+          <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
+          <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="item.obverse" alt="Изображение товара"></router-link>
+          <ul class="card-features">
+            <li v-if="item.material != '' && item.material != null" title="{{ item.material }}">Материал: <span>{{ item.material }}</span> </li>
+            <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>
+            <li v-if="item.weight != '' && item.weight != null">Вес: <span> {{ item.weight }}</span></li>
+            <li v-if="item.preservation != '' && item.preservation != null">Сохранность: <span>{{ item.preservation }}</span> </li>
+            <li v-if="item.price != '' && item.price != null">Цена: <span>{{ item.price }}</span> </li>
+          </ul>
+          <div class="card-stats" v-if="compareIds()">
+            <img v-if="item.visibility" @click="toggleVisibility(item.id)" src="../assets/views.svg" alt="views" class="icon-views"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
+            <img v-if="!item.visibility" @click="toggleVisibility(item.id)" src="../assets/visibility-none.svg" alt="views" class="icon-views"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
+            <div class="card-buttons" v-if="compareIds()">
+              <img  v-if="!item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
+              <img  v-if="item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/trade-active.svg" alt="Выключить обмен">
+              <img class="card-button" src="../assets/edit.svg" alt="Редактировать">
+              <img @click="deleteItem(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
+            </div>
           </div>
+            <div class="card-stats" v-if="!compareIds()">
+                <img v-if="item.visibility"  src="../assets/views.svg" alt="views" class="icon-views no-pointer-img"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
+                <img v-if="!item.visibility" src="../assets/visibility-none.svg" alt="views" class="icon-views no-pointer-img"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
+                    <div  class="card-buttons" >
+                        <img v-if="item.trade" src="../assets/trade-active.svg" alt="" class="card-button no-pointer">
+                        <img v-if="!item.trade" src="../assets/toggle_trade.svg" alt="" class="card-button no-pointer">
+                    </div>
+            </div>
         </div>
-          <div class="card-stats" v-if="!compareIds()">
-              <img v-if="item.visibility"  src="../assets/views.svg" alt="views" class="icon-views no-pointer-img"><span v-if="item.visibility" class="card-views">{{ item.views}}</span>
-              <img v-if="!item.visibility" src="../assets/visibility-none.svg" alt="views" class="icon-views no-pointer-img"><span v-if="!item.visibility" class="card-views">{{ item.views}}</span>
-                  <div  class="card-buttons" >
-                      <img v-if="item.trade" src="../assets/trade-active.svg" alt="" class="card-button no-pointer">
-                      <img v-if="!item.trade" src="../assets/toggle_trade.svg" alt="" class="card-button no-pointer">
-                  </div>
-          </div>
-      </div>
     </div>
     <popup-item
         :is-open="isOpen"
@@ -162,7 +162,7 @@ export default {
       getItems() {
           axios.get(`http://localhost:8000/api/items/collection/${this.collectionId}/`)
               .then(response => {
-                  this.items = response.data.filter(item => item.visibility === true);
+                  this.items = response.data
               })
               .catch(error => {
                   console.error(error);
@@ -285,7 +285,11 @@ export default {
               }
           });
 
-          return filteredItems;
+          if (this.compareIds()) {
+              return filteredItems;
+          } else {
+              return filteredItems.filter(item => item.visibility === true);
+          }
       },
   }
 }
