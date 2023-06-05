@@ -2,6 +2,10 @@
   <div class="wrapper">
     <h2 v-if="collection">{{collection.name}}</h2>
     <button v-if="compareIds()" class="create-btn" @click="isOpen = true">Добавить</button>
+      <div class="description" v-if="collection">
+          <h3>Описание</h3>
+          <p>{{ collection.description }}</p>
+      </div>
     <div class="filter">
       <div class="search-field">
         <input id="search" type="text" placeholder="поиск" v-model="searchQuery">
@@ -17,7 +21,7 @@
     </div>
     <hr>
     <div class="card-wrapper">
-      <div v-for="item in items" :key="item.id" class="card">
+      <div v-for="item in filteredItems" :key="item.id" class="card">
         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="item.obverse" alt="Изображение товара"></router-link>
         <ul class="card-features">
@@ -165,6 +169,20 @@ export default {
     compareResult() {
       return this.compareResult;
     },
+    filteredItems() {
+        if (this.searchQuery) {
+            return this.items.filter(item => {
+                for (const key in item) {
+                    if (item[key] && item[key].toString().toLowerCase().includes(this.searchQuery.toLowerCase())) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        } else {
+            return this.items;
+        }
+    },
   }
 }
 </script>
@@ -183,7 +201,7 @@ h2{
   font-weight: 600;
   font-size: 48px;
   line-height: 57px;
-  margin-bottom: 12px;
+  margin-bottom: 2px;
   color: rgba(67, 67, 67, 1);
   display: inline-block;
 }
@@ -384,5 +402,24 @@ option{
 
 .no-pointer-img{
     cursor: default;
+}
+
+.description{
+    margin-bottom: 10px;
+}
+
+h3{
+    margin-top: 2px;
+    font-size: 24px;
+    color: #434343;
+}
+
+p{
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #434343;
+    opacity: 0.8;
 }
 </style>
