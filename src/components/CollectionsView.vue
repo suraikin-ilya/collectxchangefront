@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
-    <div v-if="compareIds()">
-    <h2>Мои коллекции</h2>
-    <button @click="isOpen = true" class="create-btn">Создать</button>
+    <h2 v-if="compareIds()">Ваши коллекции</h2>
+    <h2 v-if="!compareIds()">Коллекции {{ owner }}</h2>
+    <button v-if="compareIds()" @click="isOpen = true" class="create-btn">Создать</button>
     <div class="filter">
       <div class="search-field">
         <input v-model="searchCollection" id="search" type="text" placeholder="поиск">
@@ -12,28 +12,11 @@
           <button @click="toggleSortOrder('name')">Названию</button>
           <button @click="toggleSortOrder('created_date')">Дате создания</button>
           <button @click="toggleSortOrder('views')">Просмотрам</button>
-          <button @click="toggleSortOrder('visibility')">Статусу</button>
+          <button @click="toggleSortOrder('visibility')" v-if="compareIds()">Статусу</button>
           <button @click="toggleSortOrder('itemCount')">Количеству</button>
       </div>
-<!--      <div class="category-filter">-->
-<!--        <input class="custom-checkbox" type="checkbox" id="coins" value="coins">-->
-<!--        <label for="coins">Монеты</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="stamps" value="stamps">-->
-<!--        <label for="stamps">Марки</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="banknotes" value="banknotes">-->
-<!--        <label for="banknotes">Купюры</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="magazines" value="magazines">-->
-<!--        <label for="magazines">Журналы</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="videogames" value="videogames">-->
-<!--        <label for="videogames">Видеоигры</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="pins" value="pins">-->
-<!--        <label for="pins">Значки</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="coins_set" value="coins_set">-->
-<!--        <label for="coins_set">Набор монет</label>-->
-<!--        <input class="custom-checkbox" type="checkbox" id="other" value="other">-->
-<!--        <label for="other">Другое</label>-->
-<!--      </div>-->
     </div>
+    <div v-if="compareIds()">
     <div class="table">
       <table>
         <tr>
@@ -61,19 +44,6 @@
     </div>
     </div>
         <div v-if="!compareIds()">
-            <h2>Коллекции</h2>
-            <div class="filter">
-                <div class="search-field">
-                    <input v-model="searchCollection" id="search" type="text" placeholder="поиск">
-                </div>
-                <div class="sort-by">
-                    <span>Cортировать по:</span>
-                    <button @click="toggleSortOrder('name')">Названию</button>
-                    <button>Дате создания</button>
-                    <button>Статусу</button>
-                    <button>Количеству</button>
-                </div>
-            </div>
             <div class="table">
               <table>
                   <tr>
@@ -107,6 +77,7 @@ import PopupCollection from "@/components/PopupCollection.vue";
 import { mapGetters } from 'vuex';
 import {useRoute} from "vue-router";
 import axios from 'axios'
+import {ref} from "vue";
 
 
 export default {
@@ -141,8 +112,17 @@ export default {
     setup(){
     const route = useRoute();
     const userId = route.params.userId;
+    const owner = ref(null);
+        axios.get(`http://localhost:8000/api/get_owner/${userId}`)
+            .then(response => {
+                owner.value = response.data.nickname; // Запись значения owner в реактивную переменную
+            })
+            .catch(error => {
+                console.error(error);
+            });
     return {
       userId,
+      owner
     };
   },
   methods: {
@@ -358,7 +338,7 @@ export default {
     cursor: pointer;
   }
   .search-field{
-    margin-top: 42px;
+    margin-top: 12px;
     display: inline-block;
     margin-right: 40px;
   }
