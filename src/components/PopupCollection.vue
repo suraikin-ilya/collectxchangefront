@@ -3,7 +3,8 @@
     <div class="popup__collection" @click.stop>
       <div class="popup__content">
         <form  @submit.prevent="submit" class="form" >
-          <h2 class="form__title">Создать коллекцию</h2>
+          <h2 v-if="isEditMode" class="form__title">Редактирование коллекции</h2>
+          <h2 v-else class="form__title">Создать коллекцию</h2>
           <h3 class="form__description">Введите данные</h3>
           <div class="form__group">
             <label for="email" class="form__label">Навзвание коллекции*</label>
@@ -22,7 +23,10 @@
             <label for="visibility">Видна другим пользователям на сайте</label>
           </div>
           <div class="form__actions">
-            <button type="submit" class="form__button form__button--create">Создать</button>
+            <button type="submit" class="form__button form__button--create">
+                <span v-if="isEditMode">Редактировать</span>
+                <span v-else>Создать</span>
+            </button>
           </div>
         </form>
       </div>
@@ -38,59 +42,146 @@ import {computed, reactive} from "vue";
 import { BASE_API_URL } from '@/constants';
 
 export default {
-  setup(props, context) {
-    const data = reactive({
-      name: '',
-      description: '',
-      visibility: '',
-      owner: null
-    });
-    const store = useStore();
-    const owner = computed(() => store.state.id)
-    const submit = async () => {
-      data.owner = owner.value;
-      await fetch(BASE_API_URL + 'api/collections', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-      }).then(data => {
-        this.collections.push(data);
-        this.newItemName = '';
-        context.emit('close');
-      });
-      context.emit('close');
-    }
-    return {
-      data,
-      submit
-    }
-  },
-  props: {
-    isOpen:{
-      type: Boolean,
-      required: true,
+    setup(props, context) {
+        const data = reactive({
+            name: '',
+            description: '',
+            visibility: '',
+            owner: null
+        });
+        const store = useStore();
+        const owner = computed(() => store.state.id);
+        const submit = async () => {
+            data.owner = owner.value;
+
+            if (props.selectedCollectionId) {
+                // Edit mode: Update existing collection
+                await fetch(`${BASE_API_URL}api/collections/${props.selectedCollectionId}/`, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.ok) {
+                        // Collection updated successfully
+                        context.emit('close');
+                    } else {
+                        // Handle error when updating collection
+                        console.error('Failed to update collection');
+                    }
+                }).catch(error => {
+                    // Handle error when executing the request
+                    console.error('Failed to update collection', error);
+                });
+            } else {
+                // Create mode: Create new collection
+                await fetch(`${BASE_API_URL}api/collections`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.ok) {
+                        // Collection created successfully
+                        context.emit('close');
+                    } else {
+                        // Handle error when creating collection
+                        console.error('Failed to create collection');
+                    }
+                }).catch(error => {
+                    // Handle error when executing the request
+                    console.error('Failed to create collection', error);
+                });
+            }
+        };
+
+        return {
+            data,
+            submit
+        };
     },
-  },
-  emits: {
-    close:null,
-  },
-  name: "PopupCollection",
-  mounted() {
-    document.addEventListener("keydown", this.handleKeydown);
-  },
-  beforeUnmount() {
-    document.removeEventListener("keydown", this.handleKeydown);
-  },
-  methods: {
-    handleKeydown(e) {
-      if (this.isOpen && e.key === "Escape") {
-        this.close();
-      }
+    props: {
+        isOpen: {
+            type: Boolean,
+            required: true,
+        },
+        selectedCollectionId: {
+            type: Number,
+            default: null,
+        },
     },
-    close() {
-      this.$emit("close");
-    }
-  }
+    watch: {
+        isOpen(newVal) {
+            // Watch for changes in the isOpen property
+            if (newVal) {
+                // Popup is open, fetch collection data
+                this.fetchCollectionData(this.selectedCollectionId);
+            } else {
+                // Popup is closed, reset editing data
+                this.resetEditingData();
+            }
+        },
+        selectedCollectionId(newVal) {
+            // Watch for changes in the selectedCollectionId property
+            if (this.isOpen && newVal !== null) {
+                // Popup is open and selectedCollectionId is not null, fetch collection data
+                this.fetchCollectionData(newVal);
+            }
+        },
+    },
+    emits: {
+        close: null,
+    },
+    name: "PopupCollection",
+    mounted() {
+        document.addEventListener("keydown", this.handleKeydown);
+    },
+    beforeUnmount() {
+        document.removeEventListener("keydown", this.handleKeydown);
+    },
+    methods: {
+        handleKeydown(e) {
+            if (this.isOpen && e.key === "Escape") {
+                this.close();
+            }
+        },
+        close() {
+            this.$emit("close");
+        },
+        fetchCollectionData(collectionId) {
+            const fetchCollectionData = async (collectionId) => {
+                try {
+                    const response = await fetch(BASE_API_URL + '/api/collection/' + collectionId + '/');
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Fill editing data with values from the API
+                        this.data.name = data.name;
+                        this.data.description = data.description;
+                        this.data.visibility = data.visibility;
+                        this.data.owner = data.owner;
+                    } else {
+                        // Handle error when fetching data
+                        console.error('Failed to fetch collection data');
+                    }
+                } catch (error) {
+                    // Handle error when executing the request
+                    console.error('Failed to fetch collection data', error);
+                }
+            };
+
+            fetchCollectionData(collectionId);
+        },
+        resetEditingData() {
+            // Reset editing data to initial state
+            this.data.name = '';
+            this.data.description = '';
+            this.data.visibility = '';
+            this.data.owner = null;
+        },
+    },
+    computed: {
+        isEditMode() {
+            return Boolean(this.selectedCollectionId);
+        },
+    },
 }
 </script>
 

@@ -36,7 +36,7 @@
           <td class="border-right">{{ collection.itemCount }}</td>
           <td class="collection__icons">
             <img src="../assets/share.svg">
-            <img src="../assets/edit.svg">
+            <img @click="openEditPopup(collection.id)" src="../assets/edit.svg">
             <img @click="deleteCollection(collection.id)" src="../assets/delete.svg">
           </td>
         </tr>
@@ -64,6 +64,7 @@
   <div>
   <popup-collection
       :is-open="isOpen"
+      :selected-collection-id="selectedCollectionId"
       @close="isOpen = false"
       >
   </popup-collection>
@@ -101,6 +102,7 @@ export default {
       property: '',
       itemCountSortOrder: 'asc',
       viewsSortOrder: 'asc',
+      selectedCollectionId: null,
     }
   },
   mounted() {
@@ -222,6 +224,10 @@ export default {
               .catch(error => {
                   console.error(error);
               });
+      },
+      openEditPopup(collectionId) {
+          this.selectedCollectionId = collectionId;
+          this.isOpen = true;
       },
       },
   computed: {
