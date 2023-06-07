@@ -29,6 +29,7 @@
 <script>
 import {reactive, ref} from "vue";
 import {useStore} from "vuex";
+import {BASE_API_URL} from "@/constants";
 
 
 export default {
@@ -45,7 +46,7 @@ export default {
 
         const submit = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/login", {
+                const response = await fetch(BASE_API_URL + 'api/login', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",

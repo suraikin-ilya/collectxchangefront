@@ -5,7 +5,7 @@
             <div class="left-part">
                 <div class="block">
                     <h2 class="block-heading">{{item.name}}</h2>
-                    <img class="block-image" :src="	'http://localhost:8000/'+item.obverse" alt="Image">
+                    <img class="block-image" :src="BASE_API_URL()+item.obverse" alt="Image">
                     <h2 class="block-heading">Характеристики</h2>
                     <ul class="block-description">
                         <li v-if="item.category != '' && item.category != null">Категория: <span>{{ item.category }}</span> </li>
@@ -44,7 +44,7 @@
                         </div>
                     </template>
                     <router-link :to="{name: 'Profile', params: {profileId: item.owner}}" style="text-decoration: none; color: inherit;">
-                    <img class="price-image" :src="'http://localhost:8000/'+avatar" alt="{{avatar}}">
+                    <img class="price-image" :src="BASE_API_URL()+avatar" alt="{{avatar}}">
                         <p class="price-name">{{ item.owner }}</p></router-link>
                 </div>
             </div>
@@ -62,6 +62,7 @@ import {useRoute} from "vue-router";
 import axios from "axios";
 import {mapGetters} from "vuex";
 import moment from "moment/moment";
+import { BASE_API_URL } from '@/constants';
 
 export default {
     name: "ItemView",
@@ -86,8 +87,11 @@ export default {
         this.getItem();
     },
     methods: {
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         getItem() {
-            axios.get(`http://localhost:8000/api/item/${this.itemId}/`)
+            axios.get(`${BASE_API_URL}api/item/${this.itemId}/`)
                 .then(response => {
                     this.item = response.data;
                     this.item.date_create = moment(response.data.date_create).format('DD.MM.YYYY');
@@ -95,7 +99,7 @@ export default {
                     const itemId = parseInt(response.data.id);
                     const userId = parseInt(this.$store.state.id);
                     if (itemOwner !== userId && !isNaN(userId)) {
-                        axios.post(`http://localhost:8000/api/increase_item_views/${itemId}/`)
+                        axios.post(`${BASE_API_URL}api/increase_item_views/${itemId}/`)
                             .then(response => {
                                 console.log(response.data.message);
                             })
@@ -103,11 +107,11 @@ export default {
                                 console.log(error.response.data.error);
                             });
                     }
-                    axios.get(`http://localhost:8000/api/get_owner/${this.item.owner}/`)
+                    axios.get(`${BASE_API_URL}api/get_owner/${this.item.owner}/`)
                         .then(response => {
                             const itemNickname = response.data.nickname;
                             this.item.owner = itemNickname;
-                            axios.get(`http://localhost:8000/api/avatar/${itemNickname}`)
+                            axios.get(`${BASE_API_URL}api/avatar/${itemNickname}`)
                                 .then(response => {
                                     this.avatar = response.data.avatar_url;
                                 })

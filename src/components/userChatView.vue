@@ -5,7 +5,7 @@
         <div class="container">
             <div class="dialog-container">
                 <div class="user-info">
-                    <img :src="'http://localhost:8000/'+ avatar" alt="Avatar" class="avatar">
+                    <img :src="BASE_API_URL()+ avatar" alt="Avatar" class="avatar">
                     <span class="nickname">{{this.userNickname}}</span>
                 </div>
                 <hr class="separator">
@@ -40,6 +40,7 @@ import {mapGetters} from "vuex";
 import axios from "axios";
 import Pusher from 'pusher-js';
 import {useRoute} from "vue-router";
+import { BASE_API_URL } from '@/constants';
 
 export default {
     name: "UserChatView",
@@ -62,6 +63,9 @@ export default {
         this.getAvatar();
     },
     methods: {
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         beforeUnmount() {
             const channel = this.pusher.subscribe('chat');
             channel.unbind('new-message');
@@ -74,7 +78,7 @@ export default {
             const username = this.userNickname;
             const another_username = this.userData.nickname;
             axios
-                .get(`http://localhost:8000/api/chat/${username}/${another_username}`)
+                .get(`${BASE_API_URL}api/chat/${username}/${another_username}`)
                 .then(response => {
                     const allMessages = response.data.messages;
                     const mergedMessages = allMessages.sort(
@@ -112,7 +116,7 @@ export default {
                 recipient: this.userNickname,
                 body: this.message
             }
-            await axios.post('http://localhost:8000/api/send-message', messageData)
+            await axios.post(`${BASE_API_URL}api/send-message`, messageData)
                 .then(() => {
                     this.message = '';
                     this.loadMessages();
@@ -136,7 +140,7 @@ export default {
             }
         },
         getAvatar(){
-            axios.get(`http://localhost:8000/api/avatar/${this.userNickname}`)
+            axios.get(`${BASE_API_URL}api/avatar/${this.userNickname}`)
                 .then(response => {
                     this.avatar = response.data.avatar_url;
                 })

@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="profile">
-            <div class="profile-photo"><img :src="'http://localhost:8000/'+ userInfo.avatar" alt=""></div>
+            <div class="profile-photo"><img :src="BASE_API_URL()+ userInfo.avatar" alt=""></div>
             <div class="profile-info">
                 <span class="nickname">{{nickname}}</span>
                 <span>На сайте с {{ userInfo.date_joined }}</span>
@@ -36,7 +36,7 @@
         <div class="item-cards">
           <div v-for="item in items" :key="item.id" class="item-card">
               <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-            <img :src="'http://localhost:8000/'+item.obverse" alt="">
+            <img :src="BASE_API_URL()+item.obverse" alt="">
             <span class="item-name">{{ item.name }}</span>
               </router-link>
           </div>
@@ -49,6 +49,7 @@ import {useRoute} from "vue-router";
 import moment from "moment";
 import axios from "axios";
 import {mapGetters} from "vuex";
+import { BASE_API_URL } from '@/constants';
 
 export default {
     name: "ProfileView",
@@ -66,15 +67,18 @@ export default {
         this.getItemsByUserId()
     },
     methods: {
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         getItemsByUserId() {
             const route = useRoute();
             this.nickname = route.params.profileId;
-            fetch(`http://localhost:8000/api/user/${this.nickname}/`)
+            fetch(BASE_API_URL + 'api/user/' + this.nickname)
                 .then(response => response.json())
                 .then(data => {
                     this.userInfo = data
                     this.userInfo.date_joined = moment(data.date_joined).format('DD.MM.YYYY');
-                    fetch(`http://localhost:8000/api/visible_items/${this.userInfo.id}/`)
+                    fetch(BASE_API_URL + 'api/visible_items/${this.userInfo.id}/')
                         .then(response => response.json())
                         .then(data => {
                             this.items = data;
@@ -87,7 +91,7 @@ export default {
         },
         getTrade() {
             const userId = this.userInfo.id;
-            axios.get(`http://localhost:8000/api/trades/all/${userId}/`)
+            axios.get(BASE_API_URL + '/trades/all/' + userId + '/')
                 .then(response => {
                     this.trades = response.data;
                     this.countTrade();

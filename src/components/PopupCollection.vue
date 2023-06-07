@@ -35,6 +35,7 @@
 
 import {useStore} from "vuex";
 import {computed, reactive} from "vue";
+import { BASE_API_URL } from '@/constants';
 
 export default {
   setup(props, context) {
@@ -48,7 +49,7 @@ export default {
     const owner = computed(() => store.state.id)
     const submit = async () => {
       data.owner = owner.value;
-      await fetch('http://localhost:8000/api/collections', {
+      await fetch(BASE_API_URL + 'api/collections', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)

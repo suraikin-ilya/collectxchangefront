@@ -28,7 +28,7 @@
         <div class="dropdown">
           <RouterLink to="profile">
               <img v-if="!auth" src="../assets/photo.png" alt="фото профиля" class="avatar">
-              <img v-if="auth" :src="'http://localhost:8000/'+result.avatar" alt="фото профиля" class="avatar">
+              <img v-if="auth" :src="BASE_API_URL()+result.avatar" alt="фото профиля" class="avatar">
           </RouterLink>
           <div class="header__dropdown">
             <li><router-link :to="{ name: 'Collections', params: { userId: result.id} }">Мои коллекции</router-link></li>
@@ -58,9 +58,15 @@ import PopupRegistration from "@/components/PopupRegistration.vue";
 import {onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {computed} from "vue";
+import { BASE_API_URL } from '@/constants';
 
 
 export default {
+    methods: {
+        BASE_API_URL() {
+            return BASE_API_URL
+        }
+    },
   mounted() {
     console.log(this.$store); // should output the Vuex store object
   },
@@ -76,7 +82,7 @@ export default {
     const store = useStore();
     const trade_count = ref(null);
     onMounted(async() =>{
-            const response = await fetch('http://localhost:8000/api/user', {
+            const response = await fetch(BASE_API_URL + 'api/user', {
               headers: {'Content-Type': 'application/json'},
               credentials: 'include',
             });
@@ -90,7 +96,7 @@ export default {
             }else
               {await store.dispatch('setAuth', false)
             }
-            const response_count = await fetch('http://localhost:8000/api/trades/count/' + result.value.id + '/');
+            const response_count = await fetch(BASE_API_URL + 'api/trades/count/' + result.value.id + '/');
             if (response.ok) {
                 const data = await response_count.json();
                 trade_count.value = data.trade_count;
@@ -101,7 +107,7 @@ export default {
     const auth = computed(() => store.state.authenticated)
 
     const logout = async() => {
-      await fetch('http://localhost:8000/api/logout', {
+      await fetch(BASE_API_URL + 'api/logout', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',

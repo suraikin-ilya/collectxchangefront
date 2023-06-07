@@ -47,6 +47,7 @@
 
 <script>
 import {reactive} from "vue";
+import { BASE_API_URL } from '@/constants';
 
 
 export default {
@@ -77,7 +78,7 @@ export default {
             formData.append("check_password", data.check_password);
             formData.append("avatar", data.avatar);
             try {
-                const response = await fetch("http://localhost:8000/api/register", {
+                const response = await fetch(BASE_API_URL + 'api/register', {
                     method: "POST",
                     body: formData, // Используем formData вместо JSON.stringify(data)
                 });

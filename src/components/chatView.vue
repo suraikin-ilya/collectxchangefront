@@ -6,7 +6,7 @@
             <ul class="chat-list">
                     <li class="chat-item" v-for="chat in chats" :key="chat.timestamp">
                         <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
-                        <img :src="'http://localhost:8000/'+chat.avatar" alt="Avatar" class="avatar">
+                        <img :src="BASE_API_URL()+chat.avatar" alt="Avatar" class="avatar">
                         </router-link>
                         <router-link :to="{name: 'UserChat', params: {userNickname: chat.recipient}}" style="text-decoration: none; color: inherit;">
                         <div class="chat-content">
@@ -29,6 +29,7 @@
 import {mapGetters} from "vuex";
 import axios from "axios";
 import moment from "moment";
+import { BASE_API_URL } from '@/constants';
 
 
 export default {
@@ -45,10 +46,13 @@ export default {
         this.loadMessages();
     },
     methods: {
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         async loadMessages() {
             const username = this.userData.nickname;
             try {
-                const response = await axios.get(`http://localhost:8000/api/messages/${username}/`);
+                const response = await axios.get(`${BASE_API_URL}api/messages/${username}/`);
                 const messages = response.data.messages;
 
                 const uniqueChats = new Map();
@@ -95,7 +99,7 @@ export default {
         async getAvatarForChats(chats) {
             for (const chat of chats) {
                 try {
-                    const response = await axios.get(`http://localhost:8000/api/avatar/${chat.recipient}`);
+                    const response = await axios.get(`${BASE_API_URL}api/avatar/${chat.recipient}`);
                     chat.avatar = response.data.avatar_url;
                 } catch (error) {
                     console.error(error);

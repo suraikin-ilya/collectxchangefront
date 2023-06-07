@@ -65,6 +65,7 @@ import {useRoute} from "vue-router";
 import {mapGetters} from "vuex";
 import axios from "axios";
 import PopupItem from "@/components/PopupItem.vue";
+import { BASE_API_URL } from '@/constants';
 
 export default {
   components: {PopupItem},
@@ -99,14 +100,14 @@ export default {
   },
   methods: {
    getCollections() {
-      axios.get(`http://localhost:8000/api/collection/${this.collectionId}/`)
+      axios.get(`${BASE_API_URL}api/collection/${this.collectionId}/`)
           .then(response => {
             this.collection = response.data;
               const collectionOwner = parseInt(response.data.owner);
               const collectionId = parseInt(response.data.id);
               const userId = parseInt(this.$store.state.id);
               if (collectionOwner !== userId && !isNaN(userId)) {
-                  axios.post(`http://localhost:8000/api/increase_collection_views/${collectionId}/`)
+                  axios.post(`${BASE_API_URL}api/increase_collection_views/${collectionId}/`)
                       .then(response => {
                           console.log(response.data.message);
                       })
@@ -120,7 +121,7 @@ export default {
           });
     },
       deleteItem(itemId) {
-          axios.delete(`http://localhost:8000/api/items/${itemId}/delete/`)
+          axios.delete(`${BASE_API_URL}api/items/${itemId}/delete/`)
               .then(response => {
                   this.getItems();
                   console.log(response);
@@ -130,7 +131,7 @@ export default {
               });
       },
       toggleTrade(itemId){
-          axios.put(`http://localhost:8000/api/items/${itemId}/toggle-trade/`)
+          axios.put(`${BASE_API_URL}api/items/${itemId}/toggle-trade/`)
               .then(response => {
                   console.log('Trade value toggled successfully');
                   this.getItems();
@@ -142,7 +143,7 @@ export default {
               });
       },
       toggleVisibility(itemId){
-          axios.put(`http://localhost:8000/api/items/${itemId}/toggle-visibility/`)
+          axios.put(`${BASE_API_URL}api/items/${itemId}/toggle-visibility/`)
               .then(response => {
                   console.log('Visibility value toggled successfully');
                   this.getItems();
@@ -160,7 +161,7 @@ export default {
       return false;
     },
       getItems() {
-          axios.get(`http://localhost:8000/api/items/collection/${this.collectionId}/`)
+          axios.get(`${BASE_API_URL}api/items/collection/${this.collectionId}/`)
               .then(response => {
                   this.items = response.data
               })

@@ -13,7 +13,7 @@
                 <h3 v-if="filteredTrades.length === 0">Нет обменов</h3>
                 <div class="card" v-for="trade in filteredTrades" :key="trade.id" :class="trade.status === false ? 'declined_status' : (trade.status === true ? 'accepted_status' : '')">
                     <div class="card-header">
-                        <img :src="'http://localhost:8000/'+ trade.avatar" alt="Image" class="trade-image">
+                        <img :src="BASE_API_URL()+ trade.avatar" alt="Image" class="trade-image">
                         <span>{{ trade.user_from }} предлагает {{ trade.user_to }} обменяться </span>
                     </div>
                     <div class="trade-info">
@@ -21,7 +21,7 @@
                         <div class="card-content">
                             <div class="item-card" v-for="item in trade.items_from" :key="item.id">
                                 <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                                    <img :src="'http://localhost:8000/' + item.obverse" alt="">
+                                    <img :src="BASE_API_URL() + item.obverse" alt="">
                                     <span class="item-name">{{ item.name }}</span>
                                     <span class="item-price">{{ item.price }} р</span>
                                 </router-link>
@@ -39,7 +39,7 @@
                         <div class="card-footer">
                             <div class="item-card" v-for="item in trade.items_to" :key="item.id">
                                 <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                                    <img :src="'http://localhost:8000/' + item.obverse" alt="">
+                                    <img :src="BASE_API_URL() + item.obverse" alt="">
                                     <span class="item-name">{{ item.name }}</span>
                                     <span class="item-price">{{ item.price }} р</span>
                                 </router-link>
@@ -69,6 +69,7 @@
 import {useRoute} from "vue-router";
 import {mapGetters} from "vuex";
 import axios from "axios";
+import { BASE_API_URL } from '@/constants';
 
 
 export default {
@@ -94,9 +95,12 @@ export default {
         this.showReceived = true;
     },
     methods: {
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         async getTrade() {
             try {
-                const response = await axios.get(`http://localhost:8000/api/trades/all/${this.userId}/`);
+                const response = await axios.get(`${BASE_API_URL}api/trades/all/${this.userId}/`);
                 this.trades = response.data;
                 this.processGetOwner();
                 await this.getAvatarForTrades(); // Вызов функции для получения аватаров для каждого элемента trades
@@ -107,7 +111,7 @@ export default {
         async getAvatarForTrades() {
             for (const trade of this.trades) {
                 try {
-                    const response = await axios.get(`http://localhost:8000/api/avatar/${trade.user_from}`);
+                    const response = await axios.get(`${BASE_API_URL}api/avatar/${trade.user_from}`);
                     trade.avatar = response.data.avatar_url;
                 } catch (error) {
                     console.error(error);
@@ -120,7 +124,7 @@ export default {
             });
         },
         getOwner(itemOwner) {
-            axios.get(`http://localhost:8000/api/get_owner/${itemOwner}/`)
+            axios.get(`${BASE_API_URL}api/get_owner/${itemOwner}/`)
                 .then(response => {
                     const itemOwnerId = response.data.id;
                     const itemNickname = response.data.nickname;
@@ -138,7 +142,7 @@ export default {
                 });
         },
         acceptTrade(tradeId){
-            axios.put(`http://localhost:8000/api/trades/${tradeId}/toggle-true/`)
+            axios.put(`${BASE_API_URL}api/trades/${tradeId}/toggle-true/`)
                 .then(response => {
                     console.log('Trade accepted successfully');
                     this.getTrade();
@@ -150,7 +154,7 @@ export default {
                 });
         },
         declineTrade(tradeId){
-            axios.put(`http://localhost:8000/api/trades/${tradeId}/toggle-false/`)
+            axios.put(`${BASE_API_URL}api/trades/${tradeId}/toggle-false/`)
                 .then(response => {
                     console.log('Trade declined successfully');
                     this.getTrade();

@@ -117,7 +117,7 @@
             <template v-if="showCells">
                 <div v-for="item in filteredItems" :key="item.id" class="item-card">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                        <img class="item-image" :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}">
+                        <img class="item-image" :src="BASE_API_URL()+item.obverse" alt="{{ item.name }}">
                     </router-link>
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                         <h3 class="item-title">{{ item.name }}</h3>
@@ -140,7 +140,7 @@
             <div class="container" v-if="showList">
                 <div v-for="item in filteredItems" :key="item.id" class="item-list">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
-                    <img :src="'http://localhost:8000/'+item.obverse" alt="{{ item.name }}" class="item_list-image"></router-link>
+                    <img :src="BASE_API_URL()+item.obverse" alt="{{ item.name }}" class="item_list-image"></router-link>
                     <div class="item_list-info">
                         <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                             <h3 class="item_list-title">{{ item.name }}</h3></router-link>
@@ -176,6 +176,7 @@
 
 import axios from "axios";
 import {mapGetters} from "vuex";
+import { BASE_API_URL } from '@/constants';
 
 export default {
   name: "CatalogView",
@@ -202,15 +203,18 @@ export default {
         this.getItems()
     },
     methods:{
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         getCategories() {
-            fetch('http://localhost:8000/api/categories/')
+            fetch(BASE_API_URL + 'api/categories/')
                 .then(response => response.json())
                 .then(data => {
                     this.categories = data;
                 });
         },
         getItems() {
-            axios.get(`http://localhost:8000/api/visible_items/`)
+            axios.get(`${BASE_API_URL}api/visible_items/`)
                 .then(response => {
                     this.items = response.data;
                     this.processGetOwner();
@@ -233,7 +237,7 @@ export default {
             });
         },
         getOwner(itemOwner) {
-            axios.get(`http://localhost:8000/api/get_owner/${itemOwner}/`)
+            axios.get(`${BASE_API_URL}api/get_owner/${itemOwner}/`)
                 .then(response => {
                     const itemOwner = response.data.id;
                     const itemNickname = response.data.nickname;

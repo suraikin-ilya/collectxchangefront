@@ -651,6 +651,7 @@
 import {useRoute} from "vue-router";
 import {reactive, toRefs, ref} from 'vue';
 import { useStore } from 'vuex';
+import { BASE_API_URL } from '@/constants';
 export default {
   data() {
     return {
@@ -736,7 +737,7 @@ export default {
         formData.append('ISSN', data.ISSN);
         formData.append('date_publish', data.datePublish);
 
-        const response = await fetch('http://localhost:8000/api/item/', {
+        const response = await fetch(BASE_API_URL + 'api/item/', {
           method: 'POST',
           body: formData,
         });
@@ -783,7 +784,7 @@ export default {
   methods: {
     async fetchCategories() {
       try {
-        const response = await fetch('http://localhost:8000/api/categories/');
+        const response = await fetch(BASE_API_URL + 'api/categories/');
         const data = await response.json();
         this.categories = data;
       } catch (error) {
@@ -792,7 +793,7 @@ export default {
     },
     async fetchPreservations() {
       try {
-        const response = await fetch('http://localhost:8000/api/preservations/');
+        const response = await fetch(BASE_API_URL + 'api/preservations/');
         const data = await response.json();
         this.preservations = data;
       } catch (error) {
@@ -801,7 +802,7 @@ export default {
     },
     async fetchCountries() {
       try {
-        const response = await fetch('http://localhost:8000/api/countries/');
+        const response = await fetch(BASE_API_URL + 'api/countries/');
         const data = await response.json();
         this.countries = data;
       } catch (error) {

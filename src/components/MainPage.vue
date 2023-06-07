@@ -4,7 +4,7 @@
             <div class="card-wrapper" v-if="items">
                 <div v-for="item in filteredItems" :key="item.id" class="card">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
-                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="'http://localhost:8000/'+item.obverse" alt="Изображение товара"></router-link>
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="BASE_API_URL()+item.obverse" alt="Изображение товара"></router-link>
       <!--              <ul class="card-features">-->
       <!--                  <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>-->
       <!--                  <li v-if="item.year != '' && item.year != null">Год: <span>{{ item.year }}</span> </li>-->
@@ -39,6 +39,7 @@
 
 <script>
 import axios from "axios";
+import { BASE_API_URL } from '@/constants';
 
 export default {
   name: "MainPage",
@@ -62,8 +63,11 @@ export default {
         },
     },
     methods:{
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
       getItems() {
-          axios.get(`http://localhost:8000/api/visible_items/`)
+          axios.get(`${BASE_API_URL}api/visible_items/`)
               .then(response => {
                   // Сортировка предметов по убыванию даты создания
                   const sortedItems = response.data.sort((a, b) => new Date(b.date_create) - new Date(a.date_create));
@@ -77,7 +81,7 @@ export default {
               });
       },
         getCollections() {
-            axios.get(`http://localhost:8000/api/collections_by_views/`)
+            axios.get(`${BASE_API_URL}api/collections_by_views/`)
                 .then(response => {
                     this.collections = response.data.slice(0, 3);
                     this.processGetCollectionOwner();
@@ -87,7 +91,7 @@ export default {
                 });
         },
         getItemsImage(collectionId){
-            axios.get(`http://localhost:8000/api/items/collection/${collectionId}/`)
+            axios.get(`${BASE_API_URL}api/items/collection/${collectionId}/`)
                 .then(response => {
                     const data = response.data;
                     const collection = this.collections.find(c => c.id === collectionId); // Найти соответствующую коллекцию
@@ -113,7 +117,7 @@ export default {
             });
         },
         getOwner(itemOwner) {
-            axios.get(`http://localhost:8000/api/get_owner/${itemOwner}/`)
+            axios.get(`${BASE_API_URL}api/get_owner/${itemOwner}/`)
                 .then(response => {
                     const itemOwner = response.data.id;
                     const itemNickname = response.data.nickname;
@@ -127,7 +131,7 @@ export default {
                 });
         },
         getCollectionOwner(collectionOwner) {
-            axios.get(`http://localhost:8000/api/get_owner/${collectionOwner}/`)
+            axios.get(`${BASE_API_URL}api/get_owner/${collectionOwner}/`)
                 .then(response => {
                     const collectionOwner = response.data.id;
                     const collectionNickname = response.data.nickname;

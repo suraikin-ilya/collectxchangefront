@@ -7,7 +7,7 @@
                 <h3 v-if="selected_trade_items.length === 0">Добавьте предметы которые хотите отдать</h3>
                 <div class="added-items">
                     <div  class="item-card" v-for="selectedTradeItem in selected_trade_items" :key="selectedTradeItem.id" @click="removeFromSelectedTradeItems(selectedTradeItem)">
-                        <img :src="'http://localhost:8000/'+selectedTradeItem.obverse" alt="">
+                        <img :src="BASE_API_URL()+selectedTradeItem.obverse" alt="">
                         <span class="item-name">{{ selectedTradeItem.name }}</span>
                         <span class="item-price">{{ selectedTradeItem.price }} р</span>
                     </div>
@@ -22,7 +22,7 @@
                 </select>
                 <div class="added-items">
                     <div  v-for="trade_item in filtered_trade_items" :key="trade_item.id" class="item-card" @click="addToSelectedTradeItems(trade_item)">
-                        <img :src="'http://localhost:8000/'+trade_item.obverse" alt="">
+                        <img :src="BASE_API_URL()+trade_item.obverse" alt="">
                         <span class="item-name">{{ trade_item.name }}</span>
                         <span class="item-price">{{ trade_item.price }} р</span>
                     </div>
@@ -38,7 +38,7 @@
                 <h3 v-if="selected_items.length === 0">Добавьте предметы которые хотите получить</h3>
                 <div class="added-items">
                     <div  class="item-card" v-for="selectedItem in selected_items" :key="selectedItem.id" @click="removeFromSelectedItems(selectedItem)">
-                        <img :src="'http://localhost:8000/'+selectedItem.obverse" alt="">
+                        <img :src="BASE_API_URL()+selectedItem.obverse" alt="">
                         <span class="item-name">{{ selectedItem.name }}</span>
                         <span class="item-price">{{ selectedItem.price }} р</span>
                     </div>
@@ -53,7 +53,7 @@
                 </select>
                 <div class="added-items">
                     <div  v-for="item in filtered_items" :key="item.id" class="item-card" @click="addToSelectedItems(item)">
-                        <img :src="'http://localhost:8000/'+item.obverse" alt="">
+                        <img :src="BASE_API_URL()+item.obverse" alt="">
                         <span class="item-name">{{ item.name }}</span>
                         <span class="item-price">{{ item.price }} р</span>
                     </div>
@@ -69,6 +69,7 @@
 import {useRoute} from "vue-router";
 import moment from "moment/moment";
 import {mapGetters} from "vuex";
+import { BASE_API_URL } from '@/constants';
 
 export default {
   name: "TradeView",
@@ -107,6 +108,9 @@ export default {
         },
     },
     methods:{
+        BASE_API_URL() {
+            return BASE_API_URL
+        },
         getNickname(){
             const route = useRoute();
             this.nickname = route.params.tradeId;
@@ -142,12 +146,12 @@ export default {
         getItemsByUserId() {
             const route = useRoute();
             this.nickname = route.params.tradeId;
-            fetch(`http://localhost:8000/api/user/${this.nickname}/`)
+            fetch(BASE_API_URL + 'api/user/' + this.nickname + '/')
                 .then(response => response.json())
                 .then(data => {
                     this.userInfo = data
                     this.userInfo.date_joined = moment(data.date_joined).format('DD.MM.YYYY');
-                    fetch(`http://localhost:8000/api/trade_items/${this.userInfo.id}/`)
+                    fetch(BASE_API_URL + 'api/trade_items/' + this.userInfo.id + '/')
                         .then(response => response.json())
                         .then(data => {
                             this.items = data;
@@ -160,7 +164,7 @@ export default {
         getItemsForTrade(){
             const userId = parseInt(this.$store.state.id);
             if (!isNaN(userId)) {
-                fetch(`http://localhost:8000/api/trade_items/${userId}/`)
+                fetch(BASE_API_URL + 'api/trade_items/' + userId + '/')
                     .then(response => response.json())
                     .then(data => {
                         this.trade_items = data;
@@ -172,7 +176,7 @@ export default {
         },
         async fetchCategories() {
             try {
-                const response = await fetch('http://localhost:8000/api/categories/');
+                const response = await fetch(BASE_API_URL + 'api/categories/');
                 const data = await response.json();
                 this.ItemCategories = data;
                 this.TradeCategories = data;
@@ -192,7 +196,7 @@ export default {
                 status: null
             };
 
-            fetch('http://localhost:8000/api/trade/', {
+            fetch(BASE_API_URL + 'api/trade/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

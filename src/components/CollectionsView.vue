@@ -78,6 +78,7 @@ import { mapGetters } from 'vuex';
 import {useRoute} from "vue-router";
 import axios from 'axios'
 import {ref} from "vue";
+import { BASE_API_URL } from '@/constants';
 
 
 export default {
@@ -113,7 +114,7 @@ export default {
     const route = useRoute();
     const userId = route.params.userId;
     const owner = ref(null);
-        axios.get(`http://localhost:8000/api/get_owner/${userId}`)
+        axios.get(`${BASE_API_URL}api/get_owner/${userId}`)
             .then(response => {
                 owner.value = response.data.nickname; // Запись значения owner в реактивную переменную
             })
@@ -130,7 +131,7 @@ export default {
       return parseInt(this.userId) === parseInt(this.userData.id);
     },
     getCollections() {
-      axios.get(`http://localhost:8000/api/collections/get/${this.userId}/`)
+      axios.get(`${BASE_API_URL}api/collections/get/${this.userId}/`)
           .then(response => {
             this.collections = response.data;
               this.processCollectionItemCount();
@@ -145,7 +146,7 @@ export default {
           });
       },
     deleteCollection(collectionId) {
-      axios.delete(`http://localhost:8000/api/collections/${collectionId}/`)
+      axios.delete(`${BASE_API_URL}api/collections/${collectionId}/`)
           .then(response => {
             this.getCollections();
             console.log(response);
@@ -210,7 +211,7 @@ export default {
           this.filteredAndSortedCollections = this.filteredAndSortedCollections.filter(collection => collection.visibility === true);
       },
       getCollectionItemCount(collectionId) {
-          axios.get(`http://localhost:8000/api/item/count/${collectionId}/`)
+          axios.get(`${BASE_API_URL}api/item/count/${collectionId}/`)
               .then(response => {
                   const itemCount = response.data.item_count;
                   const collection = this.collections.find(collection => collection.id === collectionId);
