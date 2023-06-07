@@ -46,7 +46,7 @@ export default {
         const data = reactive({
             name: '',
             description: '',
-            visibility: '',
+            visibility: false,
             owner: null
         });
         const store = useStore();
@@ -63,7 +63,9 @@ export default {
                 }).then(response => {
                     if (response.ok) {
                         // Collection updated successfully
+                        props.getCollections();
                         context.emit('close');
+                        // window.location.reload();
                     } else {
                         // Handle error when updating collection
                         console.error('Failed to update collection');
@@ -74,6 +76,7 @@ export default {
                 });
             } else {
                 // Create mode: Create new collection
+                console.log('Отправляемые данные:', data);
                 await fetch(`${BASE_API_URL}api/collections`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -81,7 +84,9 @@ export default {
                 }).then(response => {
                     if (response.ok) {
                         // Collection created successfully
+                        props.getCollections();
                         context.emit('close');
+                        // window.location.reload();
                     } else {
                         // Handle error when creating collection
                         console.error('Failed to create collection');
@@ -107,6 +112,10 @@ export default {
             type: Number,
             default: null,
         },
+        getCollections: {
+            type: Function,
+            required: true
+        }
     },
     watch: {
         isOpen(newVal) {

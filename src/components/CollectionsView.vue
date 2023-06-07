@@ -65,6 +65,7 @@
   <popup-collection
       :is-open="isOpen"
       :selected-collection-id="selectedCollectionId"
+      :get-collections="getCollections"
       @close="isOpen = false"
       >
   </popup-collection>
