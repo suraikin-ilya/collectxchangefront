@@ -5,8 +5,17 @@
             <div class="left-part">
                 <div class="block">
                     <h2 class="block-heading">{{item.name}}</h2>
-                    <img class="block-image" :src="BASE_API_URL()+item.obverse" alt="Image">
-                    <h2 class="block-heading">Характеристики</h2>
+                    <div class="image-container">
+                        <div class="photo_container">
+                            <img class="block-image" :src="BASE_API_URL()+selectedPhoto" alt="Image">
+                        </div>
+                        <div class="thumbnail-container">
+                            <img class="thumbnail-image" :src="BASE_API_URL()+item.obverse" alt="Image" :class="{ 'selected': selectedPhoto === item.obverse }" @click="selectPhoto(item.obverse)">
+                            <img class="thumbnail-image" :src="BASE_API_URL()+item.reverse" alt="Image" :class="{ 'selected': selectedPhoto === item.reverse }" @click="selectPhoto(item.reverse)">
+                            <img class="thumbnail-image" :src="BASE_API_URL()+item.extra_photo" alt="Image" :class="{ 'selected': selectedPhoto === item.extra_photo }" @click="selectPhoto(item.extra_photo)">
+                        </div>
+                    </div>
+                    <h2 class="block-heading" style="margin-top: 10px;">Характеристики</h2>
                     <ul class="block-description">
                         <li v-if="item.category != '' && item.category != null">Категория: <span>{{ item.category }}</span> </li>
                         <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>
@@ -70,6 +79,7 @@ export default {
         return{
             item: null,
             avatar: '',
+            selectedPhoto: "",
         }
     },
     beforeRouteUpdate(to, from, next) {
@@ -90,6 +100,10 @@ export default {
         BASE_API_URL() {
             return BASE_API_URL
         },
+        selectPhoto(photo) {
+            // Обновление выбранной фотографии при клике на миниатюру
+            this.selectedPhoto = photo;
+        },
         getItem() {
             axios.get(`${BASE_API_URL}api/item/${this.itemId}/`)
                 .then(response => {
@@ -98,6 +112,7 @@ export default {
                     const itemOwner = parseInt(response.data.owner);
                     const itemId = parseInt(response.data.id);
                     const userId = parseInt(this.$store.state.id);
+                    this.selectedPhoto = this.item.obverse;
                     if (itemOwner !== userId && !isNaN(userId)) {
                         axios.post(`${BASE_API_URL}api/increase_item_views/${itemId}/`)
                             .then(response => {
@@ -164,7 +179,7 @@ h2{
 
 .right-part {
     display: inline-block;
-    width: 30%;
+    width: 20vh;
     vertical-align: top;
     float: right;
 }
@@ -280,5 +295,88 @@ li{
 
 .block-description span{
     color: #000;
+}
+
+.photo_container{
+    width: 70vh;
+}
+
+.thumbnail-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.thumbnail-image:nth-child(1){
+    margin-left: 0;
+}
+
+.thumbnail-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    cursor: pointer;
+    margin-left: 30px;
+}
+
+.thumbnail-image.selected {
+    border-color: #007D5F;
+    border-radius: 5px;
+}
+
+.image-container {
+    position: relative;
+}
+
+.block-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.selected::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid #000;
+}
+
+@media screen and (max-width: 1200px) {
+    .wrapper {
+        padding: 20px;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+
+    .left-part,
+    .right-part {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .price-image {
+        margin: 0 auto;
+    }
+
+    .write-button,
+    .trade-button {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .block-description li {
+        margin-bottom: 5px;
+    }
+
+    .price-name {
+        margin-left: 0;
+        text-align: center;
+    }
 }
 </style>
