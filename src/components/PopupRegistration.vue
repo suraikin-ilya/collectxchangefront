@@ -170,6 +170,7 @@ export default {
 .form__title {
   font-size: 24px;
   margin-bottom: 10px;
+    color: #434343;
 }
 
 .form__description{
@@ -177,6 +178,7 @@ export default {
   font-weight: 400;
   font-size: 16px;
   line-height: 19px;
+    color: #434343;
 }
 
 .form__group {
@@ -186,7 +188,6 @@ export default {
 }
 
 .form__label {
-  font-family: 'Rubik';
   font-style: normal;
   font-weight: 200;
   font-size: 10px;

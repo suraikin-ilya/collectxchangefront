@@ -28,7 +28,7 @@
             </div></router-link>
             <p class="card-text">{{collection.description}}</p>
             <div class="card-info">
-                <router-link :to="{name: 'Profile', params: {profileId: collection.owner}}" style="text-decoration: none; color: inherit;"><span class="card-nickname">{{ collection.owner }}</span></router-link>
+                <router-link :to="{name: 'Profile', params: {profileId: collection.owner}}" style="text-decoration: none; color: inherit; height: max-content"><span class="card-nickname">{{ collection.owner }}</span></router-link>
                 <span class="collection-card-views">{{ collection.views }}</span>
             </div>
         </div>
@@ -218,7 +218,7 @@ ul{
     margin-bottom: 30px;
     margin-left: 50px;
     width: 316px;
-    height: 476px;
+    height: max-content;
     background: #FFFFFF;
     border: 1px solid rgba(0, 125, 95, 0.25);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -247,19 +247,21 @@ ul{
     line-height: 17px;
     color: #007D5F;
     opacity: 0.6;
-    margin-bottom: 10px;
     padding-left: 10px;
-    height: 85px;
-    overflow: hidden
+    height: max-content;
+    overflow: hidden;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .card-info {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
     font-size: 12px;
     padding-left: 26px;
-    padding-bottom: 16px;
+    padding-bottom: 6px;
+    width: 100%;
+    height: max-content;
 }
 
 .card-info span {
@@ -273,7 +275,9 @@ ul{
     line-height: 17px;
     color: #841FEA;
     opacity: 0.6;
-    margin-right: 120px;
+    margin-right: 0;
+    float: left;
+    height: max-content;
 }
 
 .collection-card-views {

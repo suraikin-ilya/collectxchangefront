@@ -3,6 +3,8 @@
     <div class="popup" @click.stop>
       <div class="popup__content">
         <form @submit.prevent="submit" class="form">
+          <h2 class="form__title">Вход</h2>
+          <h3 class="form__description">Введите ваши данные</h3>
           <div class="form__group">
             <label for="email" class="form__label">EMAIL</label>
             <div class="form__input-group">
@@ -13,6 +15,12 @@
             <label for="password" class="form__label">Пароль</label>
             <div class="form__input-group">
               <input v-model="data.password" type="password" id="password" name="password" class="form__input form__input--password" placeholder="Пароль" required>
+            </div>
+          </div>
+          <div class="form__group">
+            <div class="checkbox">
+                <input class="custom-checkbox" type="checkbox" id="remember" value="remember" >
+                <label for="remember">Запомнить</label>
             </div>
           </div>
           <div v-if="error" class="error-message">{{ error }}</div>
@@ -132,10 +140,10 @@ export default {
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  /*align-items: center;*/
-  /*justify-content: center;*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .form__title {
@@ -207,10 +215,6 @@ export default {
 
 }
 
-.form__input--password {
-  padding-right: 30px;
-}
-
 input#email {
   background-image: url('../assets/user-profile.svg');
   background-repeat: no-repeat;
@@ -230,4 +234,64 @@ input#password {
     color: #ff3030;
 }
 input {outline:none;}
+
+.form__title {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #434343;
+}
+
+.form__description{
+    margin-bottom: 28px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: #434343;
+}
+
+.form__actions{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.checkbox{
+    width: 22vmax;
+    justify-content: left;
+    float: left;
+}
+
+.custom-checkbox {
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    width: 17px;
+    height: 17px;
+}
+
+.custom-checkbox+label {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.custom-checkbox+label::before{
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 2px solid #55BEA4;
+    border-radius: 0.25em;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+.custom-checkbox:checked+label::before{
+    background-image: url('../assets/checkmark.svg');
+    background-size: 12px;
+}
 </style>

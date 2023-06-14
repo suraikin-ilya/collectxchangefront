@@ -292,7 +292,7 @@ h2{
 }
 .card {
     margin: 0 41px 30px 41px;
-    width: calc(100% - 82px);
+    max-width: calc(100% - 82px);
     height: min-content;
     background: rgba(0, 125, 95, 0.09);
     box-shadow: 0 4px 4px rgba(0, 125, 95, 0.25);
