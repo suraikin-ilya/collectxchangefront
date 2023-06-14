@@ -115,7 +115,7 @@
         </div >
         <div id="catalog">
             <template v-if="showCells">
-                <div v-for="item in filteredItems" :key="item.id" class="item-card">
+                <div v-for="item in displayedItems" :key="item.id" class="item-card">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                         <img class="item-image" :src="BASE_API_URL()+item.obverse" alt="{{ item.name }}">
                     </router-link>
@@ -138,7 +138,7 @@
                 </div>
             </template>
             <div class="container" v-if="showList">
-                <div v-for="item in filteredItems" :key="item.id" class="item-list">
+                <div v-for="item in displayedItems" :key="item.id" class="item-list">
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;">
                     <img :src="BASE_API_URL()+item.obverse" alt="{{ item.name }}" class="item_list-image"></router-link>
                     <div class="item_list-info">
@@ -166,7 +166,23 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="pagination">
+        <button class="previous" @click="goToPreviousPage" :disabled="currentPage === 1" v-if="!isFirstPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+                <path d="M6.29,0.3L7.41,1.42L3.7,4L7.41,6.59L6.29,7.71L2.59,4L6.29,0.3Z" transform="rotate(180 4 4)" />
+            </svg>
+        </button>
+        <ul>
+            <li v-for="page in displayedPages" :key="page">
+                <a :class="{ active: page === currentPage }" @click="setCurrentPage(page)">{{ page }}</a>
+            </li>
+        </ul>
+        <button class="next" @click="goToNextPage" :disabled="currentPage === totalPages" v-if="!isLastPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+                <path d="M2.59,0.3L1.47,1.42L5.18,4L1.47,6.59L2.59,7.71L6.29,4L2.59,0.3Z" />
+            </svg>
+        </button>
     </div>
 </template>
 
@@ -196,6 +212,9 @@ export default {
             yearTo: null,
             weightFrom: null,
             weightTo: null,
+            currentPage: 1, // Текущая страница
+            itemsPerPage: 3, // Количество элементов на странице
+            totalPages: 0,
         };
     },
     mounted(){
@@ -218,6 +237,8 @@ export default {
                 .then(response => {
                     this.items = response.data;
                     this.processGetOwner();
+                    this.currentPage = 1;
+                    this.calculateTotalPages();
                 })
                 .catch(error => {
                     console.error(error);
@@ -249,6 +270,22 @@ export default {
                 .catch(error => {
                     console.error(error);
                 });
+        },
+        goToPreviousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
+        goToNextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
+        },
+        calculateTotalPages() {
+            this.totalPages = Math.ceil(this.filteredItems.length / this.itemsPerPage);
+        },
+        setCurrentPage(page) {
+            this.currentPage = page;
         },
     },
     computed: {
@@ -317,7 +354,29 @@ export default {
                 );
             }
 
-            return filteredItems;
+            return filteredItems
+        },
+        displayedItems() {
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return this.filteredItems.slice(startIndex, endIndex);
+        },
+        displayedPages() {
+            const totalDisplayPages = 3; // Количество отображаемых страниц
+            const startPage = Math.max(this.currentPage - Math.floor(totalDisplayPages / 2), 1);
+            const endPage = Math.min(startPage + totalDisplayPages - 1, this.totalPages);
+            return Array(endPage - startPage + 1).fill().map((_, index) => startPage + index);
+        },
+        isFirstPage() {
+            return this.currentPage === 1;
+        },
+        isLastPage() {
+            return this.currentPage === this.totalPages;
+        },
+    },
+    watch: {
+        filteredItems() {
+            this.calculateTotalPages();
         },
     },
 }
@@ -461,6 +520,7 @@ export default {
 
   .checkbox {
       margin-top: 7px;
+
   }
 
   #filter-date {
@@ -721,4 +781,70 @@ export default {
       margin-right: 50px;
   }
 
+  .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      margin-bottom: 30px;
+  }
+
+  .pagination ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+  }
+
+  .pagination li {
+      margin-right: 15px;
+  }
+
+  .pagination a {
+      display: block;
+      padding: 5px 12px;
+      background-color: #f0f0f0;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+      color: #007D5F;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+
+
+
+  .pagination a:hover {
+      background-color: #ccc;
+  }
+
+  .pagination a.active {
+      background-color: #007D5F;
+      color: #fff;
+  }
+
+  .previous,
+  .next {
+      padding: 5px 7px;
+      background-color: #fff;
+      text-decoration: none;
+      color: #333;
+      margin-right: 5px;
+      display: flex;
+      align-items: center;
+      outline: none;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+  }
+
+  .previous svg {
+      transform: rotate(180deg);
+  }
+
+  .pagination svg{
+      color: #007D5F;
+  }
 </style>
