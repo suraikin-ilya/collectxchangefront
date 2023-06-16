@@ -38,7 +38,7 @@
             <div class="card-buttons" v-if="compareIds()">
               <img  v-if="!item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
               <img  v-if="item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/trade-active.svg" alt="Выключить обмен">
-              <img class="card-button" src="../assets/edit.svg" alt="Редактировать">
+              <img class="card-button" src="../assets/edit.svg" alt="Редактировать" @click="openEditPopup(item.id)">
               <img @click="deleteItem(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
             </div>
           </div>
@@ -54,7 +54,9 @@
     </div>
     <popup-item
         :is-open="isOpen"
+        :is-editing="isEditing"
         @close="isOpen = false"
+        :selected-item-id="selectedItemId"
     >
     </popup-item>
   </div>
@@ -85,6 +87,8 @@ export default {
       yearSortOrder: 'asc',
       priceSortOrder: 'asc',
       property: '',
+      selectedItemId: null,
+      isEditing: false,
     };
   },
   mounted() {
@@ -99,6 +103,11 @@ export default {
     };
   },
   methods: {
+      openEditPopup(itemId) {
+          this.selectedItemId = itemId;
+          this.isEditing = true;
+          this.isOpen = true; // открытие поп-ап окна
+      },
    getCollections() {
       axios.get(`${BASE_API_URL}api/collection/${this.collectionId}/`)
           .then(response => {

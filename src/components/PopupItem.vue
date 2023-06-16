@@ -3,7 +3,8 @@
     <div class="popup" @click.stop>
       <div class="popup__content">
         <form @submit="saveFormData" class="form" enctype="multipart/form-data">
-          <h2 class="form__title">Добавить предмет</h2>
+          <h2 v-if="!isEditing" class="form__title">Добавить предмет</h2>
+          <h2 v-if="isEditing" class="form__title">Редактировать предмет</h2>
           <h3 class="form__description">Введите данные</h3>
           <div class="form__group">
             <label for="title" class="form__label">Название*</label>
@@ -638,7 +639,8 @@
                 <input v-model="data.market" class="custom-checkbox" type="checkbox" id="market" value="market">
                 <label for="trade">Показывать цену на сайте</label>
           </div>
-          <button @click="saveFormData" class="form__button form__button--create">Добавить</button>
+          <button v-if="!isEditing" @click="saveFormData" class="form__button form__button--create">Добавить</button>
+          <button v-if="isEditing" @click="saveFormData" class="form__button form__button--create">Сохранить</button>
         </form>
       </div>
     </div>
@@ -649,7 +651,7 @@
 
 
 import {useRoute} from "vue-router";
-import {reactive, toRefs, ref} from 'vue';
+import {reactive, toRefs, ref, watch} from 'vue';
 import { useStore } from 'vuex';
 import { BASE_API_URL } from '@/constants';
 export default {
@@ -667,14 +669,19 @@ export default {
       const handleObverseChange = (event) => {
           const file = event.target.files[0];
           data.obverse = file;
+          data.obverse = URL.createObjectURL(file); // Отображение выбранного файла
       };
+
       const handleReverseChange = (event) => {
           const file = event.target.files[0];
           data.reverse = file;
+          data.reverse = URL.createObjectURL(file); // Отображение выбранного файла
       };
+
       const handleExtraPhotoChange = (event) => {
           const file = event.target.files[0];
           data.extra_photo = file;
+          data.extraPhotoFile = URL.createObjectURL(file); // Отображение выбранного файла
       };
     const store = useStore();
     const route = useRoute();
@@ -707,6 +714,44 @@ export default {
       ISSN: '',
       datePublish: null
     });
+
+      const fetchItemData = async (itemId) => {
+          try {
+              const response = await fetch(`${BASE_API_URL}api/item/${itemId}/`);
+              const responseData = await response.json(); // Use a different variable name, e.g., responseData
+              data.catalogNumber = responseData.catalogNumber;
+              data.ISSN = responseData.ISSN;
+              data.year = responseData.year;
+              data.name = responseData.name;
+              data.selectedCategory = responseData.category;
+              data.trade = responseData.trade;
+              data.market = responseData.market;
+              data.visibility = responseData.visibility;
+              data.selectedCountry = responseData.country;
+              data.selectedPreservation = responseData.preservation;
+              data.obverse = responseData.obverse;
+              data.reverse = responseData.reverse;
+              data.extra_photo = responseData.extra_photo;
+              data.price = responseData.price;
+              data.WWC = responseData.WWC;
+              data.CBRF = responseData.CBRF;
+              data.material = responseData.material;
+              data.weight = responseData.weight;
+              data.description = responseData.description;
+              data.width = responseData.width;
+              data.height = responseData.height;
+              data.datePublish = responseData.date_publish;
+          } catch (error) {
+              console.error('Ошибка при получении данных о предмете:', error);
+          }
+      };
+
+      watch(() => props.selectedItemId, (newValue) => {
+          if (newValue !== null) {
+              fetchItemData(newValue);
+          }
+      });
+
 
     const saveFormData = async (event) => {
         event.preventDefault();
@@ -752,10 +797,11 @@ export default {
         // Handle any exceptions or network errors
       }
     };
+
     return {
-        handleObverseChange,
-        handleReverseChange,
-        handleExtraPhotoChange,
+      handleObverseChange,
+      handleReverseChange,
+      handleExtraPhotoChange,
       data,
       datePublish: data.datePublish,
       saveFormData,
@@ -767,15 +813,22 @@ export default {
       type: Boolean,
       required: true,
     },
+    selectedItemId: {
+        type: Number,
+        required: true
+    },
+    isEditing:{
+        type: Boolean,
+        required: true,
+    }
   },
-  emits: {
-    close:null,
-  },
+  emits: ['close'],
   name: "PopupItem",
   mounted() {
     this.fetchCategories();
     this.fetchPreservations();
     this.fetchCountries();
+    this.fetchItemData(this.selectedItemId);
     document.addEventListener("keydown", this.handleKeydown);
   },
   beforeUnmount() {
@@ -808,6 +861,36 @@ export default {
       } catch (error) {
         console.error('Ошибка при получении данных о странах:', error);
       }
+    },
+    async fetchItemData(itemId) {
+        try {
+            const response = await fetch(`${BASE_API_URL}api/item/${itemId}/`);
+            const data = await response.json();
+            this.data.catalogNumber = data.catalog_number;
+            this.data.ISSN = data.ISSN;
+            this.data.year = data.year;
+            this.data.name = data.name;
+            this.data.selectedCategory = data.category;
+            this.data.trade = data.trade;
+            this.data.market = data.market;
+            this.data.visibility = data.visibility;
+            this.data.selectedCountry = data.country;
+            this.data.selectedPreservation = data.preservation;
+            this.data.obverse = data.obverse;
+            this.data.reverse = data.reverse;
+            this.data.extra_photo = data.extra_photo;
+            this.data.price = data.price;
+            this.data.WWC = data.WWC;
+            this.data.CBRF = data.CBRF;
+            this.data.material = data.material;
+            this.data.weight = data.weight;
+            this.data.description = data.description;
+            this.data.width = data.width;
+            this.data.height = data.height;
+            this.data.datePublish = data.date_publish;
+        } catch (error) {
+            console.error('Ошибка при получении данных о предмете:', error);
+        }
     },
     handleKeydown(e) {
       if (this.isOpen && e.key === "Escape") {
