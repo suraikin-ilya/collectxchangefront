@@ -39,7 +39,7 @@
               <img  v-if="!item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/toggle_trade.svg" alt="Включить обмен">
               <img  v-if="item.trade" @click="toggleTrade(item.id)" class="card-button" src="../assets/trade-active.svg" alt="Выключить обмен">
               <img class="card-button" src="../assets/edit.svg" alt="Редактировать" @click="openEditPopup(item.id)">
-              <img @click="deleteItem(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
+              <img @click="showConfirmationModal(item.id)" class="card-button" src="../assets/delete.svg" alt="Удалить">
             </div>
           </div>
             <div class="card-stats" v-if="!compareIds()">
@@ -52,6 +52,17 @@
             </div>
         </div>
     </div>
+      <div v-if="showModal" class="modal-overlay">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <h3>Вы уверены?</h3>
+                  <div class="modal-buttons">
+                      <button @click="deleteItemConfirmed" class="delete">Удалить</button>
+                      <button @click="closeModal" class="cancel">Отмена</button>
+                  </div>
+              </div>
+          </div>
+      </div>
     <popup-item
         :is-open="isOpen"
         :is-editing="isEditing"
@@ -89,6 +100,8 @@ export default {
       property: '',
       selectedItemId: null,
       isEditing: false,
+      showModal: false,
+      itemIdToDelete: null,
     };
   },
   mounted() {
@@ -107,6 +120,10 @@ export default {
           this.selectedItemId = itemId;
           this.isEditing = true;
           this.isOpen = true; // открытие поп-ап окна
+      },
+      showConfirmationModal(itemId) {
+          this.itemIdToDelete = itemId;
+          this.showModal = true;
       },
    getCollections() {
       axios.get(`${BASE_API_URL}api/collection/${this.collectionId}/`)
@@ -129,8 +146,9 @@ export default {
             console.log(error);
           });
     },
-      deleteItem(itemId) {
-          axios.delete(`${BASE_API_URL}api/items/${itemId}/delete/`)
+      deleteItemConfirmed() {
+          axios
+              .delete(`${BASE_API_URL}api/items/${this.itemIdToDelete}/delete/`)
               .then(response => {
                   this.getItems();
                   console.log(response);
@@ -138,6 +156,11 @@ export default {
               .catch(error => {
                   console.log(error);
               });
+          this.closeModal();
+      },
+      closeModal() {
+          this.itemIdToDelete = null;
+          this.showModal = false;
       },
       toggleTrade(itemId){
           axios.put(`${BASE_API_URL}api/items/${itemId}/toggle-trade/`)
@@ -364,6 +387,39 @@ hr{
 .search-field input:active{
   border: 2px solid #55BEA4;
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-dialog {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+    text-align: center;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    margin-right: 10px;
+}
+
 input#search {
   background-image: url('../assets/search.svg');
   background-repeat: no-repeat;
@@ -428,6 +484,28 @@ option{
   color: #434343;
   margin-bottom: 10px;
   padding-left: 11px;
+}
+
+.delete{
+    font-size: 24px;
+    line-height: 28px;
+    color: #fff;
+    background-color: #ff3030;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 30px;
+    cursor: pointer;
+}
+
+.cancel{
+    font-size: 24px;
+    line-height: 28px;
+    color: #fff;
+    background-color: #55BEA4;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 30px;
+    cursor: pointer;
 }
 
 .card-image {

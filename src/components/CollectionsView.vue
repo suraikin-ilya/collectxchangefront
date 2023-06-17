@@ -37,7 +37,7 @@
           <td class="collection__icons">
             <img src="../assets/share.svg">
             <img @click="openEditPopup(collection.id)" src="../assets/edit.svg">
-            <img @click="deleteCollection(collection.id)" src="../assets/delete.svg">
+            <img @click="showConfirmationModal(collection.id)" src="../assets/delete.svg">
           </td>
         </tr>
       </table>
@@ -61,6 +61,17 @@
               </table>
             </div>
         </div>
+      <div v-if="showModal" class="modal-overlay">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <h3>Вы уверены?</h3>
+                  <div class="modal-buttons">
+                      <button @click="deleteItemConfirmed" class="delete">Удалить</button>
+                      <button @click="closeModal" class="cancel">Отмена</button>
+                  </div>
+              </div>
+          </div>
+      </div>
   <div>
   <popup-collection
       :is-open="isOpen"
@@ -104,6 +115,8 @@ export default {
       itemCountSortOrder: 'asc',
       viewsSortOrder: 'asc',
       selectedCollectionId: null,
+      showModal: false,
+      itemIdToDelete: null,
     }
   },
   mounted() {
@@ -130,6 +143,10 @@ export default {
     };
   },
   methods: {
+      showConfirmationModal(itemId) {
+          this.itemIdToDelete = itemId;
+          this.showModal = true;
+      },
     compareIds() {
       return parseInt(this.userId) === parseInt(this.userData.id);
     },
@@ -148,16 +165,21 @@ export default {
               this.getCollectionItemCount(collection.id);
           });
       },
-    deleteCollection(collectionId) {
-      axios.delete(`${BASE_API_URL}api/collections/${collectionId}/`)
-          .then(response => {
-            this.getCollections();
-            console.log(response);
-          })
-          .catch(error => {
-            console.log(error);
-          });
-    },
+      deleteItemConfirmed() {
+          axios.delete(`${BASE_API_URL}api/collections/${this.itemIdToDelete}/`)
+              .then(response => {
+                  this.getCollections();
+                  console.log(response);
+              })
+              .catch(error => {
+                  console.log(error);
+              });
+          this.closeModal();
+      },
+      closeModal() {
+          this.itemIdToDelete = null;
+          this.showModal = false;
+      },
       toggleSortOrder(property) {
           if (this.property === property) {
               if (property === 'name') {
@@ -487,4 +509,60 @@ export default {
   td.border-right {
     border-right: 1px solid rgba(63, 132, 197, 0.29);
   }
+
+  .delete{
+      font-size: 24px;
+      line-height: 28px;
+      color: #fff;
+      background-color: #ff3030;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 30px;
+      cursor: pointer;
+  }
+
+  .cancel{
+      font-size: 24px;
+      line-height: 28px;
+      color: #fff;
+      background-color: #55BEA4;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 30px;
+      cursor: pointer;
+  }
+
+
+  .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .modal-dialog {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-content {
+      text-align: center;
+  }
+
+  .modal-buttons {
+      margin-top: 20px;
+  }
+
+  .modal-buttons button {
+      margin-right: 10px;
+  }
+
 </style>

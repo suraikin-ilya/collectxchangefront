@@ -639,8 +639,8 @@
                 <input v-model="data.market" class="custom-checkbox" type="checkbox" id="market" value="market">
                 <label for="trade">Показывать цену на сайте</label>
           </div>
-          <button v-if="!isEditing" @click="saveFormData" class="form__button form__button--create">Добавить</button>
-          <button v-if="isEditing" @click="saveFormData" class="form__button form__button--create">Сохранить</button>
+          <button @click="saveFormData" class="form__button form__button--create">Добавить</button>
+<!--          <button v-if="isEditing" @click="saveFormData" class="form__button form__button&#45;&#45;create">Сохранить</button>-->
         </form>
       </div>
     </div>
@@ -651,7 +651,7 @@
 
 
 import {useRoute} from "vue-router";
-import {reactive, toRefs, ref, watch} from 'vue';
+import {reactive, toRefs, ref} from 'vue';
 import { useStore } from 'vuex';
 import { BASE_API_URL } from '@/constants';
 export default {
@@ -669,19 +669,19 @@ export default {
       const handleObverseChange = (event) => {
           const file = event.target.files[0];
           data.obverse = file;
-          data.obverse = URL.createObjectURL(file); // Отображение выбранного файла
+           // Отображение выбранного файла
       };
 
       const handleReverseChange = (event) => {
           const file = event.target.files[0];
           data.reverse = file;
-          data.reverse = URL.createObjectURL(file); // Отображение выбранного файла
+          // Отображение выбранного файла
       };
 
       const handleExtraPhotoChange = (event) => {
           const file = event.target.files[0];
           data.extra_photo = file;
-          data.extraPhotoFile = URL.createObjectURL(file); // Отображение выбранного файла
+
       };
     const store = useStore();
     const route = useRoute();
@@ -715,43 +715,6 @@ export default {
       datePublish: null
     });
 
-      const fetchItemData = async (itemId) => {
-          try {
-              const response = await fetch(`${BASE_API_URL}api/item/${itemId}/`);
-              const responseData = await response.json(); // Use a different variable name, e.g., responseData
-              data.catalogNumber = responseData.catalogNumber;
-              data.ISSN = responseData.ISSN;
-              data.year = responseData.year;
-              data.name = responseData.name;
-              data.selectedCategory = responseData.category;
-              data.trade = responseData.trade;
-              data.market = responseData.market;
-              data.visibility = responseData.visibility;
-              data.selectedCountry = responseData.country;
-              data.selectedPreservation = responseData.preservation;
-              data.obverse = responseData.obverse;
-              data.reverse = responseData.reverse;
-              data.extra_photo = responseData.extra_photo;
-              data.price = responseData.price;
-              data.WWC = responseData.WWC;
-              data.CBRF = responseData.CBRF;
-              data.material = responseData.material;
-              data.weight = responseData.weight;
-              data.description = responseData.description;
-              data.width = responseData.width;
-              data.height = responseData.height;
-              data.datePublish = responseData.date_publish;
-          } catch (error) {
-              console.error('Ошибка при получении данных о предмете:', error);
-          }
-      };
-
-      watch(() => props.selectedItemId, (newValue) => {
-          if (newValue !== null) {
-              fetchItemData(newValue);
-          }
-      });
-
 
     const saveFormData = async (event) => {
         event.preventDefault();
@@ -782,7 +745,7 @@ export default {
         formData.append('ISSN', data.ISSN);
         formData.append('date_publish', data.datePublish);
 
-        const response = await fetch(BASE_API_URL + 'api/item/', {
+        const response = await fetch(BASE_API_URL + 'api/post_item/', {
           method: 'POST',
           body: formData,
         });
@@ -803,7 +766,6 @@ export default {
       handleReverseChange,
       handleExtraPhotoChange,
       data,
-      datePublish: data.datePublish,
       saveFormData,
       ...toRefs(data),
     };

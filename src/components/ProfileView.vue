@@ -78,7 +78,7 @@ export default {
                 .then(data => {
                     this.userInfo = data
                     this.userInfo.date_joined = moment(data.date_joined).format('DD.MM.YYYY');
-                    fetch(BASE_API_URL + 'api/visible_items/${this.userInfo.id}/')
+                    fetch(BASE_API_URL + 'api/visible_items/' + this.userInfo.id + '/')
                         .then(response => response.json())
                         .then(data => {
                             this.items = data;

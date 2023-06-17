@@ -3,7 +3,7 @@
     <h2>Последние публикации</h2>
             <div class="card-wrapper" v-if="items">
                 <div v-for="item in filteredItems" :key="item.id" class="card">
-                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title">{{item.name}}</div></router-link>
+                    <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><div class="card-title" :title="item.name">{{item.name}}</div></router-link>
                     <router-link :to="{name: 'Item', params: {itemId: item.id}}" style="text-decoration: none; color: inherit;"><img class="card-image" :src="BASE_API_URL()+item.obverse" alt="Изображение товара"></router-link>
       <!--              <ul class="card-features">-->
       <!--                  <li v-if="item.material != '' && item.material != null" :title="item.material">Материал: <span>{{ item.material }}</span> </li>-->
@@ -17,7 +17,7 @@
                         <span class="card-views">{{ item.views}}</span>
                     </div>
                 </div>
-      </div>
+            </div>
     <h2>Популярные коллекции</h2>
       <div class="card-wrapper">
         <div v-for="collection in filteredCollections" :key="collection.id" class="collection-card">
@@ -34,6 +34,68 @@
         </div>
       </div>
     <h2>Топ коллекционеров</h2>
+      <div class="card-wrapper">
+          <div class="card height">
+              <div class="card-title">Nickname</div>
+              <img class="card-image" src="../assets/photo1.jpg" alt="Изображение товара">
+              <ul class="card-features">
+                  <li>Коллекций: <span>5</span> </li>
+                  <li>Предметов: <span>100</span> </li>
+              </ul>
+              <div class="card-stats">
+                  <span>1</span>
+                  <span class="card-views">3.8k</span>
+              </div>
+          </div>
+          <div class="card height">
+              <div class="card-title">Nickname</div>
+              <img class="card-image" src="../assets/photo2.jpg" alt="Изображение товара">
+              <ul class="card-features">
+                  <li>Коллекций: <span>5</span> </li>
+                  <li>Предметов: <span>100</span> </li>
+              </ul>
+              <div class="card-stats">
+                  <span>2</span>
+                  <span class="card-views">3.8k</span>
+              </div>
+          </div>
+          <div class="card height">
+              <div class="card-title">Nickname</div>
+              <img class="card-image" src="../assets/photo3.png" alt="Изображение товара">
+              <ul class="card-features">
+                  <li>Коллекций: <span>5</span> </li>
+                  <li>Предметов: <span>100</span> </li>
+              </ul>
+              <div class="card-stats">
+                  <span>3</span>
+                  <span class="card-views">3.8k</span>
+              </div>
+          </div>
+          <div class="card height">
+              <div class="card-title">Nickname</div>
+              <img class="card-image" src="../assets/photo4.jpg" alt="Изображение товара">
+              <ul class="card-features">
+                  <li>Коллекций: <span>5</span> </li>
+                  <li>Предметов: <span>100</span> </li>
+              </ul>
+              <div class="card-stats">
+                  <span>4</span>
+                  <span class="card-views">3.8k</span>
+              </div>
+          </div>
+          <div class="card height">
+              <div class="card-title">Nickname</div>
+              <img class="card-image" src="../assets/photo5.png" alt="Изображение товара">
+              <ul class="card-features">
+                  <li>Коллекций: <span>5</span> </li>
+                  <li>Предметов: <span>100</span> </li>
+              </ul>
+              <div class="card-stats">
+                  <span>5</span>
+                  <span class="card-views">3.8k</span>
+              </div>
+          </div>
+      </div>
   </div>
 </template>
 
@@ -194,11 +256,19 @@ ul{
     color: #434343;
     margin-bottom: 10px;
     padding-left: 11px;
+    width: 100%;
+    white-space: nowrap; /* Предотвратить перенос текста на новую строку */
+    overflow: hidden; /* Скрыть текст, не умещающийся в блок */
+    text-overflow: ellipsis;
 }
 
 .card-image {
     width: 100%;
     height: auto;
+}
+
+.height{
+    height: max-content;
 }
 
 .collection-card-title{
@@ -291,13 +361,14 @@ ul{
 }
 
 .card-features li {
+    margin-top: 5px;
     margin-bottom: 5px;
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 17px;
     color: #007D5F;
-
+    list-style-type: none;
     margin-right: 5px;
     padding-left: 8px;
 }
