@@ -213,7 +213,7 @@ export default {
             weightFrom: null,
             weightTo: null,
             currentPage: 1, // Текущая страница
-            itemsPerPage: 3, // Количество элементов на странице
+            itemsPerPage: 12, // Количество элементов на странице
             totalPages: 0,
         };
     },

@@ -35,65 +35,77 @@
       </div>
     <h2>Топ коллекционеров</h2>
       <div class="card-wrapper">
+
           <div class="card height">
-              <div class="card-title">Nickname</div>
+              <RouterLink to="/profile/ilya.suraikin" style="text-decoration: none">
+              <div class="card-title">ilya.suraikin</div>
               <img class="card-image" src="../assets/photo1.jpg" alt="Изображение товара">
               <ul class="card-features">
-                  <li>Коллекций: <span>5</span> </li>
-                  <li>Предметов: <span>100</span> </li>
+                  <li>Коллекций: <span>2</span> </li>
+                  <li>Предметов: <span>11</span> </li>
               </ul>
               <div class="card-stats">
                   <span>1</span>
-                  <span class="card-views">3.8k</span>
+                  <span class="card-views">424</span>
               </div>
+              </RouterLink>
           </div>
+
           <div class="card height">
-              <div class="card-title">Nickname</div>
+              <RouterLink to="/profile/NumisKeeper89" style="text-decoration: none">
+              <div class="card-title">NumisKeeper89</div>
               <img class="card-image" src="../assets/photo2.jpg" alt="Изображение товара">
               <ul class="card-features">
-                  <li>Коллекций: <span>5</span> </li>
-                  <li>Предметов: <span>100</span> </li>
+                  <li>Коллекций: <span>1</span> </li>
+                  <li>Предметов: <span>4</span> </li>
               </ul>
               <div class="card-stats">
                   <span>2</span>
-                  <span class="card-views">3.8k</span>
+                  <span class="card-views">225</span>
               </div>
+              </RouterLink>
           </div>
           <div class="card height">
-              <div class="card-title">Nickname</div>
+              <RouterLink to="/profile/Explorer89" style="text-decoration: none">
+              <div class="card-title">Explorer89</div>
               <img class="card-image" src="../assets/photo3.png" alt="Изображение товара">
               <ul class="card-features">
-                  <li>Коллекций: <span>5</span> </li>
-                  <li>Предметов: <span>100</span> </li>
+                  <li>Коллекций: <span>1</span> </li>
+                  <li>Предметов: <span>4</span> </li>
               </ul>
               <div class="card-stats">
                   <span>3</span>
-                  <span class="card-views">3.8k</span>
+                  <span class="card-views">20</span>
               </div>
+              </RouterLink>
           </div>
           <div class="card height">
-              <div class="card-title">Nickname</div>
+              <RouterLink to="/profile/StampWhisperer" style="text-decoration: none">
+              <div class="card-title">StampWhisperer</div>
               <img class="card-image" src="../assets/photo4.jpg" alt="Изображение товара">
               <ul class="card-features">
-                  <li>Коллекций: <span>5</span> </li>
-                  <li>Предметов: <span>100</span> </li>
+                  <li>Коллекций: <span>1</span> </li>
+                  <li>Предметов: <span>1</span> </li>
               </ul>
               <div class="card-stats">
                   <span>4</span>
-                  <span class="card-views">3.8k</span>
+                  <span class="card-views">12</span>
               </div>
+              </RouterLink>
           </div>
           <div class="card height">
-              <div class="card-title">Nickname</div>
+              <RouterLink to="/profile/PinMaster" style="text-decoration: none">
+              <div class="card-title">PinMaster</div>
               <img class="card-image" src="../assets/photo5.png" alt="Изображение товара">
               <ul class="card-features">
-                  <li>Коллекций: <span>5</span> </li>
-                  <li>Предметов: <span>100</span> </li>
+                  <li>Коллекций: <span>1</span> </li>
+                  <li>Предметов: <span>1</span> </li>
               </ul>
               <div class="card-stats">
                   <span>5</span>
-                  <span class="card-views">3.8k</span>
+                  <span class="card-views">3</span>
               </div>
+              </RouterLink>
           </div>
       </div>
   </div>
@@ -241,7 +253,7 @@ ul{
     width: calc(20% - 29px);
     margin-left: 29px;
     margin-bottom: 20px;
-    height: 265px;
+    height: max-content;
     padding: 10px 0 8px 0;
     background: #FFFFFF;
     border: 1px solid rgba(0, 125, 95, 0.25);

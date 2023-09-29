@@ -5,8 +5,10 @@
         <div class="container">
             <div class="dialog-container">
                 <div class="user-info">
-                    <img :src="BASE_API_URL()+ avatar" alt="Avatar" class="avatar">
-                    <span class="nickname">{{this.userNickname}}</span>
+                    <router-link :to="{name: 'Profile', params: {profileId: this.userNickname}}" style="text-decoration: none; color: inherit;">
+                        <img :src="BASE_API_URL()+ avatar" alt="Avatar" class="avatar">
+                        <span class="nickname">{{this.userNickname}}</span>
+                    </router-link>
                 </div>
                 <hr class="separator">
                 <div class="dialog" ref="dialogContainer">
